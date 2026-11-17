@@ -979,6 +979,7 @@
     ['{ngay_so}', 'Ngày (số)'],
     ['{thang}', 'Tháng'],
     ['{nam}', 'Năm'],
+    ['{am_lich}', 'Ngày âm lịch'],
   ];
   function textDefaults(o) {
     return Object.assign({ type: 'text', text: '', font: 'Be Vietnam Pro', size: 18, color: '#333333', bg: '', align: 'center', bold: false, italic: false, underline: false, upper: false, lh: 1.35, ls: 0, shadow: false, w: 320, h: 30 }, o);
@@ -999,7 +1000,8 @@
   var WIDGET_LIST = [
     ['countdown', 'Đồng hồ đếm ngược', 'Đếm ngày, giờ, phút tới ngày cưới', { w: 340, h: 96 }],
     ['calendar', 'Lịch tháng cưới', 'Lịch tháng có đánh dấu ngày cưới', { w: 340, h: 300 }],
-    ['map', 'Bản đồ chỉ đường', 'Google Maps + nút chỉ đường', { w: 340, h: 220, address: '', label: 'Chỉ đường' }],
+    ['map', 'Bản đồ chỉ đường', 'Google Maps + nút chỉ đường', { w: 340, h: 220, address: '', label: 'Chỉ đường', style: 'full' }],
+    ['map', 'Nút xem chỉ đường', 'Chỉ một nút mở Google Maps (lễ tư gia…)', { w: 200, h: 44, address: '', label: 'Xem chỉ đường', style: 'button' }],
     ['rsvp', 'Xác nhận tham dự', 'Khách xác nhận đến dự, số người', { w: 360, h: 420, title: '' }],
     ['wishes', 'Sổ lời chúc', 'Khách gửi lời chúc, hiện ngay trên thiệp', { w: 360, h: 440, title: '' }],
     ['gift', 'Hộp mừng cưới QR', 'Mã QR chuyển khoản ngân hàng', { w: 360, h: 300, groom: { bin: '', accountNo: '', accountName: '' }, bride: { bin: '', accountNo: '', accountName: '' } }],
@@ -1185,6 +1187,35 @@
       var m = doc.music;
       var SM = window.SobaMusic;
       var cur = SM && SM.keyOf(m.url);
+      // Thư viện nhạc cưới (tệp trong /music) – mọi gói đều dùng được
+      var song = (boot.songs || []).find(function (s) {
+        return s.url === m.url;
+      });
+      var slist = h('div', { class: 'dz-pages' });
+      (boot.songs || []).forEach(function (s) {
+        var on = song && song.key === s.key;
+        var pk = h('button', { type: 'button', text: (on ? '✓ ' : '') + s.name });
+        pk.addEventListener('click', function () {
+          m.url = s.url;
+          commit();
+          openTool('music', true);
+        });
+        var pid = 'song:' + s.key;
+        var ls = h('button', { type: 'button', class: 'dz-ib', title: 'Nghe thử', 'aria-label': 'Nghe thử ' + s.name, text: S.preview && S.preview.key === pid ? '⏸' : '▶' });
+        ls.addEventListener('click', function () {
+          var playing = S.preview && S.preview.key === pid;
+          if (S.preview) S.preview.player.pause();
+          S.preview = null;
+          if (!playing) {
+            S.preview = { key: pid, player: new Audio(s.url) };
+            S.preview.player.play();
+          }
+          openTool('music', true);
+        });
+        slist.appendChild(h('div', { class: 'dz-page' + (on ? ' on' : '') }, [pk, ls]));
+      });
+      if (slist.children.length) body.appendChild(group('Nhạc cưới', [h('p', { class: 'dz-hint', text: 'Chọn một bài làm nhạc nền, bấm ▶ để nghe thử.' }), slist]));
+      if (song) cur = song.key;
       var list = h('div', { class: 'dz-pages' });
       (SM ? SM.list : []).forEach(function (s) {
         var pick = h('button', { type: 'button', text: (cur === s.key ? '✓ ' : '') + s.name });
@@ -1215,7 +1246,7 @@
         })),
         checkbox('Tự phát khi khách chạm vào thiệp', m, 'autoplay', function () {}),
       ]));
-      if (m.url && !cur) {
+      if (m.url) {
         var off = h('button', { type: 'button', class: 'dz-btn dz-btn-ghost dz-btn-sm', text: 'Tắt nhạc nền' });
         off.addEventListener('click', function () {
           m.url = '';
@@ -1571,7 +1602,7 @@
     );
     body.appendChild(
       group('Hiệu ứng xuất hiện', [
-        field('Kiểu', selectInput(el, 'anim', [['none', 'Không'], ['fade', 'Hiện dần'], ['up', 'Trượt lên'], ['down', 'Trượt xuống'], ['left', 'Từ trái sang'], ['right', 'Từ phải sang'], ['zoom', 'Phóng to dần']], function () {})),
+        field('Kiểu', selectInput(el, 'anim', [['none', 'Không'], ['fade', 'Hiện dần'], ['up', 'Trượt lên'], ['down', 'Trượt xuống'], ['left', 'Từ trái sang'], ['right', 'Từ phải sang'], ['zoom', 'Phóng to dần'], ['rise', 'Trồi lên từ phong bì']], function () {})),
         range('Trễ', el, 'delay', 0, 3, 0.1, function (v) {
           return v.toFixed(1) + 's';
         }, function () {}),
@@ -1588,7 +1619,7 @@
     var fonts = boot.fonts.map(function (n) {
       return [n, n];
     });
-    if (el.widget === 'map') body.appendChild(group('Địa điểm', [field('Địa chỉ', textInput(el, 'address', { max: 200, placeholder: 'Số nhà, đường, quận, thành phố' }, re)), field('Chữ trên nút', textInput(el, 'label', { max: 40 }, re))]));
+    if (el.widget === 'map') body.appendChild(group('Địa điểm', [field('Địa chỉ', textInput(el, 'address', { max: 200, placeholder: 'Số nhà, đường, quận, thành phố' }, re)), field('Chữ trên nút', textInput(el, 'label', { max: 40 }, re)), field('Kiểu', selectInput(el, 'style', [['full', 'Bản đồ + nút'], ['button', 'Chỉ nút chỉ đường']], re))]));
     if (el.widget === 'rsvp' || el.widget === 'wishes') body.appendChild(group('Nội dung', [field('Tiêu đề trong khung (không bắt buộc)', textInput(el, 'title', { max: 80 }, re))]));
     if (el.widget === 'call') body.appendChild(group('Nút gọi', [field('Số điện thoại', textInput(el, 'phone', { max: 20, placeholder: '09xx xxx xxx' }, re)), field('Chữ trên nút', textInput(el, 'label', { max: 40 }, re))]));
     if (el.widget === 'countdown' || el.widget === 'calendar') {

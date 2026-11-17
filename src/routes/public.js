@@ -28,7 +28,7 @@ function starterFeatures(s) {
     'Đếm ngược & lịch ngày cưới',
     'Bản đồ chỉ đường',
     `${n} vị trí ảnh có thể thay`,
-    'Nhạc nền giai điệu gốc',
+    s.song ? 'Nhạc nền: ' + (canvas.SONGS.find((x) => x.key === s.song) || {}).name : 'Nhạc nền',
   ].filter(Boolean);
 }
 

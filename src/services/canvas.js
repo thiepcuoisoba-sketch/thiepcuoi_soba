@@ -24,8 +24,29 @@ const MELODIES = [
   { key: 'dem-sao', name: 'Đêm Sao' },
   { key: 'song-hy', name: 'Song Hỷ' },
 ];
+/**
+ * Thư viện nhạc cưới (tệp trong public/music). Chủ dự án xác nhận đã có giấy phép sử dụng (17/11/2026).
+ * Thêm bài: chép tệp vào public/music rồi thêm một dòng ở đây.
+ */
+const SONGS = [
+  { key: 'a-thousand-years', name: 'A Thousand Years – Christina Perri', file: 'a-thousand-years.m4a' },
+  { key: 'beautiful-in-white', name: 'Beautiful in White (hoà tấu)', file: 'beautiful-in-white.mp3' },
+  { key: 'canon-in-d', name: 'Canon in D (violin)', file: 'canon-in-d.mp3' },
+  { key: 'marry-you', name: 'Marry You – Bruno Mars', file: 'marry-you.m4a' },
+  { key: 'cant-stop-the-feeling', name: 'Can’t Stop the Feeling – Justin Timberlake', file: 'cant-stop-the-feeling.m4a' },
+  { key: 'beautiful-girl', name: 'Beautiful Girl – SKULL & HAHA ft. 10cm', file: 'beautiful-girl.mp3' },
+  { key: 'em-dong-y', name: 'Em Đồng Ý (I Do) – Đức Phúc x 911', file: 'em-dong-y.m4a' },
+  { key: 'i-do', name: 'I Do – 911', file: 'i-do.mp3' },
+  { key: 'mai-mai-ben-nhau', name: 'Mãi Mãi Bên Nhau – Noo Phước Thịnh', file: 'mai-mai-ben-nhau.mp3' },
+  { key: 'le-duong', name: 'Lễ Đường – Kai Đinh', file: 'le-duong.mp3' },
+  { key: 'vay-cuoi', name: 'Váy Cưới (cover)', file: 'vay-cuoi.mp3' },
+  { key: 'bai-nay-khong-de-di-dien', name: 'Bài Này Không Để Đi Diễn – Anh Tú', file: 'bai-nay-khong-de-di-dien.m4a' },
+  { key: 'nhac-cuoi-nhe-nhang', name: 'Nhạc cưới nhẹ nhàng', file: 'nhac-cuoi-nhe-nhang.mp3' },
+].map((s) => ({ ...s, url: '/music/' + s.file }));
+const songUrl = (key) => (SONGS.find((s) => s.key === key) || {}).url || '';
 const musicUrl = (u) => {
   const s = clean(u, 500);
+  if (s.startsWith('/music/')) return SONGS.some((x) => x.url === s) ? s : '';
   const m = /^builtin:([a-z0-9-]{1,30})$/.exec(s);
   if (m) return MELODIES.some((x) => x.key === m[1]) ? s : '';
   return url(s);
@@ -39,7 +60,7 @@ const OPENERS = [
   { key: 'book', name: 'Lật bìa thiệp' },
 ];
 const OPENER_KEYS = OPENERS.map((o) => o.key);
-const ANIMS = ['none', 'fade', 'up', 'down', 'left', 'right', 'zoom'];
+const ANIMS = ['none', 'fade', 'up', 'down', 'left', 'right', 'zoom', 'rise'];
 const FILTERS = ['none', 'warm', 'bw', 'film', 'soft'];
 const LIMITS = { sections: 20, elements: 80, album: 30, text: 2000 };
 
@@ -137,7 +158,7 @@ function sanitizeElement(e = {}) {
     bg: color(e.bg),
     font: pick(e.font, FONTS, 'Be Vietnam Pro'),
   };
-  if (widget === 'map') Object.assign(out, { address: clean(e.address, 200), label: clean(e.label, 40) || 'Chỉ đường' });
+  if (widget === 'map') Object.assign(out, { address: clean(e.address, 200), label: clean(e.label, 40) || 'Chỉ đường', style: pick(e.style, ['full', 'button'], 'full') });
   if (widget === 'rsvp') out.title = clean(e.title, 80);
   if (widget === 'wishes') out.title = clean(e.title, 80);
   if (widget === 'gift') Object.assign(out, { groom: bank(e.groom), bride: bank(e.bride) });
@@ -381,7 +402,8 @@ require('./canvas-starters')
   .buildAll()
   .reverse()
   .forEach((s) => {
-    STARTERS.unshift({ key: s.key, name: s.name, desc: s.desc, tier: s.tier, tags: s.tags, thumb: s.thumb, music: s.music, opener: s.opener, featured: s.featured, doc: sanitizeDoc(s.raw) });
+    s.raw.music.url = songUrl(s.song);
+    STARTERS.unshift({ key: s.key, name: s.name, desc: s.desc, tier: s.tier, tags: s.tags, thumb: s.thumb, song: s.song, opener: s.opener, featured: s.featured, doc: sanitizeDoc(s.raw) });
   });
 
 const starterOf = (key) => STARTERS.find((s) => s.key === key) || null;
@@ -426,4 +448,4 @@ function pageLocals(card, { owner, guestName = '', preview = false, wishes = [],
   };
 }
 
-module.exports = { pageLocals, W, FONTS, WIDGETS, LIMITS, BANKS, OPENERS, STARTERS, starterOf, blankDoc, sanitizeDoc, parseDoc, viewDoc, docFontsUrl, safeJson };
+module.exports = { pageLocals, W, FONTS, WIDGETS, LIMITS, BANKS, OPENERS, SONGS, songUrl, STARTERS, starterOf, blankDoc, sanitizeDoc, parseDoc, viewDoc, docFontsUrl, safeJson };

@@ -36,6 +36,99 @@
     return new Date(p[0], p[1] - 1, p[2], t[0] || 0, t[1] || 0);
   }
 
+  // ===== Âm lịch Việt Nam (múi giờ +7) – theo thuật toán thiên văn công bố rộng rãi của Hồ Ngọc Đức =====
+  var LUNAR_TZ = 7;
+  function jdFromDate(dd, mm, yy) {
+    var a = Math.floor((14 - mm) / 12);
+    var y = yy + 4800 - a;
+    var m = mm + 12 * a - 3;
+    var jd = dd + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+    if (jd < 2299161) jd = dd + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - 32083;
+    return jd;
+  }
+  function newMoonDay(k) {
+    var T = k / 1236.85;
+    var T2 = T * T;
+    var T3 = T2 * T;
+    var dr = Math.PI / 180;
+    var jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3 + 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * dr);
+    var M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
+    var Mpr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
+    var F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
+    var c = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M);
+    c = c - 0.4068 * Math.sin(Mpr * dr) + 0.0161 * Math.sin(dr * 2 * Mpr) - 0.0004 * Math.sin(dr * 3 * Mpr);
+    c = c + 0.0104 * Math.sin(dr * 2 * F) - 0.0051 * Math.sin(dr * (M + Mpr)) - 0.0074 * Math.sin(dr * (M - Mpr)) + 0.0004 * Math.sin(dr * (2 * F + M));
+    c = c - 0.0004 * Math.sin(dr * (2 * F - M)) - 0.0006 * Math.sin(dr * (2 * F + Mpr)) + 0.001 * Math.sin(dr * (2 * F - Mpr)) + 0.0005 * Math.sin(dr * (2 * Mpr + M));
+    var dt = T < -11 ? 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3 : -0.000278 + 0.000265 * T + 0.000262 * T2;
+    return Math.floor(jd1 + c - dt + 0.5 + LUNAR_TZ / 24);
+  }
+  function sunLongitude(jdn) {
+    var T = (jdn - 2451545.5 - LUNAR_TZ / 24) / 36525;
+    var T2 = T * T;
+    var dr = Math.PI / 180;
+    var M = 357.5291 + 35999.0503 * T - 0.0001559 * T2 - 0.00000048 * T * T2;
+    var L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
+    var DL = (1.9146 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M) + (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) + 0.00029 * Math.sin(dr * 3 * M);
+    var L = (L0 + DL) * dr;
+    L = L - Math.PI * 2 * Math.floor(L / (Math.PI * 2));
+    return Math.floor((L / Math.PI) * 6);
+  }
+  function lunarMonth11(yy) {
+    var k = Math.floor((jdFromDate(31, 12, yy) - 2415021) / 29.530588853);
+    var nm = newMoonDay(k);
+    return sunLongitude(nm) >= 9 ? newMoonDay(k - 1) : nm;
+  }
+  function leapMonthOffset(a11) {
+    var k = Math.floor((a11 - 2415021.076998695) / 29.530588853 + 0.5);
+    var last;
+    var i = 1;
+    var arc = sunLongitude(newMoonDay(k + i));
+    do {
+      last = arc;
+      i++;
+      arc = sunLongitude(newMoonDay(k + i));
+    } while (arc !== last && i < 14);
+    return i - 1;
+  }
+  /** Dương lịch → [ngày, tháng, năm, nhuận] âm lịch */
+  function toLunar(dd, mm, yy) {
+    var day = jdFromDate(dd, mm, yy);
+    var k = Math.floor((day - 2415021.076998695) / 29.530588853);
+    var start = newMoonDay(k + 1);
+    if (start > day) start = newMoonDay(k);
+    var a11 = lunarMonth11(yy);
+    var b11 = a11;
+    var ly;
+    if (a11 >= start) {
+      ly = yy;
+      a11 = lunarMonth11(yy - 1);
+    } else {
+      ly = yy + 1;
+      b11 = lunarMonth11(yy + 1);
+    }
+    var diff = Math.floor((start - a11) / 29);
+    var leap = false;
+    var lm = diff + 11;
+    if (b11 - a11 > 365) {
+      var lo = leapMonthOffset(a11);
+      if (diff >= lo) {
+        lm = diff + 10;
+        leap = diff === lo;
+      }
+    }
+    if (lm > 12) lm -= 12;
+    if (lm >= 11 && diff < 4) ly -= 1;
+    return [day - start + 1, lm, ly, leap];
+  }
+  var CAN = ['Canh', 'Tân', 'Nhâm', 'Quý', 'Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ'];
+  var CHI = ['Thân', 'Dậu', 'Tuất', 'Hợi', 'Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi'];
+  /** "20 tháng 11 năm Bính Ngọ" */
+  function lunarText(d) {
+    if (!d) return '';
+    var l = toLunar(d.getDate(), d.getMonth() + 1, d.getFullYear());
+    return l[0] + ' tháng ' + l[1] + (l[3] ? ' nhuận' : '') + ' năm ' + CAN[l[2] % 10] + ' ' + CHI[l[2] % 12];
+  }
+
   /** Thay các mã {ten_khach}, {chu_re}... trong chữ */
   function fill(text, ctx) {
     var doc = ctx.doc;
@@ -51,7 +144,8 @@
       thang: d ? pad(d.getMonth() + 1) : '',
       nam: d ? String(d.getFullYear()) : '',
     };
-    return String(text || '').replace(/\{(ten_khach|chu_re|co_dau|ngay_so|ngay|gio|thu|thang|nam)\}/g, function (_, k) {
+    return String(text || '').replace(/\{(ten_khach|chu_re|co_dau|ngay_so|ngay|gio|thu|thang|nam|am_lich)\}/g, function (_, k) {
+      if (k === 'am_lich') return lunarText(d);
       return map[k];
     });
   }
@@ -158,6 +252,8 @@
     },
     map: function (e, ctx) {
       var q = encodeURIComponent(e.address || '');
+      // Kiểu "chỉ nút": dùng cho lễ tại tư gia nhà trai / nhà gái
+      if (e.style === 'button') return h('a', { class: 'cv-btn cv-map-btn', href: 'https://www.google.com/maps/search/?api=1&query=' + q, target: '_blank', rel: 'noopener', style: 'background:' + e.color, text: '📍 ' + (e.label || 'Xem chỉ đường') });
       var top =
         ctx.mode === 'edit' || !e.address
           ? h('div', { class: 'cv-map-ph' }, [h('span', { text: e.address ? '📍 ' + e.address : '📍 Nhập địa chỉ ở bảng bên phải' })])
@@ -168,14 +264,19 @@
       ]);
     },
     rsvp: function (e) {
+      var radio = function (v, label, on) {
+        return h('label', { class: 'cv-radio' }, [h('input', { type: 'radio', name: 'attending', value: v, checked: on, style: 'accent-color:' + e.color }), h('span', { text: label })]);
+      };
+      var people = [];
+      for (var n = 1; n <= 10; n++) people.push(h('option', { value: String(n), text: n + ' người' }));
       var form = h('form', { class: 'cv-form', 'data-rsvp': '' }, [
         h('input', { name: 'name', placeholder: 'Họ và tên của bạn *', maxlength: '120', required: true }),
-        h('input', { name: 'phone', placeholder: 'Số điện thoại', maxlength: '30', inputmode: 'tel' }),
-        h('select', { name: 'attending' }, [h('option', { value: 'yes', text: 'Tôi sẽ tham dự' }), h('option', { value: 'maybe', text: 'Chưa chắc chắn' }), h('option', { value: 'no', text: 'Rất tiếc, tôi không đến được' })]),
-        h('div', { class: 'cv-row' }, [
-          h('select', { name: 'side' }, [h('option', { value: '', text: 'Khách của…' }), h('option', { value: 'groom', text: 'Nhà trai' }), h('option', { value: 'bride', text: 'Nhà gái' })]),
-          h('input', { name: 'guests', type: 'number', min: '1', max: '20', value: '1', 'aria-label': 'Số người' }),
+        h('div', { class: 'cv-radios', role: 'radiogroup', 'aria-label': 'Bạn sẽ tham dự chứ?' }, [radio('yes', 'Có, tôi sẽ tham dự', true), radio('no', 'Tôi bận, rất tiếc không thể tham dự', false)]),
+        h('div', { class: 'cv-row cv-rsvp-more' }, [
+          h('select', { name: 'side', 'aria-label': 'Khách của' }, [h('option', { value: '', text: 'Khách của…' }), h('option', { value: 'groom', text: 'Nhà trai' }), h('option', { value: 'bride', text: 'Nhà gái' })]),
+          h('select', { name: 'guests', 'aria-label': 'Số lượng người tham dự' }, people),
         ]),
+        h('input', { name: 'phone', placeholder: 'Số điện thoại (không bắt buộc)', maxlength: '30', inputmode: 'tel' }),
         h('textarea', { name: 'message', rows: '2', placeholder: 'Lời nhắn (không bắt buộc)', maxlength: '1000' }),
         h('input', { name: 'website', class: 'cv-hp', tabindex: '-1', autocomplete: 'off' }),
         h('button', { class: 'cv-btn', type: 'submit', style: 'background:' + e.color, text: 'Gửi xác nhận' }),
@@ -190,7 +291,10 @@
       if (!(ctx.wishes || []).length) list.appendChild(h('p', { class: 'cv-empty', text: 'Hãy là người đầu tiên gửi lời chúc nhé!' }));
       var form = h('form', { class: 'cv-form', 'data-wish': '' }, [
         h('input', { name: 'name', placeholder: 'Tên của bạn *', maxlength: '120', required: true }),
-        h('textarea', { name: 'message', rows: '2', placeholder: 'Gửi lời chúc tới cô dâu chú rể *', maxlength: '1000', required: true }),
+        h('div', { class: 'cv-ta' }, [
+          h('textarea', { name: 'message', rows: '2', placeholder: 'Gửi lời chúc tới cô dâu chú rể *', maxlength: '1000', required: true }),
+          h('button', { type: 'button', class: 'cv-suggest', 'data-suggest': '', title: 'Gợi ý lời chúc', 'aria-label': 'Gợi ý lời chúc', text: '✨' }),
+        ]),
         h('input', { name: 'website', class: 'cv-hp', tabindex: '-1', autocomplete: 'off' }),
         h('button', { class: 'cv-btn', type: 'submit', style: 'background:' + e.color, text: 'Gửi lời chúc' }),
       ]);
@@ -310,5 +414,5 @@
     });
   }
 
-  window.SobaCV = { W: W, h: h, fill: fill, font: font, mainDate: mainDate, pad: pad, renderElement: renderElement, renderSection: renderSection, tickCountdowns: tickCountdowns, wishItem: wishItem, demoAccounts: demoAccounts };
+  window.SobaCV = { W: W, h: h, fill: fill, toLunar: toLunar, lunarText: lunarText, font: font, mainDate: mainDate, pad: pad, renderElement: renderElement, renderSection: renderSection, tickCountdowns: tickCountdowns, wishItem: wishItem, demoAccounts: demoAccounts };
 })();

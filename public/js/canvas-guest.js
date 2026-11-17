@@ -114,7 +114,27 @@
       });
   });
 
-  // Sao chép số tài khoản, album
+  // Lời chúc gợi ý (nút ✨ trong sổ lời chúc + bảng "Gửi lời chúc")
+  var WISH_IDEAS = [
+    'Chúc hai bạn trăm năm hạnh phúc! 💕',
+    'Chúc mừng hạnh phúc! 🎉',
+    'Đồng tâm đồng lòng, xây tổ ấm thịnh vượng ✨',
+    'Sớm có tin vui nha! 👶',
+    'Mãi yêu thương nhau như ngày đầu 🥰',
+    'Chúc hai bạn bách niên giai lão, sắt son trọn đời 💍',
+    'Chúc cô dâu chú rể luôn nắm tay nhau qua mọi mùa của cuộc đời 🌸',
+    'Hạnh phúc ngập tràn, tiếng cười đầy nhà nhé! 🏡',
+  ];
+  var ideaIdx = Math.floor(Math.random() * WISH_IDEAS.length);
+
+  // Khách chọn "không tham dự" → ẩn chọn số người / khách của
+  stage.addEventListener('change', function (ev) {
+    if (ev.target.name !== 'attending') return;
+    var f = ev.target.form;
+    if (f && f.hasAttribute('data-rsvp')) f.classList.toggle('cv-rsvp-no', ev.target.value === 'no');
+  });
+
+  // Sao chép số tài khoản, album, gợi ý lời chúc
   var albumImgs = [];
   var lbIndex = 0;
   var lb;
@@ -123,6 +143,13 @@
     lb.querySelector('img').src = albumImgs[lbIndex];
   }
   stage.addEventListener('click', function (ev) {
+    var sg = ev.target.closest('[data-suggest]');
+    if (sg) {
+      var ta = sg.parentNode.querySelector('textarea');
+      ta.value = WISH_IDEAS[ideaIdx++ % WISH_IDEAS.length];
+      ta.focus();
+      return;
+    }
     var c = ev.target.closest('[data-copy]');
     if (c) {
       var v = c.getAttribute('data-copy');
@@ -172,7 +199,8 @@
     var melody = window.SobaMusic && window.SobaMusic.keyOf(doc.music.url);
     var audio = melody ? window.SobaMusic.create(melody) : new Audio(doc.music.url);
     audio.loop = true;
-    var mbtn = CV.h('button', { class: 'cv-music' + (boot.toolbar ? ' cv-music-top' : ''), type: 'button', 'aria-label': 'Bật/tắt nhạc nền', text: '♫' });
+    var disc = firstPhoto();
+    var mbtn = CV.h('button', { class: 'cv-music' + (boot.toolbar ? ' cv-music-top' : '') + (disc ? ' cv-disc' : ''), type: 'button', 'aria-label': 'Bật/tắt nhạc nền' }, [disc ? CV.h('img', { src: disc, alt: '' }) : null, CV.h('span', { class: 'cv-music-ic', 'aria-hidden': 'true', text: '♫' })]);
     document.body.appendChild(mbtn);
     playMusic = function () {
       return audio.play().then(
@@ -407,7 +435,7 @@
     }
 
     // Gửi lời chúc (bottom sheet) + lời chúc bay
-    var chips = ['Chúc hai bạn trăm năm hạnh phúc! 💕', 'Chúc mừng hạnh phúc! 🎉', 'Đồng tâm đồng lòng, xây tổ ấm thịnh vượng ✨', 'Sớm có tin vui nha! 👶', 'Mãi yêu thương nhau như ngày đầu 🥰'];
+    var chips = WISH_IDEAS.slice(0, 5);
     var wf = h('form', { class: 'cvt-form' }, [
       h('input', { name: 'name', placeholder: 'Tên của bạn *', maxlength: '120', required: true, value: boot.guestName || '' }),
       h('textarea', { name: 'message', rows: '3', placeholder: 'Viết lời chúc của bạn…', maxlength: '1000', required: true }),

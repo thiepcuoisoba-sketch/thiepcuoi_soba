@@ -145,7 +145,8 @@ const COVERS = {
       S(150, 536, 120, 1, 'line', { fill: p.gold }),
       T(40, 552, 340, 24, '{gio}  ·  {thu}', { font: p.sans, size: 14, color: p.cream || '#fff3dc', ls: 2 }),
       T(40, 582, 340, 50, '{ngay_so} . {thang} . {nam}', { font: p.serif, size: 36, color: p.gold, bold: true, ls: 2 }),
-      T(40, 650, 340, 60, 'Trân trọng kính mời quý khách tới chung vui cùng gia đình chúng tôi.', { font: p.serif, size: 15, italic: true, color: p.cream || '#fff3dc', lh: 1.5 }),
+      T(40, 630, 340, 20, '(Tức ngày {am_lich})', { font: p.serif, size: 13.5, italic: true, color: p.cream || '#fff3dc' }),
+      T(40, 660, 340, 60, 'Trân trọng kính mời quý khách tới chung vui cùng gia đình chúng tôi.', { font: p.serif, size: 15, italic: true, color: p.cream || '#fff3dc', lh: 1.5 }),
     ]);
   },
   /** Poster chữ lớn trên ảnh */
@@ -295,7 +296,8 @@ function secSchedule(p, o = {}) {
     S(280, 112, 100, 1, 'line', { fill: p.ink }),
     S(280, 148, 100, 1, 'line', { fill: p.ink }),
     T(280, 118, 100, 24, '{thang} · {nam}', txt(p, 'sans', { size: 12, ls: 2, color: p.ink })),
-    T(40, 186, 340, 46, o.venue || 'Trung tâm Hội nghị Tiệc cưới\n8 Hoàng Văn Thụ, Phú Nhuận, TP. Hồ Chí Minh', txt(p, 'sans', { size: 12.5, lh: 1.6 })),
+    T(40, 180, 340, 20, '(Tức ngày {am_lich})', txt(p, 'serif', { size: 13.5, italic: true })),
+    T(40, 206, 340, 46, o.venue || 'Trung tâm Hội nghị Tiệc cưới\n8 Hoàng Văn Thụ, Phú Nhuận, TP. Hồ Chí Minh', txt(p, 'sans', { size: 12.5, lh: 1.6 })),
     S(74, 262, 1, 300, 'line', { fill: p.line }),
   ];
   items.forEach((it, i) => {
@@ -323,18 +325,70 @@ function secLetter(p, src, text) {
 
 // ===================== LỜI MỜI =====================
 function secInvite(p, o = {}) {
-  return sec(600, o.bg || p.bg2, [
+  return sec(520, o.bg || p.bg2, [
     T(40, 46, 340, 24, 'TRÂN TRỌNG KÍNH MỜI', txt(p, 'label', { size: 13, anim: 'fade' })),
     T(30, 80, 360, 60, '{ten_khach}', txt(p, 'script', { size: 42, anim: 'up' })),
     S(170, 150, 80, 1, 'line', { fill: p.line }),
     T(40, 166, 340, 80, 'Tới dự buổi tiệc chung vui cùng gia đình chúng tôi. Sự hiện diện của bạn là niềm vinh hạnh lớn nhất trong ngày hạnh phúc này.', txt(p, 'serif', { size: 16, italic: true, lh: 1.55 })),
-    T(30, 280, 170, 22, 'NHÀ TRAI', txt(p, 'label')),
-    T(30, 306, 170, 44, 'Ông Nguyễn Văn An\nBà Trần Thị Bình', txt(p, 'sans', { size: 13, lh: 1.6 })),
-    T(220, 280, 170, 22, 'NHÀ GÁI', txt(p, 'label')),
-    T(220, 306, 170, 44, 'Ông Lê Văn Cường\nBà Phạm Thị Dung', txt(p, 'sans', { size: 13, lh: 1.6 })),
-    T(40, 386, 340, 24, 'Trân trọng báo tin lễ thành hôn của con chúng tôi', txt(p, 'sans', { size: 13 })),
-    T(20, 420, 380, 60, '{chu_re}  &  {co_dau}', txt(p, 'script', { size: 40, anim: 'up' })),
-    T(40, 500, 340, 50, '{gio}  ·  {thu}, {ngay}', txt(p, 'serif', { size: 18, color: p.accent })),
+    S(195, 272, 30, 27, 'heart', { fill: p.accent, o: 0.85, anim: 'zoom' }),
+    T(40, 316, 340, 24, 'Trân trọng báo tin lễ thành hôn của con chúng tôi', txt(p, 'sans', { size: 13 })),
+    T(20, 350, 380, 60, '{chu_re}  &  {co_dau}', txt(p, 'script', { size: 40, anim: 'up' })),
+    T(40, 426, 340, 30, '{gio}  ·  {thu}, {ngay}', txt(p, 'serif', { size: 18, color: p.accent })),
+    T(40, 458, 340, 22, '(Tức ngày {am_lich})', txt(p, 'serif', { size: 14, italic: true, color: p.soft })),
+  ]);
+}
+
+// ===================== HAI GIA ĐÌNH + LỄ TẠI TƯ GIA =====================
+/** Bố mẹ hai bên + lễ Vu Quy (nhà gái) và lễ Thành Hôn (nhà trai), mỗi lễ có nút chỉ đường */
+function secFamily(p, o = {}) {
+  const card = (y, title, time, place, addr) => [
+    S(30, y, 360, 226, 'rect', { fill: p.bg2, stroke: p.line, sw: 1, radius: 20, anim: 'up' }),
+    T(50, y + 22, 320, 20, title, txt(p, 'label', { size: 12, anim: 'up' })),
+    T(50, y + 46, 320, 34, time + '  ·  {thu}', txt(p, 'serif', { size: 22, bold: true, anim: 'up' })),
+    T(50, y + 82, 320, 22, '{ngay}', txt(p, 'sans', { size: 14, color: p.ink, ls: 3, anim: 'up' })),
+    T(50, y + 106, 320, 20, '(Tức ngày {am_lich})', txt(p, 'serif', { size: 13.5, italic: true, anim: 'up' })),
+    T(50, y + 132, 320, 40, place + '\n' + addr, txt(p, 'sans', { size: 12.5, lh: 1.6, anim: 'up' })),
+    G(115, y + 174, 190, 38, 'map', { ...wid(p), style: 'button', label: 'Xem chỉ đường', address: addr, anim: 'up' }),
+  ];
+  return sec(820, o.bg || p.bg, [
+    T(30, 40, 360, 22, 'HAI GIA ĐÌNH', txt(p, 'label', { size: 12, anim: 'fade' })),
+    T(30, 64, 360, 60, o.title || 'Lễ Báo Hỷ', txt(p, 'script', { size: 42, anim: 'fade' })),
+    T(30, 140, 170, 22, 'NHÀ TRAI', txt(p, 'label', { size: 12 })),
+    T(30, 166, 170, 44, 'Ông Nguyễn Văn An\nBà Trần Thị Bình', txt(p, 'serif', { size: 15, color: p.ink, lh: 1.5 })),
+    T(30, 214, 170, 22, 'Quận 3, TP. Hồ Chí Minh', txt(p, 'sans', { size: 12 })),
+    S(209.5, 142, 1, 92, 'line', { fill: p.line }),
+    T(220, 140, 170, 22, 'NHÀ GÁI', txt(p, 'label', { size: 12 })),
+    T(220, 166, 170, 44, 'Ông Lê Văn Cường\nBà Phạm Thị Dung', txt(p, 'serif', { size: 15, color: p.ink, lh: 1.5 })),
+    T(220, 214, 170, 22, 'TP. Thủ Đức, TP. Hồ Chí Minh', txt(p, 'sans', { size: 12 })),
+    ...card(276, 'LỄ VU QUY', '08:30', 'Tại tư gia nhà gái', '25 Võ Văn Ngân, TP. Thủ Đức, TP. Hồ Chí Minh'),
+    ...card(526, 'LỄ THÀNH HÔN', '10:00', 'Tại tư gia nhà trai', '120 Lý Chính Thắng, Quận 3, TP. Hồ Chí Minh'),
+    T(40, 772, 340, 24, 'Sự hiện diện của quý khách là niềm vinh hạnh cho gia đình chúng tôi', txt(p, 'sans', { size: 12, italic: true })),
+  ]);
+}
+
+// ===================== PHONG BÌ ẢNH (giữa thiệp) =====================
+/** Phong bì mở nắp, hai ảnh trồi lên khi khách cuộn tới */
+function secEnvelope(p, ph, o = {}) {
+  const env = p.env || p.accent;
+  const env2 = p.env2 || p.line;
+  // Dấu sáp tương phản với phong bì: phong bì đỏ → sáp vàng, còn lại → sáp đỏ
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(env.substr(i, 2), 16));
+  const seal = p.seal || (r > g + 50 && r > b + 50 ? '#c9a046' : '#a3202c');
+  return sec(700, o.bg || p.bg2, [
+    T(30, 40, 360, 22, 'SAVE THE DATE', txt(p, 'label', { size: 12, anim: 'fade' })),
+    T(30, 64, 360, 58, o.title || 'Hẹn bạn ngày vui', txt(p, 'script', { size: 40, anim: 'fade' })),
+    S(52, 184, 316, 150, 'tri', { fill: env2, r: 180 }),
+    S(52, 330, 316, 210, 'rect', { fill: env2, radius: 6 }),
+    I(78, 192, 160, 214, ph[0], { border: 6, borderColor: '#ffffff', shadow: true, r: -6, anim: 'rise', delay: 0.1 }),
+    I(184, 178, 160, 214, ph[1] || ph[0], { border: 6, borderColor: '#ffffff', shadow: true, r: 7, anim: 'rise', delay: 0.4 }),
+    S(52, 382, 316, 158, 'rect', { fill: env, radius: 6, shadow: true }),
+    S(52, 382, 158, 158, 'tri', { fill: '#ffffff', o: 0.07, r: -90 }),
+    S(210, 382, 158, 158, 'tri', { fill: '#000000', o: 0.06, r: 90 }),
+    S(178, 428, 64, 64, 'circle', { fill: seal, shadow: true, anim: 'zoom', delay: 0.6 }),
+    S(196, 448, 28, 25, 'heart', { fill: '#ffffffdd', anim: 'zoom', delay: 0.6 }),
+    T(30, 564, 360, 54, '{chu_re}  &  {co_dau}', txt(p, 'script', { size: 36, anim: 'up' })),
+    T(30, 620, 360, 22, '{gio}  ·  {thu}, {ngay}', txt(p, 'sans', { size: 13.5, color: p.ink, ls: 1 })),
+    T(30, 646, 360, 22, '(Tức ngày {am_lich})', txt(p, 'serif', { size: 14, italic: true })),
   ]);
 }
 
@@ -388,7 +442,7 @@ const COUPLE = {
 // ===================== THỜI GIAN & ĐỊA ĐIỂM =====================
 const EVENT = {
   bigdate(p, o = {}) {
-    return sec(960, o.bg || p.bg2, [
+    return sec(890, o.bg || p.bg2, [
       T(30, 40, 360, 56, 'Tiệc Cưới', txt(p, 'script', { size: 42, anim: 'fade' })),
       T(30, 104, 360, 22, 'VÀO LÚC {gio}', txt(p, 'label', { size: 12 })),
       S(40, 150, 340, 1, 'line', { fill: p.line }),
@@ -402,14 +456,16 @@ const EVENT = {
       T(40, 318, 340, 40, o.address || '8 Hoàng Văn Thụ, Phú Nhuận, TP. Hồ Chí Minh', txt(p, 'sans', { size: 13, lh: 1.5 })),
       G(40, 384, 340, 96, 'countdown', { ...wid(p), anim: 'up' }),
       G(40, 510, 340, 260, 'map', { ...wid(p), address: o.address || '8 Hoàng Văn Thụ, Phú Nhuận, TP. Hồ Chí Minh' }),
-      T(40, 800, 340, 120, 'Lễ Vu Quy: 08:30 tại tư gia nhà gái\nLễ Thành Hôn: 10:00 tại tư gia nhà trai\nTiệc chiêu đãi: {gio} tại sảnh tiệc', txt(p, 'sans', { size: 13.5, lh: 1.9, color: p.ink })),
+      T(40, 800, 340, 30, 'Tiệc chiêu đãi: {gio} · {thu}, {ngay}', txt(p, 'sans', { size: 13.5, color: p.ink })),
+      T(40, 832, 340, 22, '(Tức ngày {am_lich})', txt(p, 'serif', { size: 14, italic: true })),
     ]);
   },
   calendar(p, o = {}) {
     return sec(980, o.bg || p.bg2, [
       T(30, 40, 360, 56, 'Ngày chung đôi', txt(p, 'script', { size: 40, anim: 'fade' })),
-      T(30, 104, 360, 24, '{gio}  ·  {thu}, {ngay}', txt(p, 'serif', { size: 18, color: p.accent, bold: true })),
-      G(40, 150, 340, 300, 'calendar', { ...wid(p), bg: o.calBg || '', anim: 'up' }),
+      T(30, 100, 360, 24, '{gio}  ·  {thu}, {ngay}', txt(p, 'serif', { size: 18, color: p.accent, bold: true })),
+      T(30, 126, 360, 20, '(Tức ngày {am_lich})', txt(p, 'serif', { size: 13.5, italic: true })),
+      G(40, 154, 340, 296, 'calendar', { ...wid(p), bg: o.calBg || '', anim: 'up' }),
       G(40, 470, 340, 96, 'countdown', { ...wid(p) }),
       T(40, 600, 340, 30, o.venue || 'Nhà hàng tiệc cưới Hoa Sen', txt(p, 'serif', { size: 20, bold: true })),
       T(40, 634, 340, 40, o.address || '12 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh', txt(p, 'sans', { size: 13, lh: 1.5 })),
@@ -554,35 +610,35 @@ const F = {
 
 const DEFS = [
   {
-    key: 'tap-chi-tinh-yeu', opener: 'book', name: 'Tạp Chí Tình Yêu', folder: 'a1', tier: 'basic', music: 'nang-mai', tags: ['Tạp chí', 'Hàn Quốc'],
+    key: 'tap-chi-tinh-yeu', opener: 'book', name: 'Tạp Chí Tình Yêu', folder: 'a1', tier: 'basic', song: 'marry-you', tags: ['Tạp chí', 'Hàn Quốc'],
     desc: 'Bìa tạp chí ảnh tràn viền, tiêu đề nghiêng vàng nhạt, phong cách retro Hàn.',
     p: { page: '#1f1b18', bg: '#f6f1ea', bg2: '#efe6da', ink: '#2c2420', soft: '#7c6d62', accent: '#9c6b3c', line: '#cdb89c', gold: '#f1d39a', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.magazine(p, [ph[0]]), secInvite(p), COUPLE.tall(p, [ph[1]]), EVENT.bigdate(p), GALLERY.collage(p, [ph[2], ph[3], ph[4], ph[5]]), secQuote(p, ph[3]), secForms(p), THANKS.full(p, ph[2])],
     photos: [4, 8, 5, 1, 6, 7],
   },
   {
-    key: 'phong-bi-hong-phan', name: 'Phong Bì Hồng Phấn', folder: 'a2', tier: 'free', music: 'hoa-co', tags: ['Phong bì', 'Pastel'],
+    key: 'phong-bi-hong-phan', noEnvelope: true, name: 'Phong Bì Hồng Phấn', folder: 'a2', tier: 'free', song: 'beautiful-girl', tags: ['Phong bì', 'Pastel'],
     desc: 'Ảnh cưới cài trong phong bì hồng phấn, dấu sáp trái tim, ảnh polaroid.',
     p: { page: '#f3dbe1', bg: '#fff6f8', bg2: '#ffecf0', ink: '#4a2533', soft: '#8a6573', accent: '#d6456c', line: '#efb5c4', env: '#f6c9d4', env2: '#eeb3c2', script: F.vibes, serif: F.corm, sans: F.mont },
     build: (p, ph) => [COVERS.envelope(p, [ph[0]]), secInvite(p), COUPLE.circles(p, [ph[1], ph[0]]), EVENT.calendar(p), GALLERY.polaroids(p, [ph[2], ph[3], ph[4], ph[5]]), secForms(p), THANKS.arch(p, ph[6])],
     photos: [6, 8, 9, 3, 1, 7, 2],
   },
   {
-    key: 'hanok-co-dien', opener: 'envelope', name: 'Hanok Cổ Điển', folder: 'a3', tier: 'basic', music: 'hen-uoc', tags: ['Vintage', 'Hàn Quốc'],
+    key: 'hanok-co-dien', opener: 'envelope', name: 'Hanok Cổ Điển', folder: 'a3', tier: 'basic', song: 'canon-in-d', tags: ['Vintage', 'Hàn Quốc'],
     desc: 'Tông be nâu ấm như ngôi nhà gỗ Hàn, khung vòm cổ điển, chữ serif thanh lịch.',
     p: { page: '#e6dccd', bg: '#f8f2e8', bg2: '#f0e6d6', ink: '#3d2f24', soft: '#806d5c', accent: '#8b5a3c', line: '#c8ad8c', script: F.dancing, serif: F.corm, sans: F.be },
     build: (p, ph) => [COVERS.arch(p, [ph[0]]), secInvite(p), COUPLE.arches(p, [ph[1], ph[2]]), EVENT.bigdate(p), GALLERY.grid(p, ph.slice(3, 9), { cols: 3 }), secQuote(p, ph[3]), secForms(p), THANKS.arch(p, ph[5])],
     photos: [9, 2, 7, 1, 3, 8, 4, 9, 7],
   },
   {
-    key: 'vuon-xanh-reu', name: 'Vườn Xanh Rêu', folder: 'a4', tier: 'free', music: 'hoa-co', tags: ['Phong bì', 'Thiên nhiên'],
+    key: 'vuon-xanh-reu', noEnvelope: true, name: 'Vườn Xanh Rêu', folder: 'a4', tier: 'free', song: 'nhac-cuoi-nhe-nhang', tags: ['Phong bì', 'Thiên nhiên'],
     desc: 'Phong bì xanh rêu và ảnh polaroid, cảm hứng tiệc cưới sân vườn.',
     p: { page: '#dfe4d6', bg: '#f6f6ef', bg2: '#eceee2', ink: '#2f3a2c', soft: '#6f7a68', accent: '#5b7247', line: '#b6c4a4', env: '#5f7650', env2: '#4f6542', seal: '#c9a46a', script: F.vibes, serif: F.lora, sans: F.be },
     build: (p, ph) => [COVERS.envelope(p, [ph[0]], { title: 'Wedding Day' }), secInvite(p), COUPLE.polaroid(p, [ph[1], ph[2]]), EVENT.calendar(p), GALLERY.collage(p, [ph[3], ph[4], ph[5], ph[6]]), secForms(p), THANKS.arch(p, ph[0])],
     photos: [6, 5, 7, 1, 4, 2, 3],
   },
   {
-    key: 'phim-den-trang', opener: 'fingerprint', name: 'Phim Đen Trắng', folder: 'a5', tier: 'premium', music: 'dem-sao', tags: ['Điện ảnh', 'Đen trắng'],
+    key: 'phim-den-trang', opener: 'fingerprint', name: 'Phim Đen Trắng', folder: 'a5', tier: 'premium', song: 'a-thousand-years', tags: ['Điện ảnh', 'Đen trắng'],
     desc: 'Dải phim đen trắng, nền tối điện ảnh, chữ trắng tinh tế.',
     p: { page: '#000000', bg: '#141414', bg2: '#1d1d1d', ink: '#f5f2ec', soft: '#bdb6aa', accent: '#c9a46a', line: '#4a463f', filmText: '#ffffff', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [
@@ -597,84 +653,84 @@ const DEFS = [
     photos: [4, 6, 8, 7, 3, 1, 9],
   },
   {
-    key: 'monochrome-studio', opener: 'fingerprint', name: 'Monochrome Studio', folder: 'a6', tier: 'basic', music: 'dem-sao', tags: ['Tối giản', 'Studio'],
+    key: 'monochrome-studio', opener: 'fingerprint', name: 'Monochrome Studio', folder: 'a6', tier: 'basic', song: 'le-duong', tags: ['Tối giản', 'Studio'],
     desc: 'Đen – trắng – xám tối giản kiểu tạp chí thời trang, bố cục ảnh lớn.',
     p: { page: '#d9d9d9', bg: '#fafafa', bg2: '#f0f0f0', ink: '#1c1c1c', soft: '#6b6b6b', accent: '#1c1c1c', line: '#c4c4c4', script: F.vibes, serif: F.corm, sans: F.mont },
     build: (p, ph) => [COVERS.split(p, [ph[0]], { filter: 'bw' }), secInvite(p), COUPLE.arches(p, [ph[1], ph[2]]), EVENT.calendar(p), GALLERY.grid(p, ph.slice(3, 11), { cols: 2, radius: 0 }), secQuote(p, ph[4]), secForms(p), THANKS.arch(p, ph[11])],
     photos: [8, 9, 10, 1, 4, 2, 3, 6, 7, 11, 5, 12],
   },
   {
-    key: 'lich-kep-giay', name: 'Studio Lịch Kẹp Giấy', folder: 'a7', tier: 'free', music: 'buoc-chan-vui', tags: ['Tối giản', 'Studio'],
+    key: 'lich-kep-giay', name: 'Studio Lịch Kẹp Giấy', folder: 'a7', tier: 'free', song: 'cant-stop-the-feeling', tags: ['Tối giản', 'Studio'],
     desc: 'Nền trắng studio, tờ lịch kẹp giấy nghiêng đánh dấu ngày cưới.',
     p: { page: '#e9e7e2', bg: '#f7f6f3', bg2: '#efede8', ink: '#2a2a2a', soft: '#777169', accent: '#b0533c', line: '#d4cfc6', script: F.dancing, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.clip(p, [ph[0]]), secInvite(p), COUPLE.circles(p, [ph[1], ph[2]]), EVENT.bigdate(p), GALLERY.polaroids(p, [ph[3], ph[4], ph[5], ph[6]]), secForms(p), THANKS.arch(p, ph[7])],
     photos: [5, 1, 10, 2, 8, 7, 11, 4],
   },
   {
-    key: 'xanh-suong-mai', opener: 'envelope', name: 'Xanh Sương Mai', folder: 'a8', tier: 'basic', music: 'chieu-bien', tags: ['Khung vòm', 'Thanh lịch'],
+    key: 'xanh-suong-mai', opener: 'envelope', name: 'Xanh Sương Mai', folder: 'a8', tier: 'basic', song: 'vay-cuoi', tags: ['Khung vòm', 'Thanh lịch'],
     desc: 'Xanh xám nhạt và trắng bạc, khung vòm mảnh, cảm giác trong trẻo.',
     p: { page: '#d5dde3', bg: '#f4f7f8', bg2: '#e8eef1', ink: '#2b3a44', soft: '#6c7c86', accent: '#4f7085', line: '#b5c6d0', script: F.vibes, serif: F.corm, sans: F.mont },
     build: (p, ph) => [COVERS.arch(p, [ph[0]]), secInvite(p), COUPLE.arches(p, [ph[1], ph[2]]), EVENT.calendar(p), GALLERY.collage(p, [ph[3], ph[4], ph[5], ph[6]]), secForms(p), THANKS.arch(p, ph[7])],
     photos: [1, 4, 8, 2, 6, 7, 10, 9],
   },
   {
-    key: 'dong-co-mua-ha', name: 'Đồng Cỏ Mùa Hạ', folder: 'a9', tier: 'free', music: 'buoc-chan-vui', tags: ['Thiên nhiên', 'Tươi sáng'],
+    key: 'dong-co-mua-ha', name: 'Đồng Cỏ Mùa Hạ', folder: 'a9', tier: 'free', song: 'i-do', tags: ['Thiên nhiên', 'Tươi sáng'],
     desc: 'Ảnh tràn viền giữa đồng cỏ, chữ viết tay “Fall in love”, tông xanh nắng.',
     p: { page: '#dfe8d3', bg: '#f8faf2', bg2: '#eef3e2', ink: '#2e3b25', soft: '#6b7a5e', accent: '#6b8f3a', line: '#c2d3a6', script: F.vibes, serif: F.lora, sans: F.mont },
     build: (p, ph) => [COVERS.full(p, [ph[0]], { title: 'Fall in love', shade: '#1d2b1288' }), secInvite(p), COUPLE.polaroid(p, [ph[1], ph[2]]), EVENT.bigdate(p), GALLERY.grid(p, ph.slice(3, 9), { cols: 2 }), secQuote(p, ph[9]), secForms(p), THANKS.full(p, ph[10])],
     photos: [2, 6, 9, 3, 4, 5, 7, 10, 11, 12, 1],
   },
   {
-    key: 'hong-pastel-ngot-ngao', name: 'Hồng Pastel Ngọt Ngào', folder: 'a10', tier: 'free', music: 'hoa-co', tags: ['Pastel', 'Lãng mạn'],
+    key: 'hong-pastel-ngot-ngao', name: 'Hồng Pastel Ngọt Ngào', folder: 'a10', tier: 'free', song: 'em-dong-y', tags: ['Pastel', 'Lãng mạn'],
     desc: 'Hồng pastel ngọt ngào, ảnh lớn phía trên, thẻ chữ bo tròn mềm mại.',
     p: { page: '#f7dfe4', bg: '#fff7f8', bg2: '#ffeef1', ink: '#4b2a35', soft: '#8d6a75', accent: '#e05a7f', line: '#f2bccb', script: F.vibes, serif: F.corm, sans: F.be },
     build: (p, ph) => [COVERS.split(p, [ph[0]], { title: 'Marry me' }), secInvite(p), COUPLE.circles(p, [ph[1], ph[2]]), EVENT.calendar(p), GALLERY.polaroids(p, [ph[3], ph[4], ph[5], ph[6]]), GALLERY.grid(p, ph.slice(7, 11), { cols: 2, title: 'Thêm chút ngọt ngào' }), secForms(p), THANKS.arch(p, ph[11])],
     photos: [10, 2, 3, 4, 5, 8, 9, 6, 7, 11, 12, 1],
   },
   {
-    key: 'hy-su-vui-nhon', name: 'Hỷ Sự Vui Nhộn', folder: 'a11', tier: 'free', music: 'song-hy', tags: ['Truyền thống', 'Chữ Hỷ'],
+    key: 'hy-su-vui-nhon', name: 'Hỷ Sự Vui Nhộn', folder: 'a11', tier: 'free', song: 'bai-nay-khong-de-di-dien', tags: ['Truyền thống', 'Chữ Hỷ'],
     desc: 'Đỏ son và vàng kim, chữ Hỷ lớn, khung viền đôi truyền thống.',
     p: { page: '#5e0a12', bg: '#9e1622', bg2: '#fff6ec', ink: '#5a1018', soft: '#8a5a50', accent: '#b3202f', line: '#e3b766', gold: '#f1c66b', cream: '#fff3dc', script: F.vibes, serif: F.playfair, sans: F.be },
     build: (p, ph) => [COVERS.hy(p, [ph[0]]), secInvite(p), COUPLE.tall(p, [ph[1]]), EVENT.bigdate(p), GALLERY.grid(p, ph.slice(2, 10), { cols: 2 }), secForms(p, { bg: '#fff6ec' }), THANKS.full(p, ph[10])],
     photos: [4, 2, 1, 5, 6, 7, 8, 9, 10, 11, 12],
   },
   {
-    key: 'do-son-song-hy', opener: 'doors', name: 'Đỏ Son Song Hỷ', folder: 'a12', tier: 'basic', music: 'song-hy', tags: ['Truyền thống', 'Sang trọng'],
+    key: 'do-son-song-hy', opener: 'doors', name: 'Đỏ Son Song Hỷ', folder: 'a12', tier: 'basic', song: 'mai-mai-ben-nhau', tags: ['Truyền thống', 'Sang trọng'],
     desc: 'Ảnh tràn viền nền đỏ son, chữ viết tay vàng, khung vòm đôi.',
     p: { page: '#4a0910', bg: '#fff5ef', bg2: '#fbe9e1', ink: '#5b1219', soft: '#8b5d58', accent: '#b81f2d', line: '#e2b2a6', script: F.vibes, serif: F.playfair, sans: F.be },
     build: (p, ph) => [COVERS.full(p, [ph[0]], { title: 'Song Hỷ Lâm Môn', shade: '#3d050999' }), secInvite(p), COUPLE.arches(p, [ph[1], ph[2]]), EVENT.calendar(p), GALLERY.collage(p, [ph[3], ph[4], ph[5], ph[6]]), secForms(p), THANKS.arch(p, ph[7])],
     photos: [1, 3, 2, 4, 6, 7, 9, 8],
   },
   {
-    key: 'phong-bi-do-nhung', opener: 'envelope', name: 'Phong Bì Đỏ Nhung', folder: 'a13', tier: 'premium', music: 'hen-uoc', tags: ['Phong bì', 'Sang trọng'],
+    key: 'phong-bi-do-nhung', noEnvelope: true, opener: 'envelope', name: 'Phong Bì Đỏ Nhung', folder: 'a13', tier: 'premium', song: 'beautiful-in-white', tags: ['Phong bì', 'Sang trọng'],
     desc: 'Phong bì đỏ nhung dấu sáp vàng trên nền kem, hoà quyện cổ phục và váy cưới.',
     p: { page: '#e9ddd0', bg: '#fbf5ee', bg2: '#f4e9dd', ink: '#4e1218', soft: '#866159', accent: '#9f1c28', line: '#d9b38f', env: '#9f1c28', env2: '#861522', seal: '#d8aa5a', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.envelope(p, [ph[0]]), secInvite(p), COUPLE.circles(p, [ph[1], ph[2]]), EVENT.bigdate(p), GALLERY.grid(p, ph.slice(3, 11), { cols: 2 }), secForms(p), THANKS.arch(p, ph[11])],
     photos: [1, 10, 9, 2, 3, 4, 6, 7, 8, 11, 12, 5],
   },
   {
-    key: 'phieu-luu-nui-tuyet', opener: 'book', name: 'Phiêu Lưu Núi Tuyết', folder: 'a14', tier: 'premium', music: 'chieu-bien', tags: ['Poster', 'Du lịch'],
+    key: 'phieu-luu-nui-tuyet', opener: 'book', name: 'Phiêu Lưu Núi Tuyết', folder: 'a14', tier: 'premium', song: 'vay-cuoi', tags: ['Poster', 'Du lịch'],
     desc: 'Poster chữ lớn “WE GOT MARRIED” trên nền núi tuyết, hồ xanh.',
     p: { page: '#cfd8df', bg: '#f3f6f8', bg2: '#e6edf1', ink: '#1f2d38', soft: '#62717d', accent: '#2f5d7c', line: '#b3c3cf', gold: '#ffd27a', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.poster(p, [ph[0]]), secInvite(p), COUPLE.tall(p, [ph[1]]), EVENT.calendar(p), GALLERY.collage(p, [ph[2], ph[3], ph[4], ph[5]], { title: 'Những chuyến đi' }), secQuote(p, ph[5], '“Đi cùng nhau, đâu cũng là nhà.”'), secForms(p), THANKS.full(p, ph[6])],
     photos: [5, 6, 1, 4, 7, 8, 2],
   },
   {
-    key: 'bao-cuoi', opener: 'book', name: 'Báo Cưới', folder: 'a15', tier: 'basic', music: 'nang-mai', tags: ['Báo cưới', 'Vintage'],
+    key: 'bao-cuoi', opener: 'book', name: 'Báo Cưới', folder: 'a15', tier: 'basic', song: 'bai-nay-khong-de-di-dien', tags: ['Báo cưới', 'Vintage'],
     desc: 'Tờ báo cổ điển đưa “tin nóng” đám cưới, cột chữ và ảnh tư liệu.',
     p: { page: '#d9d2c3', bg: '#f4efe4', bg2: '#ece5d6', ink: '#221e19', soft: '#6e665b', accent: '#9c2a3b', line: '#bfb39c', script: F.dancing, serif: F.lora, sans: F.be },
     build: (p, ph) => [COVERS.newspaper(p, [ph[0]]), secInvite(p), COUPLE.polaroid(p, [ph[1], ph[2]]), EVENT.bigdate(p), GALLERY.grid(p, ph.slice(3, 9), { cols: 2, radius: 0, title: 'Phóng sự ảnh' }), secForms(p), THANKS.arch(p, ph[1])],
     photos: [1, 4, 12, 2, 5, 13, 6, 3, 11],
   },
   {
-    key: 'do-do-chu-vang', opener: 'doors', name: 'Đỏ Đô Chữ Vàng', folder: 'a16', tier: 'basic', music: 'song-hy', tags: ['Đỏ đô', 'Chữ viết tay'],
+    key: 'do-do-chu-vang', opener: 'doors', name: 'Đỏ Đô Chữ Vàng', folder: 'a16', tier: 'basic', song: 'le-duong', tags: ['Đỏ đô', 'Chữ viết tay'],
     desc: 'Nền đỏ đô sâu, chữ viết tay vàng kim, khung vòm và thước phim.',
     p: { page: '#3a070c', bg: '#6d1119', bg2: '#5b0d15', ink: '#fbe8c8', soft: '#e7c9a4', accent: '#d9a74a', line: '#d9a74a', filmText: '#fbe8c8', script: F.vibes, serif: F.corm, sans: F.mont },
     build: (p, ph) => [COVERS.arch(p, [ph[0]]), secInvite(p), COUPLE.arches(p, [ph[1], ph[2]]), EVENT.calendar(p), GALLERY.film(p, [ph[3], ph[4], ph[5]]), secForms(p, { dark: true }), THANKS.arch(p, ph[6])],
     photos: [3, 6, 9, 7, 2, 4, 8],
   },
   {
-    key: 'pho-co-chau-au', opener: 'fingerprint', name: 'Phố Cổ Châu Âu', folder: 'a17', tier: 'premium', music: 'hen-uoc', tags: ['Thanh lịch', 'Châu Âu'],
+    key: 'pho-co-chau-au', opener: 'fingerprint', name: 'Phố Cổ Châu Âu', folder: 'a17', tier: 'premium', song: 'canon-in-d', tags: ['Thanh lịch', 'Châu Âu'],
     desc: 'Phố cổ kiến trúc châu Âu, tông xám ngà sang trọng, chữ serif kinh điển.',
     p: { page: '#d8d3cc', bg: '#f7f5f1', bg2: '#ece8e1', ink: '#2b2826', soft: '#75706a', accent: '#7a6248', line: '#c8bfb2', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.full(p, [ph[0]], { title: 'Forever begins', shade: '#1a161299' }), secInvite(p), COUPLE.tall(p, [ph[1]]), EVENT.bigdate(p), GALLERY.collage(p, [ph[2], ph[3], ph[4], ph[5]]), secQuote(p, ph[6]), secForms(p), THANKS.arch(p, ph[7])],
@@ -683,21 +739,21 @@ const DEFS = [
 
   // ===== 14 mẫu mới 16/11/2026 (ảnh a18–a31). Ảnh đủ cô dâu chú rể luôn đứng đầu làm ảnh bìa. =====
   {
-    key: 'hanok-tinh-khoi', name: 'Hanok Tinh Khôi', folder: 'a18', tier: 'basic', opener: 'book', featured: true, music: 'hen-uoc', tags: ['Hàn Quốc', 'Studio'],
+    key: 'hanok-tinh-khoi', name: 'Hanok Tinh Khôi', folder: 'a18', tier: 'basic', opener: 'book', featured: true, song: 'beautiful-in-white', tags: ['Hàn Quốc', 'Studio'],
     desc: 'Trắng – đỏ son tinh tế, thẻ “Save the Date” bo tròn, chuyện tình 4 chương và lịch trình lễ cưới.',
     p: { page: '#ece9e4', bg: '#ffffff', bg2: '#f7f5f1', ink: '#1d1c1a', soft: '#6d6a64', accent: '#b3262d', line: '#e2ddd5', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.hero(p, [ph[0], ph[1]]), secInvite(p), COUPLE.arches(p, [ph[2], ph[3]]), secStory(p, [ph[4], ph[5], ph[6], ph[7]]), secSchedule(p), GALLERY.grid(p, [ph[8], ph[9], ph[10], ph[12]], { cols: 2 }), secLetter(p, ph[11]), secForms(p), THANKS.arch(p, ph[1])],
     photos: [16, 8, 6, 5, 1, 12, 4, 10, 15, 13, 3, 14, 9],
   },
   {
-    key: 'anh-sang-studio', name: 'Ánh Sáng Studio', folder: 'a19', tier: 'free', music: 'nang-mai', tags: ['Tối giản', 'Studio'],
+    key: 'anh-sang-studio', name: 'Ánh Sáng Studio', folder: 'a19', tier: 'free', song: 'i-do', tags: ['Tối giản', 'Studio'],
     desc: 'Ảnh studio tràn viền, tông xám trắng nhẹ nhàng, bố cục tối giản dễ dùng.',
     p: { page: '#e4e4e2', bg: '#fbfbfa', bg2: '#f1f1ef', ink: '#232323', soft: '#707070', accent: '#8a7a66', line: '#d2cdc5', script: F.vibes, serif: F.corm, sans: F.mont },
     build: (p, ph) => [COVERS.full(p, [ph[0]], { shade: '#11111199' }), secInvite(p), COUPLE.arches(p, [ph[3], ph[4]]), EVENT.calendar(p), GALLERY.collage(p, [ph[1], ph[2], ph[5], ph[6]]), secForms(p), THANKS.arch(p, ph[7])],
     photos: [6, 9, 1, 2, 4, 8, 7, 5],
   },
   {
-    key: 'mua-yeu-den-trang', name: 'Mùa Yêu Đen Trắng', folder: 'a20', tier: 'premium', opener: 'fingerprint', music: 'dem-sao', tags: ['Đen trắng', 'Cá tính'],
+    key: 'mua-yeu-den-trang', name: 'Mùa Yêu Đen Trắng', folder: 'a20', tier: 'premium', opener: 'fingerprint', song: 'a-thousand-years', tags: ['Đen trắng', 'Cá tính'],
     desc: 'Đen trắng cá tính, chạm vân tay mở thiệp, thước phim và chuyện tình kể theo chương.',
     op: { color: '#1d1c1a', paper: '#f7f6f4' },
     p: { page: '#1a1a1a', bg: '#f7f6f4', bg2: '#efeeeb', ink: '#151515', soft: '#666666', accent: '#151515', line: '#cfcac2', filmText: '#151515', script: F.vibes, serif: F.playfair, sans: F.mont },
@@ -705,49 +761,49 @@ const DEFS = [
     photos: [8, 10, 9, 1, 5, 2, 4, 11, 6, 3],
   },
   {
-    key: 'lua-trang-thanh-lich', name: 'Lụa Trắng Thanh Lịch', folder: 'a21', tier: 'premium', opener: 'envelope', featured: true, music: 'hen-uoc', tags: ['Sang trọng', 'Studio'],
+    key: 'lua-trang-thanh-lich', name: 'Lụa Trắng Thanh Lịch', folder: 'a21', tier: 'premium', opener: 'envelope', featured: true, song: 'canon-in-d', tags: ['Sang trọng', 'Studio'],
     desc: 'Ngày cưới cỡ lớn trên nền ảnh tối, tông champagne, phong bì dấu sáp và hộp mừng cưới QR.',
     p: { page: '#e8e1d8', bg: '#fbf8f4', bg2: '#f3ede5', ink: '#2e2a26', soft: '#7a7067', accent: '#a07c4f', line: '#d8c9b4', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.datebig(p, [ph[0]]), secInvite(p), COUPLE.arches(p, [ph[2], ph[3]]), EVENT.bigdate(p), GALLERY.stack(p, [ph[1], ph[5], ph[6]]), secLetter(p, ph[7]), secForms(p), THANKS.full(p, ph[4])],
     photos: [2, 10, 11, 3, 1, 8, 4, 9, 6, 7],
   },
   {
-    key: 'hoa-hong-do', name: 'Hoa Hồng Đỏ', folder: 'a22', tier: 'basic', opener: 'envelope', featured: true, music: 'hoa-co', tags: ['Lãng mạn', 'Hoa'],
+    key: 'hoa-hong-do', name: 'Hoa Hồng Đỏ', folder: 'a22', tier: 'basic', opener: 'envelope', featured: true, song: 'mai-mai-ben-nhau', tags: ['Lãng mạn', 'Hoa'],
     desc: 'Cổng hoa hồng đỏ rực rỡ, khung vòm cổ điển, phong bì đỏ dấu sáp vàng.',
     p: { page: '#f3e3e1', bg: '#fffaf8', bg2: '#fbefec', ink: '#4a1d22', soft: '#8a6563', accent: '#c2283a', line: '#e9b8b5', script: F.vibes, serif: F.corm, sans: F.be },
     build: (p, ph) => [COVERS.arch(p, [ph[0]]), secInvite(p), COUPLE.circles(p, [ph[2], ph[3]]), secSchedule(p), GALLERY.grid(p, ph.slice(4, 10), { cols: 2 }), secQuote(p, ph[11]), secForms(p), THANKS.arch(p, ph[1])],
     photos: [4, 7, 10, 6, 3, 2, 1, 5, 9, 11, 12, 8],
   },
   {
-    key: 'nang-trang-thang-nam', name: 'Nắng Trắng Tháng Năm', folder: 'a23', tier: 'free', music: 'nang-mai', tags: ['Tươi sáng', 'Hàn Quốc'],
+    key: 'nang-trang-thang-nam', name: 'Nắng Trắng Tháng Năm', folder: 'a23', tier: 'free', song: 'em-dong-y', tags: ['Tươi sáng', 'Hàn Quốc'],
     desc: 'Ảnh trên – chữ dưới kiểu Hàn, nắng trắng trong trẻo, nhiều ảnh album.',
     p: { page: '#e9ece6', bg: '#fcfcfa', bg2: '#f2f4ef', ink: '#2f332c', soft: '#737a6e', accent: '#7d8f5a', line: '#cfd6c2', script: F.vibes, serif: F.corm, sans: F.be },
     build: (p, ph) => [COVERS.split(p, [ph[0]]), secInvite(p), COUPLE.tall(p, [ph[1]]), EVENT.calendar(p), GALLERY.collage(p, [ph[3], ph[4], ph[5], ph[6]]), GALLERY.grid(p, [ph[7], ph[8], ph[9], ph[10]], { cols: 2, title: 'Thêm chút nắng' }), secForms(p), THANKS.arch(p, ph[2])],
     photos: [1, 10, 3, 9, 11, 14, 6, 5, 7, 13, 16],
   },
   {
-    key: 'hoa-trang-tinh-khoi', name: 'Hoa Trắng Tinh Khôi', folder: 'a24', tier: 'premium', opener: 'book', featured: true, music: 'hen-uoc', tags: ['Sang trọng', 'Hoa'],
+    key: 'hoa-trang-tinh-khoi', name: 'Hoa Trắng Tinh Khôi', folder: 'a24', tier: 'premium', opener: 'book', featured: true, song: 'a-thousand-years', tags: ['Sang trọng', 'Hoa'],
     desc: 'Vườn hoa trắng sang trọng, lật bìa mở thiệp, chuyện tình, lịch trình và lời ngỏ.',
     p: { page: '#e6e9e1', bg: '#fdfdfb', bg2: '#f4f5f0', ink: '#26302a', soft: '#6b7468', accent: '#4f6b4a', line: '#cdd5c6', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.hero(p, [ph[0], ph[1]]), secInvite(p), GALLERY.stagger(p, [ph[2], ph[3]]), secStory(p, [ph[4], ph[5], ph[6], ph[7]]), secSchedule(p), GALLERY.grid(p, [ph[8], ph[9], ph[10], ph[13]], { cols: 2 }), secLetter(p, ph[14]), GALLERY.stack(p, [ph[11], ph[12], ph[15]]), secForms(p), THANKS.full(p, ph[2])],
     photos: [14, 1, 9, 15, 7, 12, 19, 21, 3, 5, 2, 6, 10, 16, 23, 13],
   },
   {
-    key: 'sac-mau-thanh-pho', name: 'Sắc Màu Thành Phố', folder: 'a25', tier: 'basic', opener: 'fingerprint', music: 'buoc-chan-vui', tags: ['Trẻ trung', 'Poster'],
+    key: 'sac-mau-thanh-pho', name: 'Sắc Màu Thành Phố', folder: 'a25', tier: 'basic', opener: 'fingerprint', song: 'marry-you', tags: ['Trẻ trung', 'Poster'],
     desc: 'Poster chữ lớn trên nền vàng rực, polaroid vui nhộn, hợp cặp đôi trẻ trung.',
     p: { page: '#f4ead0', bg: '#fffbf0', bg2: '#fff3d6', ink: '#3a2a14', soft: '#7d6a4c', accent: '#e0861f', line: '#f0cf8a', gold: '#ffd166', script: F.dancing, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.poster(p, [ph[0]], { title: 'WE\nSAID\nYES' }), secInvite(p), COUPLE.tall(p, [ph[3]]), EVENT.bigdate(p), GALLERY.polaroids(p, [ph[1], ph[2], ph[4], ph[5]]), GALLERY.grid(p, [ph[6], ph[7], ph[8], ph[10]], { cols: 2, title: 'Thành phố của hai ta' }), secForms(p), THANKS.full(p, ph[1])],
     photos: [8, 2, 3, 9, 6, 7, 5, 1, 11, 10, 12],
   },
   {
-    key: 'le-cuoi-tren-doi', name: 'Lễ Cưới Trên Đồi', folder: 'a26', tier: 'premium', opener: 'envelope', music: 'chieu-bien', tags: ['Ngoài trời', 'Hoa'],
+    key: 'le-cuoi-tren-doi', name: 'Lễ Cưới Trên Đồi', folder: 'a26', tier: 'premium', opener: 'envelope', song: 'nhac-cuoi-nhe-nhang', tags: ['Ngoài trời', 'Hoa'],
     desc: 'Lễ cưới ngoài trời dưới vòm kính và hoa, hoàng hôn trên đồi, tông xanh trời – cam đào.',
     p: { page: '#e3e8ec', bg: '#fbfcfd', bg2: '#f1f5f7', ink: '#253341', soft: '#66737f', accent: '#d9846b', line: '#c9d6df', script: F.vibes, serif: F.corm, sans: F.mont },
     build: (p, ph) => [COVERS.frame(p, [ph[0]]), secInvite(p), GALLERY.stagger(p, [ph[1], ph[2]]), secSchedule(p), GALLERY.collage(p, [ph[3], ph[4], ph[5], ph[6]]), secQuote(p, ph[11], '“Ở đâu có nhau, ở đó là nhà.”'), GALLERY.grid(p, [ph[7], ph[8], ph[9], ph[10]], { cols: 2, title: 'Hoàng hôn trên đồi' }), secForms(p), THANKS.full(p, ph[10])],
     photos: [2, 1, 4, 10, 14, 9, 8, 12, 19, 21, 22, 18],
   },
   {
-    key: 'dem-thanh-pho', name: 'Đêm Thành Phố', folder: 'a27', tier: 'basic', opener: 'fingerprint', music: 'dem-sao', tags: ['Điện ảnh', 'Đêm'],
+    key: 'dem-thanh-pho', name: 'Đêm Thành Phố', folder: 'a27', tier: 'basic', opener: 'fingerprint', song: 'le-duong', tags: ['Điện ảnh', 'Đêm'],
     desc: 'Nền xanh đêm, ánh đèn phố và thước phim, chữ vàng ấm kiểu điện ảnh.',
     op: { color: '#e8b04b', paper: '#121826' },
     p: { page: '#0b0f1a', bg: '#121826', bg2: '#1a2133', ink: '#f3efe8', soft: '#b8b3c4', accent: '#e8b04b', line: '#3b4560', filmText: '#f3efe8', script: F.vibes, serif: F.playfair, sans: F.mont },
@@ -755,14 +811,14 @@ const DEFS = [
     photos: [10, 15, 12, 2, 5, 11, 13, 7, 6, 18, 16],
   },
   {
-    key: 'dong-hoa-mua-ha', name: 'Đồng Hoa Mùa Hạ', folder: 'a28', tier: 'free', music: 'buoc-chan-vui', tags: ['Thiên nhiên', 'Tươi sáng'],
+    key: 'dong-hoa-mua-ha', name: 'Đồng Hoa Mùa Hạ', folder: 'a28', tier: 'free', song: 'beautiful-girl', tags: ['Thiên nhiên', 'Tươi sáng'],
     desc: 'Đồng hoa cúc vàng và đồi xanh, chữ viết tay “Summer Love”, polaroid tươi vui.',
     p: { page: '#e3ead2', bg: '#fbfcf4', bg2: '#f1f5e2', ink: '#2c3a1f', soft: '#6c7a5c', accent: '#c98a12', line: '#d5dfb5', script: F.vibes, serif: F.lora, sans: F.mont },
     build: (p, ph) => [COVERS.full(p, [ph[0]], { title: 'Summer Love', shade: '#1d2b1288' }), secInvite(p), COUPLE.tall(p, [ph[2]]), EVENT.calendar(p), GALLERY.polaroids(p, [ph[3], ph[4], ph[5], ph[6]]), GALLERY.grid(p, [ph[7], ph[8], ph[9], ph[10]], { cols: 2 }), secForms(p), THANKS.full(p, ph[1])],
     photos: [13, 22, 7, 3, 1, 18, 21, 19, 24, 11, 20],
   },
   {
-    key: 'hanbok-xuan-thi', name: 'Hanbok Xuân Thì', folder: 'a29', tier: 'premium', opener: 'doors', featured: true, music: 'song-hy', tags: ['Truyền thống', 'Hàn Quốc'],
+    key: 'hanbok-xuan-thi', name: 'Hanbok Xuân Thì', folder: 'a29', tier: 'premium', opener: 'doors', featured: true, song: 'em-dong-y', tags: ['Truyền thống', 'Hàn Quốc'],
     desc: 'Cổ phục và váy cưới, cửa hai cánh chữ Hỷ mở thiệp, sắc ngọc bích – đỏ son.',
     op: { color: '#7d1d24' },
     p: { page: '#e4ebe5', bg: '#fdfcf8', bg2: '#f2f5ef', ink: '#2b3a33', soft: '#6c7a72', accent: '#a3262e', line: '#cdd9cf', script: F.vibes, serif: F.playfair, sans: F.be },
@@ -770,14 +826,14 @@ const DEFS = [
     photos: [2, 14, 10, 13, 5, 11, 4, 18, 16, 1, 9, 12, 6, 7],
   },
   {
-    key: 'khung-cua-vom', name: 'Khung Cửa Vòm', folder: 'a30', tier: 'basic', opener: 'envelope', music: 'hen-uoc', tags: ['Lãng mạn', 'Châu Âu'],
+    key: 'khung-cua-vom', name: 'Khung Cửa Vòm', folder: 'a30', tier: 'basic', opener: 'envelope', song: 'vay-cuoi', tags: ['Lãng mạn', 'Châu Âu'],
     desc: 'Khung cửa vòm ngập nắng, tông be ấm, phong bì nâu dấu sáp cổ điển.',
     p: { page: '#e9dfd2', bg: '#fbf7f1', bg2: '#f3eadf', ink: '#3a2c22', soft: '#7e6c5d', accent: '#9b6a43', line: '#d9c3a8', script: F.vibes, serif: F.corm, sans: F.be },
     build: (p, ph) => [COVERS.arch(p, [ph[0]]), secInvite(p), GALLERY.stagger(p, [ph[1], ph[2]]), EVENT.calendar(p), GALLERY.collage(p, [ph[3], ph[4], ph[5], ph[6]]), secQuote(p, ph[7]), secForms(p), THANKS.arch(p, ph[9])],
     photos: [3, 6, 9, 1, 2, 4, 5, 7, 8, 10],
   },
   {
-    key: 'lau-dai-anh-nen', name: 'Lâu Đài Ánh Nến', folder: 'a31', tier: 'basic', opener: 'book', featured: true, music: 'hen-uoc', tags: ['Cổ điển', 'Sang trọng'],
+    key: 'lau-dai-anh-nen', name: 'Lâu Đài Ánh Nến', folder: 'a31', tier: 'basic', opener: 'book', featured: true, song: 'mai-mai-ben-nhau', tags: ['Cổ điển', 'Sang trọng'],
     desc: 'Lâu đài cổ điển ánh nến vàng, bìa tạp chí, chuyện tình và album 3 cột.',
     p: { page: '#2a2118', bg: '#fbf6ec', bg2: '#f3e9d6', ink: '#3a2a17', soft: '#7d6a52', accent: '#a8833a', line: '#dcc69a', gold: '#f1d39a', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.magazine(p, [ph[0]], { mast: 'LOVE NOTES', title: 'Golden\nHour' }), secInvite(p), COUPLE.arches(p, [ph[2], ph[3]]), secStory(p, [ph[4], ph[5], ph[6], ph[13]]), EVENT.bigdate(p), GALLERY.grid(p, ph.slice(7, 13), { cols: 3 }), secQuote(p, ph[1]), secForms(p), THANKS.full(p, ph[14])],
@@ -799,6 +855,10 @@ function buildAll() {
     CUR_TIER = d.tier;
     const ph = img(d.folder, d.photos);
     const sections = d.build(d.p, ph);
+    // Trang "Hai gia đình" ngay sau lời mời; phong bì ảnh sau trang cô dâu chú rể
+    // (mẫu có bìa phong bì đặt noEnvelope để không lặp)
+    sections.splice(2, 0, secFamily(d.p));
+    if (!d.noEnvelope) sections.splice(4, 0, secEnvelope(d.p, d.envPhotos ? img(d.folder, d.envPhotos) : [ph[ph.length - 1], ph[ph.length - 2]]));
     // Mẫu trả phí: có màn mở thiệp (mặc định theo bảng màu của mẫu)
     const op = d.tier === 'free' ? { style: 'none' } : { style: d.opener || 'envelope', color: d.op?.color || d.p.accent, paper: d.op?.paper || d.p.bg, font: d.p.script };
     return {
@@ -808,7 +868,7 @@ function buildAll() {
       tier: d.tier,
       tags: d.tags,
       thumb: ph[0],
-      music: d.music,
+      song: d.song,
       opener: op.style,
       featured: Boolean(d.featured),
       raw: {
@@ -817,7 +877,8 @@ function buildAll() {
         date: futureDate(),
         time: '11:00',
         pageBg: d.p.page,
-        music: { url: 'builtin:' + d.music, autoplay: true },
+        // URL bài hát gắn ở canvas.js (songUrl) – tránh require vòng
+        music: { url: '', autoplay: true },
         effects: { petals: true, toolbar: true },
         opener: op,
         sections,

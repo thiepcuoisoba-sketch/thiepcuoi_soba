@@ -1,6 +1,6 @@
 # HANDOFF – SOBA (bàn giao để tiếp tục trên máy khác)
 
-> Cập nhật: 16/11/2026. Không chứa mật khẩu, API key hay thông tin bí mật.
+> Cập nhật: 17/11/2026. Không chứa mật khẩu, API key hay thông tin bí mật.
 
 ## 1. Mục tiêu dự án
 
@@ -50,6 +50,14 @@ Khách đăng ký → chọn mẫu → tự chỉnh thiệp (form + xem trước
   - **14 mẫu ảnh mới** a18–a31: Hanok Tinh Khôi, Ánh Sáng Studio, Mùa Yêu Đen Trắng, Lụa Trắng Thanh Lịch, Hoa Hồng Đỏ, Nắng Trắng Tháng Năm, Hoa Trắng Tinh Khôi, Sắc Màu Thành Phố, Lễ Cưới Trên Đồi, Đêm Thành Phố, Đồng Hoa Mùa Hạ, Hanbok Xuân Thì, Khung Cửa Vòm, Lâu Đài Ánh Nến (3 Free · 6 Basic · 5 Premium). Ảnh bìa luôn có đủ cô dâu chú rể. Tổng: 31 mẫu ảnh (9 Free · 13 Basic · 9 Premium); 11 mẫu trả phí cũ cũng được gắn kiểu mở thiệp.
   - Bố cục mới: bìa `hero` (ảnh lớn + thẻ Save the Date bo tròn), `datebig`, `frame`; trang `secStory` (Love Story 4 chương), `secSchedule` (lịch trình theo giờ), `secLetter` (Lời ngỏ), album `stagger`, `stack`.
   - Trang chủ: 6 mẫu mới `featured` đứng đầu hàng “Mẫu thiết kế phổ biến”; popup xem trước có danh sách **“Có trong mẫu này”** riêng từng mẫu (kiểu mở thiệp, QR, số vị trí ảnh…).
+- **Cập nhật 17/11/2026** (tham khảo *bố cục & tiện ích* mẫu ZenLove; giao diện & code tự viết, không chép thiết kế):
+  - **Thư viện nhạc cưới** 13 bài trong `public/music/` (~56MB, nguồn `D:\Claude_1\nhac_cuoi`), khai báo ở `SONGS` trong `src/services/canvas.js`, lưu dạng `music.url = '/music/<tệp>'`. **Chủ dự án xác nhận đã có giấy phép** dùng các bài này (17/11/2026) – phần lớn là bài hát thương mại tải từ YouTube, nên giữ giấy tờ bản quyền (VCPMC + hãng đĩa) trước khi chạy thật. Mỗi mẫu ảnh gắn 1 bài (`song:` trong `DEFS`, các bài dùng lặp lại). Bảng Âm nhạc của editor có nhóm “Nhạc cưới” (chọn + nghe thử), mọi gói đều dùng được. 7 giai điệu Web Audio vẫn giữ.
+  - **Ngày âm lịch tự động** `{am_lich}` → “13 tháng 1 năm Đinh Mùi” (thuật toán thiên văn, múi giờ +7, có tháng nhuận) trong `cv-render.js` (`toLunar`, `lunarText`). Đã gắn vào lời mời, lịch cưới, lịch trình, bìa chữ Hỷ và các trang mới.
+  - **Trang “Hai gia đình”** (`secFamily`, chèn sau lời mời ở cả 31 mẫu): bố mẹ nhà trai / nhà gái + 2 thẻ **Lễ Vu Quy (tư gia nhà gái)** và **Lễ Thành Hôn (tư gia nhà trai)**, mỗi thẻ có giờ, ngày, âm lịch, địa chỉ và nút **“Xem chỉ đường”** (widget `map` kiểu `style: 'button'`). Phần bố mẹ đã bỏ khỏi trang lời mời.
+  - **Trang “Phong bì ảnh”** (`secEnvelope`, sau trang cô dâu chú rể; bỏ qua ở 3 mẫu bìa phong bì nhờ `noEnvelope`): phong bì mở nắp, 2 ảnh **trồi lên** khi cuộn tới (hiệu ứng mới `anim: 'rise'`), dấu sáp tự chọn màu tương phản.
+  - **RSVP mới**: chọn tham dự bằng nút tròn, “Số lượng người tham dự” 1–10 (ẩn khi khách chọn không đến), khách của nhà trai/gái. Trang khách mời của chủ thiệp vẫn cộng tổng số người.
+  - **Gợi ý lời chúc** ✨ trong sổ lời chúc (8 câu, dùng chung với bảng “Gửi lời chúc”).
+  - **Đĩa nhạc xoay** có ảnh bìa thiệp ở góc màn hình (thay nút ♫).
 - Hiển thị dùng chung `public/js/cv-render.js` + `css/canvas.css`; trang khách `views/invitation/canvas.ejs` + `js/canvas-guest.js` (co giãn theo màn hình, RSVP/lời chúc dùng API cũ, lightbox, nhạc, cánh hoa). Server làm sạch dữ liệu chặt trong `src/services/canvas.js` (`sanitizeDoc`).
 
 **Bảo mật**: bcrypt, CSRF token, Helmet + CSP, rate limit, honeypot, kiểm tra loại/kích thước upload, escape nội dung người dùng.
@@ -63,7 +71,9 @@ Khách đăng ký → chọn mẫu → tự chỉnh thiệp (form + xem trước
 - [ ] Đã xem trên điện thoại: 4 kiểu mở thiệp, thanh tiện ích, hộp QR, mẫu Hoa Trắng Tinh Khôi (đủ trang), bìa của Lụa Trắng/Hanbok/Đêm Thành Phố/Hanok Tinh Khôi. Chưa duyệt hết từng trang của 13 mẫu mới còn lại.
 - [x] Nút “Dùng mẫu này” ở popup trang chủ khi đã đăng nhập: đã thử 16/11 – mẫu miễn phí mở đúng editor `/thiep/:id/thiet-ke`, mẫu Basic với tài khoản Free chuyển sang `/bang-gia`.
 - [ ] Mới xem kỹ 2/17 mẫu ảnh trên điện thoại (bìa của cả 17 đã kiểm tra); cần xem hết các trang còn lại của 15 mẫu.
-- [ ] Nhạc: có 7 giai điệu gốc phát bằng Web Audio (chưa ai nghe thử đánh giá); thiệp dạng form vẫn chỉ cho dán link https hoặc tải mp3 (Basic+). Chưa có thư viện bài hát thật (vướng bản quyền).
+- [x] Thư viện 13 bài nhạc cưới cho thiệp canvas (17/11). Thiệp dạng **form** vẫn chỉ cho dán link https hoặc tải mp3 (Basic+), chưa dùng thư viện này.
+- [ ] Chưa xem từng trang mới (Hai gia đình, Phong bì ảnh) trên cả 31 mẫu – đã xem Hanok Tinh Khôi, Phim Đen Trắng, Hỷ Sự Vui Nhộn.
+- [ ] Địa chỉ/tên bố mẹ trong trang “Hai gia đình” là chữ mẫu – chủ thiệp sửa bằng nhấp đúp; chưa có ô nhập riêng ở bảng Thông tin.
 - [ ] Chưa có ảnh **og:image** (ảnh chia sẻ Facebook/Zalo) cho website.
 - [ ] Mục **cảm nhận khách hàng** đang rỗng (`TESTIMONIALS` trong `src/content.js`) – chỉ thêm cảm nhận thật.
 - [ ] Logo/thông tin liên hệ/mạng xã hội là tạm – thay trong `.env` (`CONTACT_*`) và `partials/logo.ejs`.
@@ -81,6 +91,7 @@ Khách đăng ký → chọn mẫu → tự chỉnh thiệp (form + xem trước
 - Mẫu đã lưu chỉ lưu trên **localStorage** (không đồng bộ theo tài khoản).
 - Thời hạn lưu thiệp tính theo **gói hiện tại** của chủ thiệp (hạ gói có thể làm thiệp hết hạn sớm).
 - Nhiều ảnh mẫu còn **chữ ký studio** in trong ảnh (WONKYU ở a6–a8, a18–a21, a27, a29; deFarang ở a23–a25; THE CLASSY ở a31; VC STUDIO ở ảnh 1 của a16) – nên thay ảnh hoặc cắt bớt nếu không muốn hiện.
+- `public/music` nặng ~56MB (13 bài) – cũng nằm trong git.
 - `public/img/mau` nặng ~55MB (430 ảnh) – sẽ nằm trong git; ổn với Hostinger nhưng tránh thêm ảnh lớn bừa bãi (có thể nén lại 1200px nếu cần nhẹ hơn).
 - Script nén ảnh mẫu `scripts/nen-anh-mau.js` cần thư viện `sharp`, **không** có trong `dependencies` (cài tạm ở thư mục khác, xem đầu file). Script tạo `public/img/mau/aN/01.jpg…` và ảnh tổng hợp đánh số ở `data/anh-tong-hop/` để chọn ảnh bìa.
 - Số lượt “thả tim” trên thanh tiện ích chỉ lưu trên máy khách (localStorage), chưa đếm chung trên server.
@@ -93,7 +104,7 @@ Khách đăng ký → chọn mẫu → tự chỉnh thiệp (form + xem trước
 | Phạm vi | Nền tảng đầy đủ như ZenLove (tài khoản, editor, gói trả phí) |
 | Editor | Hai editor chạy song song theo `cards.kind`: `form` (form + xem trước, 30 mẫu) và `canvas` (kéo thả tự do, máy tính + điện thoại) |
 | Thiệp canvas | JSON trong `cards.data`, rộng thiết kế 420px; server lọc bằng `sanitizeDoc` (whitelist); editor và trang khách dùng chung `cv-render.js` |
-| Nhạc mẫu | Giai điệu tự soạn (`builtin:<key>`, Web Audio) thay vì dùng bài hát có bản quyền |
+| Nhạc mẫu | Thư viện bài hát trong `public/music` (`SONGS`, chủ dự án xác nhận có giấy phép 17/11/2026) + 7 giai điệu tự soạn (`builtin:<key>`) |
 | Hosting | Hostinger Business/Cloud Node.js Web App + MySQL |
 | DB | Lớp `src/db.js` tự viết, SQL tương thích MySQL & SQLite; migration tự chạy khi khởi động (`src/migrations.js`) – **thêm migration mới, không sửa migration cũ** |
 | Thanh toán | VietQR chuyển khoản + webhook SePay (không dùng VNPay/MoMo) |
