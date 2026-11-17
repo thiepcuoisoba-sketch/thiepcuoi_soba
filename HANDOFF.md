@@ -1,175 +1,172 @@
 # HANDOFF – SOBA (bàn giao để tiếp tục trên máy khác)
 
-> Cập nhật: 17/11/2026. Không chứa mật khẩu, API key hay thông tin bí mật.
+> Cập nhật: 17/11/2026 · commit cuối trước khi bàn giao: xem `git log`.
+> File này **không** chứa mật khẩu, API key hay thông tin bí mật. Bí mật nằm trong `.env` (không vào git).
+
+---
 
 ## 1. Mục tiêu dự án
 
-**SOBA** là nền tảng SaaS tạo **thiệp cưới online** cho thị trường Việt Nam (tham khảo ZenLove, CineLove, Hunbei, Hotwedding, TheDays).
-Khách đăng ký → chọn mẫu → tự chỉnh thiệp (form + xem trước trực tiếp) → gửi link có tên riêng từng khách → nhận xác nhận tham dự, lời chúc, mừng cưới QR. Có gói trả phí, thanh toán chuyển khoản VietQR tự kích hoạt qua webhook SePay.
+**SOBA** là nền tảng SaaS tạo **thiệp cưới online** cho thị trường Việt Nam (tham khảo ZenLove, CineLove, Hunbei, Hotwedding, TheDays, 27biggroup).
+Luồng chính: khách đăng ký → chọn mẫu → tự chỉnh thiệp (editor form **hoặc** trình thiết kế kéo thả) → gửi link có tên riêng từng khách → nhận xác nhận tham dự, lời chúc, chữ ký lưu bút, mừng cưới qua QR. Có gói trả phí; thanh toán chuyển khoản VietQR, tự kích hoạt qua webhook SePay.
 
-- Stack: **Node.js (≥20) · Express 5 · EJS (render server, SEO) · MySQL (production) / SQLite có sẵn trong Node (dev)**.
-- Deploy dự kiến: **GitHub → Hostinger Business/Cloud “Node.js Web App” + MySQL**.
-- Giao diện hiện tại: **tông hồng nhạt + be trắng**, bố cục thẻ ảnh lớn kiểu TheDays, nét dễ thương kiểu Hunbei.
+- Stack: **Node.js (≥20, dev ≥22.5) · Express 5 · EJS (render server, SEO) · MySQL (production) / SQLite có sẵn trong Node (dev)**.
+- Deploy dự kiến: **GitHub → Hostinger Business/Cloud “Node.js Web App” + MySQL** (hướng dẫn chi tiết trong `README.md` mục 3–7).
+- Giao diện website: tông hồng nhạt + be trắng, thẻ ảnh lớn kiểu TheDays, nét dễ thương kiểu Hunbei. Toàn bộ UI tiếng Việt.
+
+---
 
 ## 2. Chức năng đã hoàn thành (đã chạy thử trên trình duyệt)
 
-**Website công khai**
-- Trang chủ `/` (layout `explore`): hero nền khảm ảnh mẫu + 3 thiệp ảnh xếp quạt, bong bóng danh mục, hàng “Mẫu thiết kế phổ biến” (31 mẫu ảnh, mẫu `featured` đứng đầu), 4 lối tắt, các hàng mẫu cuộn ngang, 3 bước, danh sách tiện ích, CTA.
-- Kho mẫu `/mau-thiep`: lọc danh mục (`?dm=`), gói (`?goi=`), tìm kiếm không dấu (`?q=`), mẫu đã lưu (`?luu=1`, localStorage).
-- Popup xem trước (iframe `/demo/:key`), lưu mẫu bằng nút tim, đếm số mẫu đã lưu trên header.
-- Trang: `/gioi-thieu` (landing cũ), `/mau-thiep/:key`, `/bang-gia`, `/tinh-nang`, `/huong-dan`, `/cam-nang(/:slug)`, `/cau-hoi-thuong-gap`, `/lien-he` (lưu DB), `/thiep-khach-hang`, `/dieu-khoan`, `/chinh-sach-bao-mat`, `sitemap.xml`, `robots.txt`.
-- Header/footer dùng chung (`partials/hw-header.ejs`, `hw-footer.ejs`), menu ngăn kéo + thanh điều hướng dưới đáy trên điện thoại, nút Zalo/hotline nổi.
-- Responsive đã kiểm tra không tràn ngang ở 320 / 375 / 820 / 1366–1440px.
+### 2.1. Website công khai
+- Trang chủ `/` (layout `explore`): hero nền khảm ảnh mẫu + 3 thiệp ảnh xếp quạt; hàng **“Mẫu thiết kế phổ biến”** (39 mẫu ảnh, mẫu `featured` đứng đầu); các hàng **SOBA tuyển chọn / Đang thịnh hành / Truyền thống Việt / Phong cách Hàn Quốc / Miễn phí / Sang trọng & điện ảnh** – mỗi hàng hiện **mẫu ảnh thật trước (lặp cho đủ 10 thẻ)** rồi tới mẫu vẽ cũ; 3 bước, tiện ích, CTA.
+- Kho mẫu `/mau-thiep`: lọc danh mục (`?dm=`), gói (`?goi=`), tìm không dấu (`?q=`), mẫu đã lưu (`?luu=1`, localStorage). Hiện cả mẫu ảnh (theo nhãn → danh mục, `TAG_CAT` trong `src/routes/public.js`) lẫn mẫu vẽ.
+- Popup xem trước (iframe `/demo/:key` hoặc `/demo-thiet-ke/:key` với mã `cv:<key>`), danh sách “Có trong mẫu này”, nút “Dùng mẫu này”, nút tim lưu mẫu.
+- Trang: `/gioi-thieu`, `/mau-thiep/:key`, `/bang-gia`, `/tinh-nang`, `/huong-dan`, `/cam-nang(/:slug)`, `/cau-hoi-thuong-gap`, `/lien-he` (lưu DB), `/thiep-khach-hang`, `/dieu-khoan`, `/chinh-sach-bao-mat`, `sitemap.xml`, `robots.txt`.
+- Header/footer dùng chung, menu ngăn kéo + thanh điều hướng đáy trên điện thoại, nút Zalo/hotline nổi. Responsive đã kiểm tra 320 / 375 / 820 / 1366–1440px.
 
-**Kho 30 mẫu thiệp gốc** (`src/services/templates.js`): 11 miễn phí, 10 Basic, 9 Premium; 6 kiểu thumbnail (classic, photo, poster, newspaper, arch, hy), 6 kiểu bìa mở thiệp (envelope, monogram, film, hy, letter, poster); font nạp theo từng mẫu. Hình cô dâu chú rể là vector tự vẽ (`partials/couple.ejs`) – **không** dùng ảnh/thiết kế của site khác.
+### 2.2. Thiệp dạng form (30 mẫu vẽ gốc – `src/services/templates.js`)
+- 11 Free · 10 Basic · 9 Premium; thumbnail vẽ bằng CSS (`partials/mini.ejs`), 6 kiểu bìa mở thiệp, hình cô dâu chú rể vector tự vẽ.
+- Trang khách `/t/:slug?to=Tên`: bìa mở thiệp, tên khách riêng, đếm ngược, lịch, chuyện tình, sự kiện + Google Maps, album + lightbox, RSVP, sổ lời chúc, mừng cưới VietQR, nhạc nền, cánh hoa. Đếm lượt xem, khoá khi hết lượt xem/hết hạn lưu trữ.
+- Editor `/thiep/:id/sua`: tự lưu, xem trước iframe, đổi mẫu/màu, tải ảnh, sự kiện, chuyện tình, ngân hàng, nhạc (Basic+), bật/tắt mục, xuất bản.
 
-**Trang thiệp khách xem** `/t/:slug?to=Tên`: bìa mở thiệp, tên khách riêng, đếm ngược, lịch tháng, cô dâu chú rể, chuyện tình, sự kiện + Google Maps, album + lightbox, RSVP, sổ lời chúc, hộp mừng cưới VietQR (copy STK), nhạc nền, cánh hoa rơi, điều hướng nhanh. Đếm lượt xem, khoá thiệp khi hết lượt xem/hết hạn lưu trữ.
+### 2.3. Thiệp thiết kế tự do – kéo thả (`cards.kind = 'canvas'`)
+- Dữ liệu JSON trong `cards.data`, nhiều trang xếp dọc, rộng thiết kế 420px; server lọc chặt bằng `sanitizeDoc` (whitelist).
+- **Editor** `/thiep/:id/thiet-ke` (`views/dashboard/designer.ejs`, `public/js/designer.js`): kéo thả, đổi cỡ, xoay, căn dóng, khoá, lớp, nhân bản, Ctrl+Z/Y/C/V/D, sửa chữ trực tiếp, chữ tự động `{ten_khach} {chu_re} {co_dau} {ngay} {gio} {thu} {ngay_so} {thang} {nam} {am_lich}`; ảnh (tải lên tự nén ≤2000px, cắt/phóng, khung vuông/tròn/vòm, viền, bộ lọc kể cả **làm mờ**); hình dạng; nền trang; nhạc; trang; “Thay ảnh nhanh”; hiệu ứng xuất hiện (kể cả `rise` – trồi lên từ phong bì, `spin` – đĩa than xoay khi phát nhạc); tự lưu; xuất bản. Điện thoại: thanh công cụ dưới đáy.
+- **Tiện ích (widget)**: đếm ngược, lịch, bản đồ (đầy đủ hoặc **chỉ nút “Xem chỉ đường”**), RSVP (nút tròn có/không, **số người 1–10**, khách của nhà trai/gái), sổ lời chúc (nút ✨ **gợi ý lời chúc**, tuỳ chọn **“Chỉ cô dâu, chú rể xem”**), mừng cưới QR (hiện sẵn hoặc **hộp quà chạm để mở**), album, nút gọi, **Ký tên lưu bút**, **Dresscode**, **Thêm vào lịch** (Google Calendar).
+- **6 kiểu mở thiệp** (gói Basic+): phong bì dấu sáp, chạm vân tay – rèm, cửa hai cánh chữ Hỷ, lật bìa có ảnh, **rèm lụa & bướm bay**, **bầu trời sao rơi**. Tên khách riêng trên màn mở; nhạc phát khi khách chạm mở.
+- **Thanh tiện ích nổi** (Basic+): RSVP, gửi lời chúc (bảng trượt + câu gợi ý), lời chúc bay, bắn tim, hộp mừng cưới QR, thả tim. Nút nhạc là **đĩa nhạc xoay có ảnh bìa**.
+- **Ngày âm lịch** tự tính (thuật toán thiên văn, múi giờ +7, có tháng nhuận) – `toLunar`, `lunarText` trong `cv-render.js`.
+- Trang khách `views/invitation/canvas.ejs` + `public/js/canvas-guest.js` (co giãn theo màn hình, lightbox, nhạc, cánh hoa, bảng vẽ chữ ký). Demo mẫu `/demo-thiet-ke/:key` dùng **đúng gói của mẫu** và QR ảo `/img/qr-mau.svg`.
 
-**Tài khoản & bảng điều khiển**
+### 2.4. 39 mẫu ảnh thật (`src/services/canvas-starters.js`) – 11 Free · 16 Basic · 12 Premium
+- **a1–a31** (bố cục “cổ điển”, thư viện `COVERS` / `COUPLE` / `EVENT` / `GALLERY` / `secStory` / `secSchedule` / `secLetter` / `secForms`…). Mỗi mẫu tự được chèn thêm trang **“Hai gia đình”** (`secFamily`: bố mẹ hai bên, lễ Vu Quy / Thành Hôn tại tư gia, âm lịch, nút chỉ đường) và **“Phong bì ảnh”** (`secEnvelope`, trừ 3 mẫu bìa phong bì có `noEnvelope`).
+- **a32–a39** (phong cách **“kính mờ”**, thư viện `GL` + `glassBuild`, cờ `noAuto`): bìa ảnh vòm có chữ dọc HAPPY WEDDING + ngày lớn, hoặc bìa tràn ảnh + thẻ kính mờ; hai họ; lễ thành hôn trên thẻ kính mờ đặt trên ảnh làm mờ (ngày 3 cột, âm lịch, thêm vào lịch, lễ vu quy); chú rể / cô dâu riêng; đĩa than; thư mời nhà hàng; timeline có biểu tượng; đếm ngược; ký tên lưu bút; love story theo năm; album so le; xác nhận / lời nhắn riêng tư / dresscode / hộp quà; thank you. Câu văn, dresscode, timeline riêng từng mẫu (`p.t`).
+  - Ngân Hà Sao Rơi (a35, Premium, sao), Pháo Hoa Champagne (a36, Premium, rèm), Cung Điện Ánh Vàng (a38, Premium, rèm), Bướm Hồng Studio (a32, Basic, rèm), Vườn Lụa Trắng (a33, Basic, rèm), Hoàng Hôn Sân Thượng (a39, Basic, sao), Mây Trắng Tinh Khôi (a34, Free), Kiến Trúc Trắng (a37, Free).
+- 3 mẫu ảnh giữ chỗ (SVG) cũ: `do-ruou-vang`, `kem-anh-kim`, `hong-pastel` + thiệp trống.
+- `featured: 2` = chủ dự án chọn đẩy lên đầu (Đồng Cỏ Mùa Hạ, Hồng Pastel Ngọt Ngào, Hỷ Sự Vui Nhộn, Đỏ Son Song Hỷ, Phong Bì Đỏ Nhung, Phiêu Lưu Núi Tuyết, Báo Cưới, Đỏ Đô Chữ Vàng); `featured: 1` = mẫu mới nổi bật.
+
+### 2.5. Nhạc nền
+- **Thư viện 13 bài** trong `public/music/` (~56MB), khai báo `SONGS` trong `src/services/canvas.js`, lưu `music.url = '/music/<tệp>'`. Chủ dự án xác nhận **đã có giấy phép** (17/11/2026). Mỗi mẫu ảnh gắn 1 bài (`song:` trong `DEFS`, lặp lại giữa các mẫu). Editor có nhóm “Nhạc cưới” (chọn + nghe thử), mọi gói đều dùng được.
+- 7 giai điệu gốc phát bằng Web Audio (`public/js/soba-music.js`, `builtin:<key>`) vẫn giữ.
+- Nhạc tự tải lên: gói Basic+.
+
+### 2.6. Tài khoản, bảng điều khiển, thanh toán, quản trị
 - Đăng ký/đăng nhập email, quên/đặt lại mật khẩu (SMTP; chưa cấu hình thì in link ra log), Google & Facebook (tự ẩn nút nếu thiếu key).
-- `/tai-khoan`: danh sách thiệp, thống kê, nhân bản/xoá; `/thiep/tao` chọn mẫu (khoá theo gói).
-- Trình chỉnh sửa `/thiep/:id/sua`: tự lưu, xem trước iframe, đổi mẫu/màu nhấn, tải ảnh bìa/cô dâu/chú rể/album, sự kiện, chuyện tình, ngân hàng mừng cưới, nhạc (Basic+), bật/tắt từng mục, xuất bản/ẩn (slug tạo lại theo tên thật ở lần xuất bản đầu).
-- `/thiep/:id/khach-moi`: tạo link tên riêng hàng loạt, xem RSVP, xuất CSV (UTF-8 BOM, chống CSV injection), ẩn/hiện lời chúc.
-- Thanh toán `/nang-cap?goi=basic|premium`: VietQR + tự kiểm tra trạng thái; webhook `POST /api/webhooks/sepay` (API key, chống xử lý trùng, kiểm tra số tiền).
-- Quản trị `/quan-tri`: tổng quan doanh thu, người dùng (đổi gói/quyền), đơn hàng (xác nhận/huỷ thủ công, log webhook), thiệp (đặt nổi bật), liên hệ.
+- `/tai-khoan`: danh sách thiệp, thống kê, nhân bản/xoá. `/thiep/tao`: chọn mẫu (khoá theo gói), mục “Thiết kế tự do”.
+- `/thiep/:id/khach-moi`: tạo link tên riêng hàng loạt, tab **Phản hồi** (RSVP, tổng số người, xuất CSV UTF‑8 BOM chống CSV injection), tab **Lời chúc** (ẩn/hiện; lời chúc riêng tư hiện “Đang ẩn khỏi thiệp”), tab **Chữ ký** (xem/xoá chữ ký lưu bút).
+- Thanh toán `/nang-cap?goi=basic|premium`: VietQR + tự kiểm tra; webhook `POST /api/webhooks/sepay` (API key, chống xử lý trùng, kiểm tra số tiền).
+- Quản trị `/quan-tri`: doanh thu, người dùng (đổi gói/quyền), đơn hàng, thiệp (nổi bật), liên hệ. **Tài khoản admin không giới hạn số thiệp**.
+- Giá: Free 0đ · **Basic 129.000đ** · **Premium 249.000đ** / 12 tháng (giá gạch 299k/599k).
 
-**Trình thiết kế tự do – kéo thả** (thêm 13/11/2026, tham khảo *luồng thao tác* editor CineLove, giao diện & code tự viết)
-- Cột `cards.kind` (`form` | `canvas`, migration `002_card_kind`). Thiệp canvas lưu JSON trong `cards.data`: nhiều trang xếp dọc (rộng thiết kế 420px), mỗi trang có các phần tử đặt tự do.
-- Tạo: `/thiep/tao` → mục “Thiết kế tự do” (17 mẫu ảnh thật xếp trước + 3 mẫu ảnh giữ chỗ `do-ruou-vang`, `kem-anh-kim`, `hong-pastel` + thiệp trống) → `POST /thiep/tao-thiet-ke` → editor `/thiep/:id/thiet-ke` (`/sua` tự chuyển hướng). Demo mẫu: `/demo-thiet-ke/:key`.
-- Editor (`views/dashboard/designer.ejs`, `public/js/designer.js`, `css/designer.css`): kéo thả, đổi cỡ (góc giữ tỉ lệ, chữ tự co theo), xoay, căn dóng (guide), khoá, lớp trên/dưới, nhân bản, Ctrl+Z/Y/C/V/D, phím mũi tên; nhấp đúp sửa chữ trực tiếp; chữ tự động `{ten_khach} {chu_re} {co_dau} {ngay} {gio} {thu}`; ảnh: tải lên (tự nén ≤2000px), thư viện ảnh của thiệp, cắt/phóng/kéo vị trí, khung vuông/tròn/vòm, viền, bộ lọc; hình dạng; tiện ích: đếm ngược, lịch, bản đồ, RSVP, lời chúc, mừng cưới QR, album, nút gọi; nền trang (màu/ảnh), nhạc nền, thêm/xếp/nhân bản/xoá trang, đổi chiều cao trang; “Thay ảnh nhanh”; hiệu ứng xuất hiện; tự lưu `POST /api/thiep/:id/thiet-ke`; xuất bản + popup chia sẻ. Điện thoại: thanh công cụ dưới đáy, bảng dạng ngăn kéo.
-- **17 mẫu thiết kế tự do có ảnh thật** (`src/services/canvas-starters.js`, ảnh nén ≤1400px trong `public/img/mau/a1…a17`, nguồn gốc `D:\Claude_1\anh_thiep_mau` – chủ dự án xác nhận đã thoả thuận quyền dùng ảnh). Mỗi mẫu ghép từ thư viện bố cục: bìa (tạp chí, phong bì, khung vòm, dải phim, báo cưới, chữ Hỷ, poster, ảnh trên – chữ dưới, lịch kẹp giấy, polaroid, ảnh tràn viền), lời mời, cô dâu chú rể, ngày giờ (ngày lớn / lịch), album (lưới, collage, polaroid, thước phim), trích dẫn, RSVP + lời chúc + mừng cưới, cảm ơn. Gói: 7 free, 6 Basic, 4 Premium (khoá ở trang chọn mẫu và khi tạo).
-- **Trang chủ** (`views/explore/home.ejs`): hero có nền khảm ảnh bìa các mẫu ảnh (lớp phủ kem hồng), 3 thiệp ảnh xếp quạt; hàng “Mẫu thiết kế phổ biến” (17 mẫu ảnh) ngay dưới danh mục. Popup xem trước (`public/js/explore.js`) nhận mã `cv:<key>` → iframe `/demo-thiet-ke/<key>`, nút “Dùng mẫu này” gửi tới `/thiep/tao-thiet-ke`.
-- **Nhạc nền giai điệu gốc** (`public/js/soba-music.js`): 7 giai điệu do SOBA tự soạn, phát bằng Web Audio (không dùng file, không vướng bản quyền). Lưu dạng `music.url = 'builtin:<key>'`; bảng Âm nhạc trong editor có nghe thử. Mỗi mẫu được gắn sẵn một giai điệu.
-- Hình dạng mới: tam giác (`tri`), nền chuyển dần (`grad`), đổ bóng; chữ tự động thêm `{ngay_so} {thang} {nam}`.
-- **Cập nhật 16/11/2026** (tham khảo cách làm của Hunbei/CineLove và mẫu `D:\Claude_1\thiep_cuoi_91_premium` của SOBA; giao diện & code tự viết):
-  - **Giá mới**: Basic 129.000đ, Premium 249.000đ (giá gạch 299k/599k giữ nguyên). Gói Free **không có** hộp mừng cưới QR (`features.gift = false`), màn mở thiệp hay thanh tiện ích nổi.
-  - **4 kiểu mở thiệp** cho thiệp canvas (`doc.opener.style`): phong bì dấu sáp, chạm vân tay – rèm mở, cửa hai cánh chữ Hỷ, lật bìa có ảnh. Có tên khách riêng trên màn mở; nhạc phát ngay khi khách chạm mở. Editor: bảng **Thông tin → Mở thiệp & tiện ích** (kiểu, màu chính, màu nền, phông tên, bật/tắt thanh tiện ích).
-  - **Thanh tiện ích nổi** (`doc.effects.toolbar`): nút RSVP (cuộn tới form), “Gửi lời chúc…” (bảng trượt có câu chúc gợi ý, gửi qua API lời chúc cũ), **lời chúc bay** (bong bóng), **bắn tim**, **hộp mừng cưới QR** (bảng trượt, sao chép STK), **thả tim** (đếm trên máy khách).
-  - **QR ảo** `/img/qr-mau.svg` (tự vẽ, không quét được, ghi “QR MẪU”) + STK minh hoạ hiện trong mọi bản demo mẫu trả phí.
-  - Demo `/demo-thiet-ke/:key` dùng **đúng gói của mẫu** (mẫu Free → không mở thiệp/QR/thanh tiện ích, có logo SOBA).
-  - **14 mẫu ảnh mới** a18–a31: Hanok Tinh Khôi, Ánh Sáng Studio, Mùa Yêu Đen Trắng, Lụa Trắng Thanh Lịch, Hoa Hồng Đỏ, Nắng Trắng Tháng Năm, Hoa Trắng Tinh Khôi, Sắc Màu Thành Phố, Lễ Cưới Trên Đồi, Đêm Thành Phố, Đồng Hoa Mùa Hạ, Hanbok Xuân Thì, Khung Cửa Vòm, Lâu Đài Ánh Nến (3 Free · 6 Basic · 5 Premium). Ảnh bìa luôn có đủ cô dâu chú rể. Tổng: 31 mẫu ảnh (9 Free · 13 Basic · 9 Premium); 11 mẫu trả phí cũ cũng được gắn kiểu mở thiệp.
-  - Bố cục mới: bìa `hero` (ảnh lớn + thẻ Save the Date bo tròn), `datebig`, `frame`; trang `secStory` (Love Story 4 chương), `secSchedule` (lịch trình theo giờ), `secLetter` (Lời ngỏ), album `stagger`, `stack`.
-  - Trang chủ: 6 mẫu mới `featured` đứng đầu hàng “Mẫu thiết kế phổ biến”; popup xem trước có danh sách **“Có trong mẫu này”** riêng từng mẫu (kiểu mở thiệp, QR, số vị trí ảnh…).
-- **Cập nhật 17/11/2026** (tham khảo *bố cục & tiện ích* mẫu ZenLove; giao diện & code tự viết, không chép thiết kế):
-  - **Thư viện nhạc cưới** 13 bài trong `public/music/` (~56MB, nguồn `D:\Claude_1\nhac_cuoi`), khai báo ở `SONGS` trong `src/services/canvas.js`, lưu dạng `music.url = '/music/<tệp>'`. **Chủ dự án xác nhận đã có giấy phép** dùng các bài này (17/11/2026) – phần lớn là bài hát thương mại tải từ YouTube, nên giữ giấy tờ bản quyền (VCPMC + hãng đĩa) trước khi chạy thật. Mỗi mẫu ảnh gắn 1 bài (`song:` trong `DEFS`, các bài dùng lặp lại). Bảng Âm nhạc của editor có nhóm “Nhạc cưới” (chọn + nghe thử), mọi gói đều dùng được. 7 giai điệu Web Audio vẫn giữ.
-  - **Ngày âm lịch tự động** `{am_lich}` → “13 tháng 1 năm Đinh Mùi” (thuật toán thiên văn, múi giờ +7, có tháng nhuận) trong `cv-render.js` (`toLunar`, `lunarText`). Đã gắn vào lời mời, lịch cưới, lịch trình, bìa chữ Hỷ và các trang mới.
-  - **Trang “Hai gia đình”** (`secFamily`, chèn sau lời mời ở cả 31 mẫu): bố mẹ nhà trai / nhà gái + 2 thẻ **Lễ Vu Quy (tư gia nhà gái)** và **Lễ Thành Hôn (tư gia nhà trai)**, mỗi thẻ có giờ, ngày, âm lịch, địa chỉ và nút **“Xem chỉ đường”** (widget `map` kiểu `style: 'button'`). Phần bố mẹ đã bỏ khỏi trang lời mời.
-  - **Trang “Phong bì ảnh”** (`secEnvelope`, sau trang cô dâu chú rể; bỏ qua ở 3 mẫu bìa phong bì nhờ `noEnvelope`): phong bì mở nắp, 2 ảnh **trồi lên** khi cuộn tới (hiệu ứng mới `anim: 'rise'`), dấu sáp tự chọn màu tương phản.
-  - **RSVP mới**: chọn tham dự bằng nút tròn, “Số lượng người tham dự” 1–10 (ẩn khi khách chọn không đến), khách của nhà trai/gái. Trang khách mời của chủ thiệp vẫn cộng tổng số người.
-  - **Gợi ý lời chúc** ✨ trong sổ lời chúc (8 câu, dùng chung với bảng “Gửi lời chúc”).
-  - **Đĩa nhạc xoay** có ảnh bìa thiệp ở góc màn hình (thay nút ♫).
-  - **Trang chủ & kho mẫu dùng mẫu ảnh thật**: mỗi hàng (SOBA tuyển chọn, Đang thịnh hành, Truyền thống Việt, Phong cách Hàn Quốc – hàng mới, Miễn phí, Sang trọng) hiện mẫu ảnh trước, **lặp lại cho đủ 10 thẻ**, rồi tới mẫu vẽ cũ. Danh mục của mẫu ảnh suy ra từ nhãn (`TAG_CAT` trong `src/routes/public.js`). `/mau-thiep` cũng hiện mẫu ảnh khớp bộ lọc danh mục / gói / tìm kiếm, có nút tim lưu mẫu (mã `cv:<key>`). Thẻ ảnh dùng chung partial `views/explore/photo-card.ejs`.
-  - **Mẫu phổ biến**: `featured: 2` (chủ dự án chọn) đứng đầu, rồi `featured: true` (=1). Đang ở mức 2: Đồng Cỏ Mùa Hạ, Hồng Pastel Ngọt Ngào, Hỷ Sự Vui Nhộn, Đỏ Son Song Hỷ, Phong Bì Đỏ Nhung, Phiêu Lưu Núi Tuyết, Báo Cưới, Đỏ Đô Chữ Vàng.
-  - **Tài khoản quản trị không giới hạn số thiệp** (`role = 'admin'` bỏ qua `limits.cards` khi tạo/nhân bản). Tài khoản thử localhost `tester@soba.local` đã được nâng **Premium (hết hạn 2036) + admin** trong DB dev – chỉ là dữ liệu SQLite trên máy, không ảnh hưởng production.
-- **8 mẫu “kính mờ” a32–a39** (17/11/2026, tham khảo bố cục, cách mở thiệp, tiện ích & giọng văn của 27biggroup; giao diện và code SOBA tự làm). Ảnh nén từ `D:\Claude_1\anh_thiep_mau\a32–a39` (chủ dự án xác nhận có bản quyền). Bố cục mới `GL` + `glassBuild` trong `canvas-starters.js`: bìa thẻ bo tròn có chữ dọc HAPPY WEDDING + ngày lớn in mờ trên ảnh vòm, hoặc bìa tràn ảnh + thẻ kính mờ; hai họ; lễ thành hôn trên **thẻ kính mờ đặt trên ảnh làm mờ** (bộ lọc `blur`) với ngày 3 cột, âm lịch, **Thêm vào lịch** (Google Calendar), lễ vu quy; chú rể / cô dâu riêng; **đĩa than** xoay khi phát nhạc (`anim: 'spin'`, chạm để bật/tắt); thư mời nhà hàng; timeline có biểu tượng; đếm ngược; **Ký tên lưu bút**; love story theo năm; album so le; Xác nhận / Gửi lời nhắn (khách chọn **“Chỉ cô dâu, chú rể”**) / **Dresscode** / **hộp quà chạm để mở**; Thank you. Mỗi mẫu có câu văn, dresscode, timeline riêng (`p.t`) và cờ `noAuto` (không chèn trang Hai gia đình / Phong bì ảnh).
-  - Mẫu: Ngân Hà Sao Rơi (a35, Premium, mở thiệp **bầu trời sao rơi**), Pháo Hoa Champagne (a36, Premium, **rèm lụa & bướm bay**), Cung Điện Ánh Vàng (a38, Premium, rèm), Bướm Hồng Studio (a32, Basic, rèm), Vườn Lụa Trắng (a33, Basic, rèm), Hoàng Hôn Sân Thượng (a39, Basic, sao), Mây Trắng Tinh Khôi (a34, Free), Kiến Trúc Trắng (a37, Free). Tổng 39 mẫu ảnh.
-  - Tiện ích mới cho mọi thiệp canvas: `signature`, `dresscode`, `addcal`; `gift.style = 'box'`; `wishes.privacy`. Chữ ký lưu ở bảng `signatures` (migration `003_signatures`, PNG data URL ≤80KB, tối đa 500/thiệp), API `POST /t/:slug/ky-ten`; chủ thiệp xem/xoá ở tab **Chữ ký** trang Khách mời. Lời chúc riêng tư lưu `hidden = 1`.
-  - Phông mới **Alex Brush** (có dấu tiếng Việt).
-- Hiển thị dùng chung `public/js/cv-render.js` + `css/canvas.css`; trang khách `views/invitation/canvas.ejs` + `js/canvas-guest.js` (co giãn theo màn hình, RSVP/lời chúc dùng API cũ, lightbox, nhạc, cánh hoa). Server làm sạch dữ liệu chặt trong `src/services/canvas.js` (`sanitizeDoc`).
+### 2.7. Bảo mật
+bcrypt, CSRF token, Helmet + CSP (script chỉ `'self'`), rate limit, honeypot, kiểm tra loại/kích thước upload, escape nội dung người dùng, chữ ký chỉ nhận PNG data URL ≤80KB, tối đa 500 chữ ký/thiệp.
 
-**Bảo mật**: bcrypt, CSRF token, Helmet + CSP, rate limit, honeypot, kiểm tra loại/kích thước upload, escape nội dung người dùng.
+---
 
-## 3. Chức năng đang phát triển / còn dang dở
+## 3. Chức năng đang phát triển / công việc còn dang dở
 
-- [x] Commit đầu tiên 17/11/2026 (nhánh `master`). **Chưa có remote GitHub.**
-- [ ] **Chưa chạy thử với MySQL thật** (chỉ test SQLite). Cần kiểm tra lần deploy đầu trên Hostinger.
-- [x] Giá gói đã chốt 16/11: Basic 129k, Premium 249k (`src/services/plans.js`). Giá gạch (299k/599k) chưa chốt lại.
-- [ ] Thiệp dạng **form** (30 mẫu cũ) chưa có thanh tiện ích nổi; màn mở thiệp của form vẫn hiện với cả gói Free (chỉ QR đã tắt cho Free).
-- [ ] Đã xem trên điện thoại: 4 kiểu mở thiệp, thanh tiện ích, hộp QR, mẫu Hoa Trắng Tinh Khôi (đủ trang), bìa của Lụa Trắng/Hanbok/Đêm Thành Phố/Hanok Tinh Khôi. Chưa duyệt hết từng trang của 13 mẫu mới còn lại.
-- [x] Nút “Dùng mẫu này” ở popup trang chủ khi đã đăng nhập: đã thử 16/11 – mẫu miễn phí mở đúng editor `/thiep/:id/thiet-ke`, mẫu Basic với tài khoản Free chuyển sang `/bang-gia`.
-- [ ] Mới xem kỹ 2/17 mẫu ảnh trên điện thoại (bìa của cả 17 đã kiểm tra); cần xem hết các trang còn lại của 15 mẫu.
-- [x] Thư viện 13 bài nhạc cưới cho thiệp canvas (17/11). Thiệp dạng **form** vẫn chỉ cho dán link https hoặc tải mp3 (Basic+), chưa dùng thư viện này.
-- [ ] Chưa xem từng trang mới (Hai gia đình, Phong bì ảnh) trên cả 31 mẫu – đã xem Hanok Tinh Khôi, Phim Đen Trắng, Hỷ Sự Vui Nhộn.
-- [ ] Địa chỉ/tên bố mẹ trong trang “Hai gia đình” là chữ mẫu – chủ thiệp sửa bằng nhấp đúp; chưa có ô nhập riêng ở bảng Thông tin.
-- [ ] Chưa có ảnh **og:image** (ảnh chia sẻ Facebook/Zalo) cho website.
-- [ ] Mục **cảm nhận khách hàng** đang rỗng (`TESTIMONIALS` trong `src/content.js`) – chỉ thêm cảm nhận thật.
-- [ ] Logo/thông tin liên hệ/mạng xã hội là tạm – thay trong `.env` (`CONTACT_*`) và `partials/logo.ejs`.
-- [ ] Điều khoản & chính sách bảo mật là **bản mẫu** – cần rà soát pháp lý.
-- [ ] Google/Facebook login và SePay **chưa test với key thật**.
+- [ ] **Chưa có remote GitHub, chưa push** (repo git nhánh `master`, đã có các commit). Máy này chưa cài GitHub CLI.
+- [ ] **Chưa deploy, chưa chạy thử với MySQL thật** (chỉ test SQLite). Migration `003_signatures` cũng chưa chạy trên MySQL.
+- [ ] Chưa duyệt **từng trang** của mọi mẫu ảnh trên điện thoại. Đã xem kỹ: Hanok Tinh Khôi, Hoa Trắng Tinh Khôi, Phim Đen Trắng, Hỷ Sự Vui Nhộn, Bướm Hồng Studio, Ngân Hà Sao Rơi. Còn lại cần xem: 6 mẫu kính mờ (a33, a34, a36–a39) và các trang “Hai gia đình” / “Phong bì ảnh” của a1–a31.
+- [ ] Tên bố mẹ, địa chỉ lễ tư gia, tên nhà hàng, timeline trong mẫu là **chữ mẫu** – chủ thiệp sửa bằng nhấp đúp; chưa có ô nhập riêng ở bảng Thông tin.
+- [ ] Thiệp dạng **form** (30 mẫu cũ): chưa có thanh tiện ích nổi, ký tên, dresscode, thư viện nhạc; màn mở thiệp form vẫn hiện với gói Free.
+- [ ] Google/Facebook login, SePay, SMTP **chưa test với key thật**.
+- [ ] Chưa có ảnh **og:image** cho website; logo/liên hệ/mạng xã hội là tạm (`.env` `CONTACT_*`, `partials/logo.ejs`); điều khoản & chính sách là **bản mẫu** cần rà soát pháp lý; `TESTIMONIALS` rỗng (chỉ thêm cảm nhận thật).
+- [ ] Trình thiết kế: chưa chọn nhiều phần tử cùng lúc, chưa có kho sticker/hoạ tiết.
 - [ ] Chưa có test tự động.
-- [ ] Trình thiết kế tự do: chưa chọn nhiều phần tử cùng lúc, chưa có kho sticker/hoạ tiết; 3 mẫu ảnh giữ chỗ cũ có thể bỏ khi đủ mẫu ảnh thật.
+
+---
 
 ## 4. Lỗi / hạn chế đang tồn tại
 
-- `public/css/app.css` còn **CSS cũ không dùng** (`.site-header`, `.nav`, `.mobile-nav`, `.site-footer`, `.fab-contact`) từ header cũ – vô hại, có thể dọn.
-- `src/views/partials/tpl-card.ejs` (thẻ mẫu kiểu cũ) vẫn dùng ở `/gioi-thieu` và `/mau-thiep/:key` – giao diện hơi khác thẻ mới ở trang chủ.
-- Head nạp **toàn bộ ~10 họ font Google** để thumbnail hiển thị đúng → hơi nặng; có thể tối ưu.
-- Ảnh tải lên **không được nén/resize** (chưa dùng `sharp`), giới hạn 12MB/tệp.
-- Mẫu đã lưu chỉ lưu trên **localStorage** (không đồng bộ theo tài khoản).
-- Thời hạn lưu thiệp tính theo **gói hiện tại** của chủ thiệp (hạ gói có thể làm thiệp hết hạn sớm).
-- Nhiều ảnh mẫu còn **chữ ký studio** in trong ảnh (WONKYU ở a6–a8, a18–a21, a27, a29; deFarang ở a23–a25; THE CLASSY ở a31; VC STUDIO ở ảnh 1 của a16) – nên thay ảnh hoặc cắt bớt nếu không muốn hiện.
-- `public/music` nặng ~56MB (13 bài) – cũng nằm trong git.
-- Ảnh a32–a39 cũng có chữ ký studio (WEDDING PLEDGE, FIA, LAENDY, MELEVO, VIVIENDA, BRIDE, KOREA WEDDING PLEDGE).
-- `sharp` để nén ảnh đang cài tạm ở `D:\Claude_1\tools` (ngoài repo).
-- `public/img/mau` nặng ~55MB (430 ảnh) – sẽ nằm trong git; ổn với Hostinger nhưng tránh thêm ảnh lớn bừa bãi (có thể nén lại 1200px nếu cần nhẹ hơn).
-- Script nén ảnh mẫu `scripts/nen-anh-mau.js` cần thư viện `sharp`, **không** có trong `dependencies` (cài tạm ở thư mục khác, xem đầu file). Script tạo `public/img/mau/aN/01.jpg…` và ảnh tổng hợp đánh số ở `data/anh-tong-hop/` để chọn ảnh bìa.
-- Số lượt “thả tim” trên thanh tiện ích chỉ lưu trên máy khách (localStorage), chưa đếm chung trên server.
-- Trên Hostinger, nếu `UPLOAD_DIR` nằm trong thư mục code thì **ảnh có thể mất khi deploy lại** → phải đặt ngoài.
+- Nhiều ảnh mẫu còn **chữ ký studio** in trong ảnh: WONKYU (a6–a8, a18–a21, a27, a29), deFarang (a23–a25), THE CLASSY (a31), VC STUDIO (a16 ảnh 1), WEDDING PLEDGE / FIA / LAENDY / MELEVO / VIVIENDA / BRIDE / KOREA WEDDING PLEDGE (a32–a39).
+- Repo nặng: `public/img/mau` ~67MB (543 ảnh), `public/music` ~56MB, thư mục `.git` ~120MB. Ổn với GitHub/Hostinger nhưng tránh thêm tệp lớn bừa bãi.
+- Ảnh khách tải lên **không được nén phía server** (chỉ trình thiết kế canvas nén ở trình duyệt), giới hạn 12MB/tệp.
+- `public/css/app.css` còn CSS cũ không dùng (`.site-header`, `.nav`, `.mobile-nav`, `.site-footer`, `.fab-contact`); `partials/tpl-card.ejs` (thẻ mẫu cũ) vẫn dùng ở `/gioi-thieu`, `/mau-thiep/:key`.
+- Head nạp nhiều họ font Google để thumbnail đúng → hơi nặng.
+- Mẫu đã lưu & số “thả tim” chỉ lưu localStorage, không đồng bộ server.
+- Thời hạn lưu thiệp tính theo **gói hiện tại** của chủ thiệp.
+- Hiệu ứng (mở thiệp, xuất hiện) chỉ chạy khi tab đang hiển thị – trong khung xem trước bị ẩn của Claude, thẻ mở thiệp có thể đứng ở trạng thái mờ (không phải lỗi thiệp).
+- Trên Hostinger, nếu `UPLOAD_DIR` nằm trong thư mục code thì ảnh khách **có thể mất khi deploy lại** → đặt ngoài.
+
+---
 
 ## 5. Quyết định kỹ thuật đã thống nhất
 
 | Chủ đề | Quyết định |
 |---|---|
 | Phạm vi | Nền tảng đầy đủ như ZenLove (tài khoản, editor, gói trả phí) |
-| Editor | Hai editor chạy song song theo `cards.kind`: `form` (form + xem trước, 30 mẫu) và `canvas` (kéo thả tự do, máy tính + điện thoại) |
-| Thiệp canvas | JSON trong `cards.data`, rộng thiết kế 420px; server lọc bằng `sanitizeDoc` (whitelist); editor và trang khách dùng chung `cv-render.js` |
-| Nhạc mẫu | Thư viện bài hát trong `public/music` (`SONGS`, chủ dự án xác nhận có giấy phép 17/11/2026) + 7 giai điệu tự soạn (`builtin:<key>`) |
+| Editor | Hai editor song song theo `cards.kind`: `form` (30 mẫu vẽ) và `canvas` (kéo thả tự do, máy tính + điện thoại) |
+| Thiệp canvas | JSON trong `cards.data`, rộng 420px; server lọc bằng `sanitizeDoc` (whitelist – trường mới phải khai báo); editor và trang khách dùng chung `cv-render.js` |
+| Mẫu ảnh | Khai báo trong `DEFS` (`canvas-starters.js`); ảnh đầu tiên phải **có đủ cô dâu & chú rể**; mẫu trả phí đặt `opener`; `noAuto` cho mẫu tự có hai họ |
+| Bản quyền | Không sao chép thiết kế/ảnh/thiệp của site khác – chỉ tham khảo bố cục, luồng, tiện ích. Ngoại lệ: ảnh `D:\Claude_1\anh_thiep_mau\a1–a39` và nhạc `D:\Claude_1\nhac_cuoi` – chủ dự án xác nhận có quyền |
+| Nhạc | Thư viện `public/music` (`SONGS`) + giai điệu tự soạn Web Audio |
 | Hosting | Hostinger Business/Cloud Node.js Web App + MySQL |
-| DB | Lớp `src/db.js` tự viết, SQL tương thích MySQL & SQLite; migration tự chạy khi khởi động (`src/migrations.js`) – **thêm migration mới, không sửa migration cũ** |
-| Thanh toán | VietQR chuyển khoản + webhook SePay (không dùng VNPay/MoMo) |
-| Đăng nhập | Email + mật khẩu, Google, Facebook (Passport) |
-| Session | Lưu trong bảng `sessions` (store tự viết) |
+| DB | Lớp `src/db.js` tự viết, SQL tương thích MySQL & SQLite; migration tự chạy khi khởi động – **thêm migration mới vào cuối, không sửa cái cũ** (đang có 001, 002, 003) |
+| Thanh toán | VietQR + webhook SePay (không dùng VNPay/MoMo) |
+| Đăng nhập | Email + mật khẩu, Google, Facebook (Passport); session lưu bảng `sessions` |
 | Trang thiệp khách | Không tạo session (mount trước middleware session) |
-| Mẫu thiệp | 30 mẫu **gốc** của SOBA; không sao chép thiết kế/ảnh của Hunbei/CineLove/TheDays… (chỉ tham khảo cách làm, hiệu ứng, tiện ích). Ngoại lệ: ảnh trong `anh_thiep_mau/a1–a31` được chủ dự án xác nhận đã thoả thuận quyền dùng (bố cục mẫu vẫn tự làm) |
-| Ảnh bìa mẫu ảnh | Ảnh đầu tiên (`photos[0]`) phải có **đủ cô dâu & chú rể** |
-| Giá gói | Free 0đ · Basic 129.000đ · Premium 249.000đ / 12 tháng (chốt 16/11/2026) |
-| Phân quyền tính năng | Free: thiệp + RSVP + lời chúc + đếm ngược/lịch/bản đồ, có logo SOBA. Basic/Premium thêm: màn mở thiệp, thanh tiện ích nổi, hộp mừng cưới QR, cánh hoa, nhạc tự tải, bỏ logo. Mẫu Premium chỉ gói Premium dùng được |
-| Mở thiệp canvas | 4 kiểu `envelope / fingerprint / doors / book`, lưu ở `doc.opener`; mỗi mẫu trả phí gắn sẵn 1 kiểu, chủ thiệp đổi được |
-| QR trong demo | QR ảo tự vẽ `/img/qr-mau.svg` + STK minh hoạ – không bao giờ dùng STK thật trong mẫu |
-| Giao diện | Hồng nhạt `#FFF1F3` + be trắng `#FFFAF7`, nút hồng `#D6456C`; tiêu đề Be Vietnam Pro đậm, chữ viết tay Great Vibes, tên mẫu Cormorant Garamond |
-| Ngôn ngữ | Toàn bộ UI tiếng Việt |
+| Giá gói | Free 0đ · Basic 129.000đ · Premium 249.000đ / 12 tháng |
+| Phân quyền tính năng | Free: thiệp + RSVP + lời chúc + chữ ký + đếm ngược/lịch/bản đồ, có logo SOBA. Basic/Premium: thêm mở thiệp, thanh tiện ích, hộp mừng cưới QR, cánh hoa, nhạc tự tải, bỏ logo. Mẫu Premium chỉ gói Premium dùng. Admin không giới hạn số thiệp |
+| QR trong demo | QR ảo tự vẽ `/img/qr-mau.svg` + STK minh hoạ – không dùng STK thật |
+| Giao diện web | Hồng nhạt `#FFF1F3` + be trắng `#FFFAF7`, nút `#D6456C`; Be Vietnam Pro, Great Vibes, Cormorant Garamond; Alex Brush cho mẫu kính mờ |
+| Ngôn ngữ | Toàn bộ UI, nội dung, comment code bằng tiếng Việt |
+
+---
 
 ## 6. Bước tiếp theo đề xuất
 
-1. Duyệt từng trang 13 mẫu ảnh mới còn lại trên điện thoại (`/demo-thiet-ke/<key>`), chỉnh vị trí ảnh nếu bị cắt mặt; quyết định xử lý chữ ký studio in trong ảnh.
-2. (Hỏi chủ dự án) thêm thanh tiện ích nổi + QR mẫu cho 30 mẫu thiệp dạng form; có tắt màn mở thiệp form với gói Free cho thống nhất không.
-3. Tạo repo GitHub (riêng tư) → push (`README.md` mục 3). Đã commit lần đầu 17/11.
-4. Tạo DB MySQL + Node.js app trên Hostinger, khai báo biến môi trường, deploy & kiểm tra (`README.md` mục 4).
-5. Cấu hình SePay webhook, Google/Facebook OAuth, SMTP Hostinger.
-6. Chốt giá gạch (299k/599k), logo thật, thông tin liên hệ; viết điều khoản chính thức.
-7. Tối ưu: nén ảnh upload, giảm font tải ở head, dọn CSS cũ, thống nhất thẻ mẫu ở `/gioi-thieu`, cân nhắc nén `public/img/mau` xuống 1200px.
+1. **Tạo repo GitHub riêng tư → push** (`README.md` mục 3). Dùng `git remote add origin <url>` rồi `git push -u origin master`.
+2. Tạo DB MySQL + Node.js app trên Hostinger, khai báo biến môi trường, deploy, kiểm tra migration 001–003 chạy được trên MySQL (`README.md` mục 4).
+3. Cấu hình SePay webhook, Google/Facebook OAuth, SMTP Hostinger (`README.md` mục 5–7).
+4. Duyệt từng trang các mẫu còn lại trên điện thoại (mục 3); quyết định xử lý chữ ký studio trong ảnh.
+5. Thêm ô nhập “Hai gia đình / lễ tư gia / nhà hàng / timeline” vào bảng Thông tin của trình thiết kế (hiện phải nhấp đúp sửa chữ).
+6. Cân nhắc đưa thanh tiện ích, ký tên, thư viện nhạc sang thiệp dạng form.
+7. Logo thật, og:image, thông tin liên hệ, điều khoản chính thức; chốt giá gạch.
+8. Tối ưu: nén ảnh upload phía server, giảm font tải ở head, dọn CSS cũ.
+
+---
 
 ## 7. Cài đặt & chạy trên máy mới
 
-Yêu cầu: **Node.js 22.5+** (để dùng SQLite tích hợp khi dev; production MySQL chạy được từ Node 20), Git.
+Yêu cầu: **Node.js 22.5+** (để dùng SQLite tích hợp khi dev; production MySQL chạy được từ Node 20), Git. Máy cũ dùng Node v26.13.1 trên Windows.
 
 ```bash
+git clone <repo> soba        # hoặc chép nguyên thư mục soba
 cd soba
 npm install
-cp .env.example .env        # sửa: NODE_ENV=development, APP_URL=http://localhost:3000, DB_CLIENT=sqlite, SESSION_SECRET, ADMIN_EMAIL
-npm run dev                 # http://localhost:3000 (bảng DB tự tạo)
+cp .env.example .env         # rồi sửa: NODE_ENV=development, APP_URL=http://localhost:3000, DB_CLIENT=sqlite, SESSION_SECRET, ADMIN_EMAIL
+npm run dev                  # http://localhost:3000 – migration tự chạy, bảng tự tạo
 ```
 
-- Nếu mang theo `data/soba.sqlite*` và `uploads/` từ máy cũ thì giữ nguyên dữ liệu thử nghiệm; nếu không, DB mới sẽ tự tạo trống.
-- Preview server cho Claude: tạo `D:\Claude_1\.claude\launch.json` (thư mục cha của `soba`) với nội dung
-  `{"version":"0.0.1","configurations":[{"name":"soba","runtimeExecutable":"node","runtimeArgs":["soba/server.js"],"port":3000}]}`.
-- Đổi CSS/JS hoặc file trong `src/` xong phải khởi động lại server (cache-busting theo `assetVersion`; preview server của Claude chạy `node` không có `--watch`).
-- Thử nhanh sau khi cài: mở `/`, `/demo-thiet-ke/hanok-tinh-khoi` (mở thiệp lật bìa + thanh tiện ích), `/demo-thiet-ke/dong-hoa-mua-ha` (mẫu Free – không mở thiệp/QR), `/bang-gia` (129.000 / 249.000).
-- Kiểm tra cú pháp toàn bộ: `for f in server.js src/*.js src/routes/*.js src/services/*.js scripts/*.js public/js/*.js; do node --check "$f"; done`.
-- Tài khoản thử dev: `tester@soba.local`, mật khẩu ghi trong `data/dev-test-account.txt` (không vào git).
-- Tài khoản có email trùng `ADMIN_EMAIL` tự thành admin khi đăng ký; hoặc `npm run make-admin -- email@domain.com`.
+- Nếu chép theo `data/soba.sqlite*` và `uploads/` từ máy cũ → giữ nguyên dữ liệu thử (thiệp, khách, chữ ký). Không có thì DB mới tự tạo trống.
+- **Preview server cho Claude**: tạo `<thư mục cha của soba>/.claude/launch.json`:
+  `{"version":"0.0.1","configurations":[{"name":"soba","runtimeExecutable":"node","runtimeArgs":["soba/server.js"],"port":3000}]}`
+- Đổi CSS/JS hoặc file trong `src/` xong phải **khởi động lại server** (cache-busting theo `assetVersion`; preview server của Claude chạy `node` không `--watch`).
+- Thử nhanh: `/`, `/mau-thiep?dm=truyen-thong`, `/demo-thiet-ke/ngan-ha-sao-roi` (mở thiệp sao rơi), `/demo-thiet-ke/buom-hong-studio` (rèm & bướm), `/demo-thiet-ke/hanok-tinh-khoi`, `/demo-thiet-ke/dong-hoa-mua-ha` (mẫu Free), `/bang-gia`.
+- Kiểm tra cú pháp: `for f in server.js src/*.js src/routes/*.js src/services/*.js scripts/*.js public/js/*.js; do node --check "$f"; done`
+- Tài khoản thử dev: `tester@soba.local` (Premium đến 2036 + admin), mật khẩu trong `data/dev-test-account.txt` (không vào git). Tài khoản có email trùng `ADMIN_EMAIL` tự thành admin khi đăng ký; hoặc `npm run make-admin -- email@domain.com`.
 - Giả lập thanh toán khi dev: `POST /api/webhooks/sepay` với header `Authorization: Apikey <SEPAY_WEBHOOK_KEY>` và nội dung chứa mã đơn `SOBAxxxxxx`.
+- **Thêm bộ ảnh mẫu mới** (aN): cài `sharp` ngoài dự án (`mkdir ../tools && cd ../tools && npm init -y && npm i sharp`), rồi `NODE_PATH=../tools/node_modules node scripts/nen-anh-mau.js ../anh_thiep_mau <từ> [đến]` → `public/img/mau/aN/NN.jpg` + ảnh tổng hợp đánh số `data/anh-tong-hop/aN.jpg` để chọn ảnh.
+- Git trên máy cũ đặt tên/email riêng cho repo (`git config user.name/user.email`) và `core.autocrlf=false` – máy mới cần đặt lại.
+
+---
 
 ## 8. File cần sao lưu khi chuyển máy
 
-| File / thư mục | Có trong git? | Ghi chú |
+| File / thư mục | Trong git? | Ghi chú |
 |---|---|---|
-| Toàn bộ thư mục `soba/` (trừ `node_modules/`) | Có (sau khi commit) | Mã nguồn |
-| `soba/.env` | **Không** | Cấu hình & bí mật – chép thủ công, an toàn |
-| `soba/data/soba.sqlite`, `-shm`, `-wal` | Không | DB thử nghiệm (tuỳ chọn) |
+| `soba/` (trừ `node_modules/`) | **Có** | Toàn bộ mã nguồn, ảnh mẫu, nhạc. Chưa có remote → **phải chép thủ công hoặc push GitHub trước** |
+| `soba/.git/` | – | Lịch sử commit (~120MB) – chép cùng thư mục `soba` nếu chưa push |
+| `soba/.env` | **Không** | Cấu hình & bí mật – chép thủ công qua kênh an toàn |
+| `soba/data/soba.sqlite`, `-shm`, `-wal` | Không | DB thử nghiệm (tài khoản, thiệp, chữ ký) – tuỳ chọn. Tắt server trước khi chép để file `-wal` gộp vào |
 | `soba/uploads/` | Không | Ảnh đã tải lên khi thử (tuỳ chọn) |
-| `D:\Claude_1\.claude\launch.json` | Không (ngoài repo) | Cấu hình preview server của Claude |
-| `soba/data/dev-test-account.txt` | Không | Tài khoản thử trên localhost (tuỳ chọn) |
-| `D:\Claude_1\anh_thiep_mau\a1…a31` | Không (ngoài repo, ~245MB) | Ảnh gốc độ phân giải cao của 31 mẫu – bản nén đã có trong `public/img/mau`; cần khi muốn nén lại/chọn ảnh khác |
-| `D:\Claude_1\thiep_cuoi_91_premium\` | Không (ngoài repo) | Mẫu thiệp HTML tham khảo của SOBA (bố cục, hiệu ứng mở thiệp, thanh tiện ích) |
-| `C:\Users\<tên máy>\.claude\projects\D--Claude-1\memory\` | Không | Bộ nhớ Claude của dự án (tuỳ chọn) |
+| `soba/data/dev-test-account.txt` | Không | Tài khoản thử localhost (tuỳ chọn) |
+| `D:\Claude_1\.claude\launch.json` | Không (ngoài repo) | Cấu hình preview server của Claude (có thể tạo lại theo mục 7) |
+| `D:\Claude_1\anh_thiep_mau\a1…a39` | Không (ngoài repo, ~320MB) | Ảnh gốc độ phân giải cao – cần khi nén lại/chọn ảnh khác. `a10` có tệp tên chứa ký tự đặc biệt → nên **nén zip** cả thư mục rồi chép để không sót tệp |
+| `D:\Claude_1\nhac_cuoi\` | Không (ngoài repo, ~56MB) | Nhạc gốc – bản dùng thật đã chép vào `public/music` |
+| `D:\Claude_1\thiep_cuoi_91_premium\` | Không | Mẫu thiệp HTML tham khảo của SOBA |
+| `D:\Claude_1\tools\` | Không | Chỉ chứa `sharp` cài tạm – không cần sao lưu, cài lại được |
+| `C:\Users\<tên>\.claude\projects\D--Claude-1\memory\` | Không | Bộ nhớ Claude của dự án (tuỳ chọn) |
+| `soba/data/anh-tong-hop/` | Không | Ảnh tổng hợp đánh số – tạo lại được bằng script |
