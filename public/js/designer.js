@@ -1007,6 +1007,9 @@
     ['gift', 'Hộp mừng cưới QR', 'Mã QR chuyển khoản ngân hàng', { w: 360, h: 300, groom: { bin: '', accountNo: '', accountName: '' }, bride: { bin: '', accountNo: '', accountName: '' } }],
     ['album', 'Album ảnh', 'Lưới ảnh, bấm để xem phóng to', { w: 360, h: 480, images: [], cols: 2, gap: 6, radius: 6 }],
     ['call', 'Nút gọi điện', 'Khách bấm để gọi cho cô dâu chú rể', { w: 220, h: 48, phone: '', label: 'Gọi điện' }],
+    ['signature', 'Ký tên lưu bút', 'Khách ký tay lên thiệp – đặt nổi trên một ảnh', { w: 360, h: 420, label: 'Ký tên của bạn' }],
+    ['dresscode', 'Dresscode', 'Các màu trang phục gợi ý cho khách', { w: 360, h: 100, colors: [{ c: '#f3ece4', n: 'Trắng kem' }, { c: '#d8c3a5', n: 'Be cát' }, { c: '#b08d7a', n: 'Nâu nude' }, { c: '#e8b4b8', n: 'Đào phấn' }] }],
+    ['addcal', 'Thêm vào lịch', 'Nút lưu ngày cưới vào Google Calendar', { w: 200, h: 42, label: 'Thêm vào lịch', title: '', address: '', time: '' }],
   ];
   var SWATCHES = ['#ffffff', '#fffaf7', '#fff1f3', '#ffe9ee', '#f6dfe5', '#fbf6ef', '#f4ece1', '#efe7dc', '#e9efe6', '#dfe7ef', '#d6456c', '#b3203f', '#6e1a22', '#3b2f25', '#2b2226', '#1c1220'];
 
@@ -1558,7 +1561,7 @@
           }, re),
           h('div', { class: 'dz-grid2' }, [field('Viền (px)', numInput(el, 'border', 0, 30, 1, re)), field('Màu viền', colorInput(el, 'borderColor', false, re))]),
           checkbox('Đổ bóng', el, 'shadow', re),
-          field('Bộ lọc màu', seg(el, 'filter', [['none', 'Gốc'], ['warm', 'Ấm'], ['film', 'Phim'], ['soft', 'Dịu'], ['bw', 'Đen trắng']], re)),
+          field('Bộ lọc màu', seg(el, 'filter', [['none', 'Gốc'], ['warm', 'Ấm'], ['film', 'Phim'], ['soft', 'Dịu'], ['bw', 'Đen trắng'], ['blur', 'Làm mờ']], re)),
         ])
       );
     }
@@ -1602,7 +1605,7 @@
     );
     body.appendChild(
       group('Hiệu ứng xuất hiện', [
-        field('Kiểu', selectInput(el, 'anim', [['none', 'Không'], ['fade', 'Hiện dần'], ['up', 'Trượt lên'], ['down', 'Trượt xuống'], ['left', 'Từ trái sang'], ['right', 'Từ phải sang'], ['zoom', 'Phóng to dần'], ['rise', 'Trồi lên từ phong bì']], function () {})),
+        field('Kiểu', selectInput(el, 'anim', [['none', 'Không'], ['fade', 'Hiện dần'], ['up', 'Trượt lên'], ['down', 'Trượt xuống'], ['left', 'Từ trái sang'], ['right', 'Từ phải sang'], ['zoom', 'Phóng to dần'], ['rise', 'Trồi lên từ phong bì'], ['spin', 'Xoay đĩa nhạc (khi phát nhạc)']], function () {})),
         range('Trễ', el, 'delay', 0, 3, 0.1, function (v) {
           return v.toFixed(1) + 's';
         }, function () {}),
@@ -1621,6 +1624,18 @@
     });
     if (el.widget === 'map') body.appendChild(group('Địa điểm', [field('Địa chỉ', textInput(el, 'address', { max: 200, placeholder: 'Số nhà, đường, quận, thành phố' }, re)), field('Chữ trên nút', textInput(el, 'label', { max: 40 }, re)), field('Kiểu', selectInput(el, 'style', [['full', 'Bản đồ + nút'], ['button', 'Chỉ nút chỉ đường']], re))]));
     if (el.widget === 'rsvp' || el.widget === 'wishes') body.appendChild(group('Nội dung', [field('Tiêu đề trong khung (không bắt buộc)', textInput(el, 'title', { max: 80 }, re))]));
+    if (el.widget === 'wishes') body.appendChild(group('', [checkbox('Cho khách chọn “Chỉ cô dâu, chú rể xem”', el, 'privacy', re)]));
+    if (el.widget === 'signature') body.appendChild(group('Ký tên lưu bút', [h('p', { class: 'dz-hint', text: 'Đặt khung này đè lên một ảnh. Chữ ký của khách hiện nổi trên ảnh, nút ký ở phía dưới khung.' }), field('Chữ trên nút', textInput(el, 'label', { max: 40 }, re))]));
+    if (el.widget === 'addcal') body.appendChild(group('Thêm vào lịch', [field('Chữ trên nút', textInput(el, 'label', { max: 40 }, re)), field('Giờ (để trống = giờ cưới)', textInput(el, 'time', { max: 5, placeholder: '10:00' }, re)), field('Địa điểm', textInput(el, 'address', { max: 200 }, re))]));
+    if (el.widget === 'dresscode') {
+      if (!el.colors) el.colors = [];
+      var dcs = [];
+      for (var di = 0; di < 6; di++) {
+        if (!el.colors[di]) el.colors[di] = { c: '', n: '' };
+        dcs.push(h('div', { class: 'dz-row2' }, [colorInput(el.colors[di], 'c', true, re), textInput(el.colors[di], 'n', { max: 24, placeholder: 'Tên màu ' + (di + 1) }, re)]));
+      }
+      body.appendChild(group('Màu trang phục (tối đa 6)', dcs));
+    }
     if (el.widget === 'call') body.appendChild(group('Nút gọi', [field('Số điện thoại', textInput(el, 'phone', { max: 20, placeholder: '09xx xxx xxx' }, re)), field('Chữ trên nút', textInput(el, 'label', { max: 40 }, re))]));
     if (el.widget === 'countdown' || el.widget === 'calendar') {
       var go = h('button', { type: 'button', class: 'dz-btn dz-btn-soft dz-btn-block', text: 'Sửa ngày giờ cưới…' });
@@ -1629,6 +1644,7 @@
       });
       body.appendChild(group('Ngày cưới', [h('p', { class: 'dz-hint', text: 'Lấy theo ngày giờ cưới ở mục Thông tin: ' + (doc.date || 'chưa đặt') + ' ' + doc.time }), go]));
     }
+    if (el.widget === 'gift') body.appendChild(group('Kiểu hiển thị', [selectInput(el, 'style', [['cards', 'Hiện sẵn mã QR'], ['box', 'Hộp quà – chạm để mở']], re)]));
     if (el.widget === 'gift') {
       var banks = [['', '— Chọn ngân hàng —']].concat(
         boot.banks.map(function (b) {

@@ -169,7 +169,7 @@
     return h('div', { class: 'cv-text', style: css, text: fill(e.text, ctx) });
   }
 
-  var FILTER = { none: '', warm: 'sepia(.25) saturate(1.2) brightness(1.03)', bw: 'grayscale(1) contrast(1.05)', film: 'contrast(1.1) saturate(.85) sepia(.15)', soft: 'brightness(1.08) saturate(.9) contrast(.92)' };
+  var FILTER = { none: '', warm: 'sepia(.25) saturate(1.2) brightness(1.03)', bw: 'grayscale(1) contrast(1.05)', film: 'contrast(1.1) saturate(.85) sepia(.15)', soft: 'brightness(1.08) saturate(.9) contrast(.92)', blur: 'blur(14px) brightness(1.05) saturate(1.1)' };
 
   function imageEl(e) {
     var radius = e.mask === 'circle' ? '50%' : e.mask === 'arch' ? e.w / 2 + 'px ' + e.w / 2 + 'px ' + e.radius + 'px ' + e.radius + 'px' : e.radius + 'px';
@@ -291,6 +291,7 @@
       if (!(ctx.wishes || []).length) list.appendChild(h('p', { class: 'cv-empty', text: 'Hãy là người đầu tiên gửi lời chúc nhé!' }));
       var form = h('form', { class: 'cv-form', 'data-wish': '' }, [
         h('input', { name: 'name', placeholder: 'Tên của bạn *', maxlength: '120', required: true }),
+        e.privacy ? h('select', { name: 'visibility', 'aria-label': 'Ai sẽ thấy lời nhắn này?' }, [h('option', { value: 'public', text: 'Ai thấy: Tất cả mọi người' }), h('option', { value: 'private', text: 'Ai thấy: Chỉ cô dâu, chú rể' })]) : null,
         h('div', { class: 'cv-ta' }, [
           h('textarea', { name: 'message', rows: '2', placeholder: 'Gửi lời chúc tới cô dâu chú rể *', maxlength: '1000', required: true }),
           h('button', { type: 'button', class: 'cv-suggest', 'data-suggest': '', title: 'Gợi ý lời chúc', 'aria-label': 'Gợi ý lời chúc', text: '✨' }),
@@ -322,7 +323,7 @@
         if (ctx.demo) accs = demoAccounts(ctx);
         else return h('div');
       }
-      return h(
+      var grid = h(
         'div',
         { class: 'cv-gift' },
         accs.map(function (a) {
@@ -334,6 +335,53 @@
           ]);
         })
       );
+      if (e.style !== 'box') return grid;
+      // Kiểu "hộp quà": chạm để mở ra mã QR (trình thiết kế hiện luôn dạng mở)
+      return h('div', { class: 'cv-giftbox' + (ctx.mode === 'edit' ? ' open' : '') }, [
+        h('button', { type: 'button', class: 'cv-giftbox-lid', 'data-giftbox': '', style: 'border-color:' + e.color }, [
+          h('span', { class: 'cv-giftbox-ic', 'aria-hidden': 'true', text: '🎁' }),
+          h('b', { text: 'Chạm để mở hộp mừng cưới', style: 'color:' + e.color }),
+          h('small', { text: 'Gửi quà mừng tới cô dâu, chú rể' }),
+        ]),
+        grid,
+      ]);
+    },
+    /** Ký tên lưu bút: chữ ký của khách hiện nổi trên ảnh, nút ký ở dưới */
+    signature: function (e, ctx) {
+      var wall = h('div', { class: 'cv-sign-wall', 'data-sign-wall': '' });
+      var list = ctx.signatures || [];
+      list.slice(0, 18).forEach(function (g, i) {
+        wall.appendChild(signItem(g, i));
+      });
+      if (!list.length) wall.appendChild(h('p', { class: 'cv-sign-empty', text: ctx.mode === 'edit' ? 'Chữ ký của khách sẽ hiện ở đây' : 'Hãy là người đầu tiên ký tên nhé!' }));
+      return h('div', { class: 'cv-sign' }, [wall, h('button', { type: 'button', class: 'cv-btn cv-sign-btn', 'data-sign': '', style: 'background:' + e.color, text: '✍ ' + (e.label || 'Ký tên của bạn') })]);
+    },
+    /** Dresscode: các ô màu trang phục gợi ý */
+    dresscode: function (e) {
+      var cols = e.colors && e.colors.length ? e.colors : [{ c: '#f3ece4', n: 'Trắng kem' }, { c: '#d8c3a5', n: 'Be cát' }, { c: '#b08d7a', n: 'Nâu nude' }, { c: '#e8b4b8', n: 'Đào phấn' }];
+      return h(
+        'div',
+        { class: 'cv-dress' },
+        cols.map(function (c) {
+          return h('div', { class: 'cv-dress-item' }, [h('span', { class: 'cv-dress-dot', style: 'background:' + c.c }), h('small', { text: c.n })]);
+        })
+      );
+    },
+    /** Thêm vào lịch Google (giờ Việt Nam) */
+    addcal: function (e, ctx) {
+      var d = mainDate(ctx.doc);
+      var href = '#';
+      if (d) {
+        var t = (e.time || ctx.doc.time || '11:00').split(':').map(Number);
+        var s = new Date(d.getFullYear(), d.getMonth(), d.getDate(), t[0] || 0, t[1] || 0);
+        var en = new Date(s.getTime() + 3 * 36e5);
+        var f = function (x) {
+          return x.getFullYear() + pad(x.getMonth() + 1) + pad(x.getDate()) + 'T' + pad(x.getHours()) + pad(x.getMinutes()) + '00';
+        };
+        var title = e.title || 'Đám cưới ' + ((ctx.doc.groom && ctx.doc.groom.name) || '') + ' & ' + ((ctx.doc.bride && ctx.doc.bride.name) || '');
+        href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(fill(title, ctx)) + '&dates=' + f(s) + '/' + f(en) + '&ctz=Asia/Ho_Chi_Minh' + (e.address ? '&location=' + encodeURIComponent(e.address) : '');
+      }
+      return h('a', { class: 'cv-btn cv-addcal', href: href, target: '_blank', rel: 'noopener', style: 'color:' + e.color + ';border-color:' + e.color, text: '📅 ' + (e.label || 'Thêm vào lịch') });
     },
     album: function (e) {
       var imgs = e.images || [];
@@ -361,6 +409,12 @@
       { label: 'Mừng cưới chú rể', bankName: 'Ngân hàng (mẫu)', accountNo: '0123 456 789', accountName: up(g), qr: '/img/qr-mau.svg', demo: true },
       { label: 'Mừng cưới cô dâu', bankName: 'Ngân hàng (mẫu)', accountNo: '9876 543 210', accountName: up(b), qr: '/img/qr-mau.svg', demo: true },
     ];
+  }
+
+  /** Một chữ ký trên tường lưu bút – vị trí nghiêng nhẹ theo thứ tự */
+  function signItem(g, i) {
+    var rot = [-6, 4, -2, 7, -5, 3][i % 6];
+    return h('figure', { class: 'cv-sign-item', style: 'transform:rotate(' + rot + 'deg)' }, [h('img', { src: g.img, alt: 'Chữ ký của ' + g.name, loading: 'lazy' }), h('figcaption', { text: g.name })]);
   }
 
   function wishItem(w, e) {
@@ -414,5 +468,5 @@
     });
   }
 
-  window.SobaCV = { W: W, h: h, fill: fill, toLunar: toLunar, lunarText: lunarText, font: font, mainDate: mainDate, pad: pad, renderElement: renderElement, renderSection: renderSection, tickCountdowns: tickCountdowns, wishItem: wishItem, demoAccounts: demoAccounts };
+  window.SobaCV = { W: W, h: h, fill: fill, toLunar: toLunar, lunarText: lunarText, signItem: signItem, font: font, mainDate: mainDate, pad: pad, renderElement: renderElement, renderSection: renderSection, tickCountdowns: tickCountdowns, wishItem: wishItem, demoAccounts: demoAccounts };
 })();

@@ -594,6 +594,266 @@ const THANKS = {
   },
 };
 
+// ===================== BỐ CỤC "KÍNH MỜ" (17/11/2026) =====================
+/**
+ * Phong cách mới cho các mẫu a32–a39: thẻ bo tròn lớn, thẻ kính mờ trên ảnh làm mờ,
+ * chữ dọc, ngày lớn in mờ trên ảnh, đĩa than, timeline có biểu tượng, ký tên lưu bút,
+ * dresscode, hộp quà chạm để mở. Mỗi mẫu có câu văn riêng theo chủ đề (p.t).
+ * p bổ sung: card (nền thẻ), glass (thẻ kính mờ, có alpha), veil (lớp phủ ảnh mờ), script2.
+ */
+const GL = {
+  /** Bìa: thẻ trắng bo tròn, ảnh vòm, chữ dọc HAPPY WEDDING, ngày lớn đè lên ảnh, tên xếp dọc */
+  cover(p, ph) {
+    return sec(900, p.bg, [
+      S(22, 34, 376, 640, 'rect', { fill: p.card, radius: 34, shadow: true, anim: 'fade' }),
+      I(40, 52, 340, 562, ph[0], { mask: 'arch', radius: 22, anim: 'zoom' }),
+      S(40, 380, 340, 234, 'rect', { fill: '#00000070', grad: 'up', radius: 22 }),
+      T(40, 76, 340, 34, p.t.tag, { font: p.script2, size: 26, color: '#ffffff', shadow: true, anim: 'fade', delay: 0.3 }),
+      T(-92, 330, 300, 20, 'HAPPY  WEDDING', { font: p.sans, size: 11, ls: 9, color: '#ffffffd0', r: -90, anim: 'fade', delay: 0.4 }),
+      T(40, 514, 340, 96, '{ngay_so}.{thang}', { font: 'Playfair Display', size: 84, color: '#ffffffe8', ls: 2, lh: 1.1, shadow: true, anim: 'up', delay: 0.3 }),
+      T(30, 690, 360, 60, '{chu_re}', txt(p, 'script', { font: p.script2, size: 48, anim: 'up' })),
+      T(30, 746, 360, 30, '&', txt(p, 'serif', { size: 22, color: p.soft })),
+      T(30, 774, 360, 60, '{co_dau}', txt(p, 'script', { font: p.script2, size: 48, anim: 'up', delay: 0.1 })),
+      T(30, 846, 360, 22, '{thu}  ·  {ngay}', txt(p, 'sans', { size: 12, ls: 4 })),
+    ]);
+  },
+  /** Bìa tràn ảnh + thẻ kính mờ phía dưới (hợp mẫu đêm / hoàng hôn) */
+  coverFull(p, ph, o = {}) {
+    const els = [
+      I(0, 0, W, 860, ph[0], { anim: 'zoom' }),
+      S(0, 0, W, 300, 'rect', { fill: '#00000080', grad: 'down' }),
+      S(0, 500, W, 360, 'rect', { fill: '#000000b0', grad: 'up' }),
+    ];
+    // Sao lấp lánh gộp thành 1 dòng chữ để tiết kiệm phần tử
+    if (o.stars) els.push(T(10, 150, 400, 140, '✦        ·      ✧            ·\n    ·          ✦        ·        ✧\n ✧       ·            ✦      ·', { font: 'Be Vietnam Pro', size: 13, color: '#ffffffb0', lh: 2.6, align: 'left', anim: 'fade', delay: 0.5 }));
+    els.push(
+      T(20, 50, 380, 22, 'THIỆP MỜI CƯỚI', { font: p.sans, size: 12, ls: 8, color: '#ffffff', anim: 'fade' }),
+      T(20, 78, 380, 44, p.t.tag, { font: p.script2, size: 32, color: '#ffffff', shadow: true, anim: 'fade', delay: 0.2 }),
+      S(34, 610, 352, 214, 'rect', { fill: '#ffffff24', stroke: '#ffffff88', sw: 1, radius: 26, anim: 'up' }),
+      T(34, 630, 352, 62, '{chu_re}  &  {co_dau}', { font: p.script2, size: 40, color: '#ffffff', shadow: true, anim: 'up', delay: 0.1 }),
+      T(34, 700, 352, 32, '{ngay_so} . {thang} . {nam}', { font: p.serif, size: 24, ls: 4, color: '#ffffff', anim: 'up', delay: 0.2 }),
+      T(34, 738, 352, 22, 'Nhằm ngày {am_lich}', { font: p.serif, size: 13.5, italic: true, color: '#ffffffd0', anim: 'up', delay: 0.25 }),
+      T(34, 770, 352, 22, '{gio}  ·  {thu}', { font: p.sans, size: 12, ls: 3, color: '#ffffffd0', anim: 'up', delay: 0.3 })
+    );
+    return sec(860, p.bg, els);
+  },
+  /** Hai bên gia đình trên thẻ bo tròn */
+  parents(p) {
+    return sec(400, p.bg, [
+      S(22, 30, 376, 340, 'rect', { fill: p.card, radius: 30, shadow: true, anim: 'up' }),
+      T(42, 58, 160, 22, 'NHÀ TRAI', txt(p, 'label', { size: 12 })),
+      T(42, 86, 160, 50, 'Ông: Lê Văn Bình\nBà: Phạm Thị Mai', txt(p, 'serif', { size: 15, lh: 1.6 })),
+      T(42, 140, 160, 20, 'Quận 3, TP. Hồ Chí Minh', txt(p, 'sans', { size: 11.5 })),
+      S(209.5, 60, 1, 104, 'line', { fill: p.line }),
+      T(218, 58, 160, 22, 'NHÀ GÁI', txt(p, 'label', { size: 12 })),
+      T(218, 86, 160, 50, 'Ông: Nguyễn Văn An\nBà: Trần Thị Hoa', txt(p, 'serif', { size: 15, lh: 1.6 })),
+      T(218, 140, 160, 20, 'TP. Thủ Đức, TP. Hồ Chí Minh', txt(p, 'sans', { size: 11.5 })),
+      T(42, 190, 336, 22, 'Trân trọng báo tin lễ thành hôn của con chúng tôi', txt(p, 'sans', { size: 12.5, italic: true })),
+      T(42, 220, 336, 60, '{chu_re}  &  {co_dau}', txt(p, 'script', { font: p.script2, size: 38, color: p.accent, anim: 'up' })),
+      T(52, 290, 316, 56, p.t.quote, txt(p, 'serif', { size: 14.5, italic: true, lh: 1.5 })),
+    ]);
+  },
+  /** Lễ thành hôn: thẻ kính mờ trên ảnh làm mờ, ngày 3 cột, âm lịch, thêm vào lịch, chỉ đường */
+  ceremony(p, src) {
+    const addr = '120 Lý Chính Thắng, Phường Võ Thị Sáu, Quận 3, TP. Hồ Chí Minh';
+    const addr2 = '25 Võ Văn Ngân, TP. Thủ Đức, TP. Hồ Chí Minh';
+    return sec(830, p.bg2, [
+      I(0, 0, W, 830, src, { filter: 'blur', zoom: 1.25 }),
+      S(0, 0, W, 830, 'rect', { fill: p.veil }),
+      S(28, 46, 364, 740, 'rect', { fill: p.glass, stroke: '#ffffffaa', sw: 1, radius: 30, shadow: true, anim: 'up' }),
+      T(48, 74, 324, 58, 'Lễ Thành Hôn', txt(p, 'script', { font: p.script2, size: 42, anim: 'up' })),
+      S(184, 142, 30, 30, 'ring', { stroke: p.accent, sw: 2, anim: 'zoom' }),
+      S(206, 142, 30, 30, 'ring', { stroke: p.accent, sw: 2, anim: 'zoom' }),
+      T(48, 214, 104, 56, '{thu}', txt(p, 'serif', { size: 19, italic: true, color: p.ink, lh: 1.3 })),
+      S(152, 196, 1, 96, 'line', { fill: p.line }),
+      T(155, 192, 110, 20, 'Ngày', txt(p, 'sans', { size: 12 })),
+      T(155, 212, 110, 66, '{ngay_so}', txt(p, 'serif', { size: 56, bold: true, color: p.accent, lh: 1.1, anim: 'zoom' })),
+      T(155, 278, 110, 20, 'Tháng {thang}', txt(p, 'sans', { size: 13, color: p.ink })),
+      S(268, 196, 1, 96, 'line', { fill: p.line }),
+      T(272, 214, 100, 56, 'Năm\n{nam}', txt(p, 'serif', { size: 19, italic: true, color: p.ink, lh: 1.3 })),
+      T(48, 318, 324, 26, 'Vào lúc 10:00', txt(p, 'sans', { size: 16, bold: true, color: p.ink })),
+      T(48, 346, 324, 22, '(Tức ngày {am_lich})', txt(p, 'serif', { size: 13.5, italic: true })),
+      S(170, 384, 80, 1, 'line', { fill: p.accent }),
+      T(48, 400, 324, 22, 'TẠI TƯ GIA NHÀ TRAI', txt(p, 'label', { size: 12 })),
+      T(58, 426, 304, 44, addr, txt(p, 'sans', { size: 13, color: p.ink, lh: 1.6 })),
+      G(110, 484, 200, 42, 'addcal', { ...wid(p), time: '10:00', address: addr }),
+      G(110, 536, 200, 42, 'map', { ...wid(p), style: 'button', label: 'Xem bản đồ', address: addr }),
+      S(70, 606, 280, 1, 'line', { fill: p.line }),
+      T(48, 624, 324, 22, 'LỄ VU QUY  ·  08:30', txt(p, 'label', { size: 12 })),
+      T(58, 650, 304, 44, 'Tại tư gia nhà gái\n' + addr2, txt(p, 'sans', { size: 12.5, lh: 1.6 })),
+      G(130, 708, 160, 38, 'map', { ...wid(p), style: 'button', label: 'Chỉ đường', address: addr2 }),
+    ]);
+  },
+  /** Chú rể / cô dâu: ảnh trong khung kính mờ trên nền chính ảnh đó làm mờ */
+  person(p, src, label, token) {
+    return sec(630, p.bg2, [
+      I(0, 0, W, 630, src, { filter: 'blur', zoom: 1.3 }),
+      S(0, 0, W, 630, 'rect', { fill: p.veil }),
+      S(48, 36, 324, 478, 'rect', { fill: '#ffffff38', stroke: '#ffffffcc', sw: 1, radius: 28, shadow: true, anim: 'up' }),
+      I(64, 52, 292, 410, src, { radius: 20, anim: 'fade' }),
+      S(64, 362, 292, 100, 'rect', { fill: '#00000060', grad: 'up', radius: 20 }),
+      T(64, 420, 292, 30, label, { font: p.sans, size: 15, bold: true, ls: 7, color: '#ffffff', shadow: true, upper: true }),
+      T(30, 528, 360, 72, token, { font: p.script2, size: 50, color: '#ffffff', shadow: true, anim: 'up' }),
+    ]);
+  },
+  /** Đĩa than có ảnh cưới – xoay khi phát nhạc, chạm để bật/tắt */
+  vinyl(p, src) {
+    return sec(520, p.bg2, [
+      T(30, 38, 360, 56, p.t.song || 'Our Song', txt(p, 'script', { font: p.script2, size: 40, anim: 'fade' })),
+      T(30, 94, 360, 20, 'CHẠM VÀO ĐĨA ĐỂ BẬT / TẮT NHẠC', txt(p, 'label', { size: 10, color: p.soft })),
+      S(70, 132, 280, 280, 'circle', { fill: p.card, shadow: true, anim: 'zoom' }),
+      S(84, 146, 252, 252, 'circle', { fill: '#141414', anim: 'zoom' }),
+      S(100, 162, 220, 220, 'ring', { stroke: '#2f2f2f', sw: 1 }),
+      S(116, 178, 188, 188, 'ring', { stroke: '#2f2f2f', sw: 1 }),
+      I(148, 210, 124, 124, src, { mask: 'circle', anim: 'spin' }),
+      S(203, 265, 14, 14, 'circle', { fill: p.bg2 }),
+      S(330, 128, 24, 24, 'circle', { fill: '#d9d2c7', shadow: true }),
+      S(326, 146, 6, 118, 'rect', { fill: '#bfb6aa', radius: 3, r: 16 }),
+      T(40, 432, 340, 60, p.t.songLine || '“Mỗi bản nhạc là một kỷ niệm của hai ta.”', txt(p, 'serif', { size: 15, italic: true, lh: 1.5 })),
+    ]);
+  },
+  /** Thư mời tiệc: tên khách, ảnh, giờ, ngày, âm lịch, nhà hàng lớn */
+  invite(p, src, o = {}) {
+    const addr = o.addr || 'Số 88 Hồ Tây, Phường Tây Hồ, Hà Nội';
+    return sec(1010, p.bg, [
+      S(22, 30, 376, 950, 'rect', { fill: p.card, radius: 30, shadow: true }),
+      T(42, 58, 336, 42, 'Trân Trọng Kính Mời', txt(p, 'serif', { size: 26, italic: true, anim: 'fade' })),
+      T(42, 102, 336, 52, '{ten_khach}', txt(p, 'script', { font: p.script2, size: 40, color: p.accent, anim: 'up' })),
+      T(42, 158, 336, 44, 'TỚI DỰ TIỆC MỪNG CƯỚI\nCÙNG GIA ĐÌNH CHÚNG TÔI', txt(p, 'sans', { size: 12.5, bold: true, ls: 2, color: p.ink, lh: 1.6 })),
+      I(42, 220, 336, 380, src, { radius: 22, anim: 'fade' }),
+      T(42, 618, 336, 56, '{chu_re}  &  {co_dau}', txt(p, 'script', { font: p.script2, size: 36, anim: 'up' })),
+      T(42, 682, 336, 22, 'VÀO LÚC {gio}  –  {thu}', txt(p, 'sans', { size: 12.5, bold: true, ls: 2 })),
+      T(42, 706, 336, 50, '{ngay}', txt(p, 'serif', { size: 38, bold: true, color: p.accent, ls: 1 })),
+      T(42, 758, 336, 20, '(Tức ngày {am_lich})', txt(p, 'serif', { size: 13.5, italic: true })),
+      T(42, 792, 336, 22, 'TẠI NHÀ HÀNG', txt(p, 'label', { size: 12 })),
+      T(42, 816, 336, 48, o.venue || 'Hoa Viên Palace', { font: p.display || 'Playfair Display', size: 34, color: p.ink }),
+      T(52, 866, 316, 40, addr, txt(p, 'sans', { size: 12.5, lh: 1.6 })),
+      G(120, 916, 180, 40, 'map', { ...wid(p), style: 'button', label: 'Xem bản đồ', address: addr }),
+    ]);
+  },
+  /** Timeline xen kẽ trái/phải, biểu tượng trong vòng tròn */
+  timeline(p) {
+    const items = p.t.timeline || [
+      ['♡', '15:45', 'Đón khách'],
+      ['✦', '16:15', 'Nghi thức thành hôn'],
+      ['❀', '17:00', 'Chụp hình lưu niệm'],
+      ['✧', '19:00', 'Cắt bánh · Rót rượu'],
+      ['♫', '20:00', 'Tiệc chung vui'],
+    ];
+    const els = [T(30, 40, 360, 64, 'Timeline', txt(p, 'script', { font: p.script2, size: 48, anim: 'fade' })), S(209.5, 128, 1, items.length * 110 - 30, 'line', { fill: p.line })];
+    items.forEach((it, i) => {
+      const y = 128 + i * 110;
+      const left = i % 2 === 0;
+      const cx = left ? 120 : 300;
+      const an = left ? 'left' : 'right';
+      els.push(
+        S(cx - 26, y, 52, 52, 'circle', { fill: p.card, shadow: true, anim: an }),
+        T(cx - 26, y + 11, 52, 30, it[0], { font: 'Noto Serif', size: 20, color: p.accent, anim: an }),
+        S(205, y + 22, 9, 9, 'circle', { fill: p.bg, stroke: p.accent, sw: 1.5 }),
+        T(cx - 80, y + 58, 160, 24, it[1], txt(p, 'sans', { size: 16, bold: true, color: p.accent, anim: an })),
+        T(cx - 80, y + 82, 160, 22, it[2], txt(p, 'sans', { size: 12.5, color: p.ink, anim: an }))
+      );
+    });
+    return sec(128 + items.length * 110 + 30, p.bg, els);
+  },
+  /** Đếm ngược */
+  countdown(p) {
+    return sec(320, p.bg2, [
+      T(30, 36, 360, 60, 'Count Down', txt(p, 'script', { font: p.script2, size: 44, anim: 'fade' })),
+      T(40, 96, 340, 44, p.t.count || 'Cùng đếm ngược tới ngày hôm đó nhé', txt(p, 'serif', { size: 15, italic: true, lh: 1.5 })),
+      G(40, 160, 340, 104, 'countdown', { ...wid(p), anim: 'up' }),
+    ]);
+  },
+  /** Ký tên lưu bút đè lên ảnh */
+  signature(p, src) {
+    return sec(760, p.bg, [
+      T(30, 34, 360, 60, 'Signature', txt(p, 'script', { font: p.script2, size: 44, anim: 'fade' })),
+      T(30, 94, 360, 22, 'KÝ TÊN', txt(p, 'label', { size: 13, ls: 6 })),
+      T(40, 122, 340, 44, 'Để lại chữ ký của bạn và cùng chúng mình lưu giữ kỷ niệm hạnh phúc này nhé!', txt(p, 'sans', { size: 13, lh: 1.6 })),
+      I(30, 184, 360, 540, src, { radius: 24, shadow: true, anim: 'fade' }),
+      S(30, 184, 360, 540, 'rect', { fill: '#00000038', radius: 24 }),
+      T(30, 212, 360, 50, '{chu_re}  &  {co_dau}', { font: p.script2, size: 34, color: '#ffffff', shadow: true }),
+      G(30, 268, 360, 440, 'signature', { ...wid(p) }),
+    ]);
+  },
+  /** Love story theo năm, ảnh ngang bo góc */
+  story(p, ph) {
+    const CH = p.t.story || [
+      ['2019 · LẦN ĐẦU GẶP GỠ', 'Hôm đó trời chẳng có gì đặc biệt, nhưng có một người nói chuyện đủ ấm để mình muốn trả lời thêm một lần nữa.'],
+      ['2021 · THƯƠNG NHAU', 'Từ những tin nhắn cho đỡ buồn, tụi mình nhận ra chỉ cần có nhau là mọi mệt mỏi đều nhẹ đi.'],
+      ['2026 · LỜI CẦU HÔN', 'Tình yêu của tụi mình không ồn ào, cũng chẳng hoàn hảo – nhưng sau tất cả, cả hai vẫn chọn ở bên nhau.'],
+    ];
+    const els = [T(30, 38, 360, 64, 'Love Story', txt(p, 'script', { font: p.script2, size: 48, anim: 'fade' }))];
+    CH.forEach((c, i) => {
+      const y = 124 + i * 326;
+      els.push(
+        I(40, y, 340, 204, ph[i] || ph[0], { radius: 18, shadow: true, anim: 'up' }),
+        T(40, y + 218, 340, 22, c[0], txt(p, 'label', { size: 12, anim: 'up' })),
+        T(46, y + 246, 328, 66, c[1], txt(p, 'sans', { size: 13, lh: 1.7, anim: 'up' }))
+      );
+    });
+    return sec(124 + CH.length * 326 + 10, p.bg2, els);
+  },
+  /** Album ghép so le */
+  album(p, ph) {
+    return sec(900, p.bg, [
+      T(30, 34, 360, 60, 'Album', txt(p, 'script', { font: p.script2, size: 48, anim: 'fade' })),
+      T(30, 94, 360, 22, 'lưu giữ khoảnh khắc', txt(p, 'serif', { size: 15, italic: true })),
+      I(24, 136, 240, 330, ph[0], { radius: 16, anim: 'left' }),
+      I(274, 136, 122, 160, ph[1] || ph[0], { radius: 16, anim: 'right' }),
+      I(274, 306, 122, 160, ph[2] || ph[0], { radius: 16, anim: 'right', delay: 0.1 }),
+      I(24, 476, 122, 160, ph[3] || ph[0], { radius: 16, anim: 'left' }),
+      I(24, 646, 122, 160, ph[5] || ph[0], { radius: 16, anim: 'left', delay: 0.1 }),
+      I(156, 476, 240, 330, ph[4] || ph[0], { radius: 16, anim: 'right' }),
+      T(30, 830, 360, 30, '{ngay}', txt(p, 'serif', { size: 18, ls: 6, color: p.accent })),
+    ]);
+  },
+  /** Xác nhận, lời nhắn (có chế độ riêng tư), dresscode, hộp quà chạm để mở */
+  forms(p) {
+    const gift = CUR_TIER !== 'free';
+    const head = (y, t) => T(30, y, 360, 60, t, txt(p, 'script', { font: p.script2, size: 44, anim: 'fade' }));
+    const els = [
+      head(36, 'Xác Nhận'),
+      T(40, 98, 340, 44, 'Hãy xác nhận sự hiện diện của Quý Khách để gia đình chúng tôi chuẩn bị chu đáo hơn.', txt(p, 'sans', { size: 13, lh: 1.6 })),
+      G(30, 156, 360, 420, 'rsvp', { ...wid(p) }),
+      head(606, 'Gửi Lời Nhắn'),
+      G(30, 672, 360, 480, 'wishes', { ...wid(p), privacy: true }),
+      head(1184, 'Dresscode'),
+      T(40, 1246, 340, 44, p.t.dressLine || 'Rất mong Quý Khách chọn trang phục theo các tông màu dưới đây để cùng hoà vào không khí buổi tiệc.', txt(p, 'sans', { size: 13, lh: 1.6 })),
+      G(30, 1300, 360, 110, 'dresscode', { ...wid(p), colors: p.t.dress }),
+    ];
+    if (gift) {
+      els.push(
+        head(1440, 'Share the Love'),
+        T(40, 1500, 340, 22, 'Gửi quà mừng tới cô dâu, chú rể', txt(p, 'sans', { size: 13 })),
+        G(40, 1536, 340, 300, 'gift', { ...wid(p), style: 'box' })
+      );
+    }
+    return sec(gift ? 1870 : 1440, p.bg2, els);
+  },
+  /** Lời cảm ơn trên ảnh */
+  thanks(p, src) {
+    return sec(700, p.bg, [
+      I(0, 0, W, 700, src, { anim: 'zoom' }),
+      S(0, 300, W, 400, 'rect', { fill: '#000000b8', grad: 'up' }),
+      T(30, 470, 360, 80, 'Thank You!', { font: p.script2, size: 60, color: '#ffffff', shadow: true, anim: 'up' }),
+      T(50, 556, 320, 50, 'Sự hiện diện của Quý Khách là niềm vinh hạnh cho gia đình chúng tôi.', { font: p.sans, size: 13, color: '#ffffffe0', lh: 1.6, anim: 'up' }),
+      T(30, 620, 360, 40, '{chu_re}  &  {co_dau}', { font: p.script2, size: 28, color: '#ffffff', anim: 'up' }),
+    ]);
+  },
+};
+
+/** Ghép trọn bộ trang cho một mẫu kính mờ. full = có chú rể/cô dâu riêng, đĩa than, love story */
+function glassBuild(p, ph, o = {}) {
+  const at = (i) => ph[i % ph.length];
+  const s = [o.coverFull ? GL.coverFull(p, ph, { stars: o.stars }) : GL.cover(p, ph), GL.parents(p), GL.ceremony(p, at(1))];
+  if (o.full) s.push(GL.person(p, at(o.groom), 'Chú Rể', '{chu_re}'), GL.person(p, at(o.bride), 'Cô Dâu', '{co_dau}'), GL.vinyl(p, at(2)));
+  s.push(GL.invite(p, at(3), o), GL.timeline(p), GL.countdown(p), GL.signature(p, at(4)));
+  if (o.full) s.push(GL.story(p, [at(5), at(6), at(7)]));
+  s.push(GL.album(p, [at(8), at(9), at(10), at(11), at(5), at(6)]), GL.forms(p), GL.thanks(p, at(o.thanks == null ? 12 : o.thanks)));
+  return s;
+}
+
 // ===================== 17 MẪU =====================
 const img = (folder, list) => list.map((n) => `/img/mau/${folder}/${String(n).padStart(2, '0')}.jpg`);
 const F = {
@@ -839,6 +1099,130 @@ const DEFS = [
     build: (p, ph) => [COVERS.magazine(p, [ph[0]], { mast: 'LOVE NOTES', title: 'Golden\nHour' }), secInvite(p), COUPLE.arches(p, [ph[2], ph[3]]), secStory(p, [ph[4], ph[5], ph[6], ph[13]]), EVENT.bigdate(p), GALLERY.grid(p, ph.slice(7, 13), { cols: 3 }), secQuote(p, ph[1]), secForms(p), THANKS.full(p, ph[14])],
     photos: [26, 1, 33, 7, 27, 4, 5, 8, 10, 11, 12, 14, 15, 20, 2],
   },
+  // ===== 8 mẫu "kính mờ" 17/11/2026 (ảnh a32–a39) – tham khảo bố cục & tiện ích 27biggroup, thiết kế SOBA tự làm =====
+  // noAuto: không chèn trang Hai gia đình / Phong bì ảnh (bố cục riêng đã có hai họ, lễ tư gia)
+  {
+    key: 'ngan-ha-sao-roi', name: 'Ngân Hà Sao Rơi', folder: 'a35', tier: 'premium', opener: 'stars', featured: 1, noAuto: true, song: 'a-thousand-years', tags: ['Ngân hà', 'Điện ảnh'],
+    desc: 'Bầu trời sao rơi mở thiệp, nền xanh đêm ánh vàng, thẻ kính mờ, đĩa than và ký tên lưu bút.',
+    op: { color: '#e2c78f', paper: '#0b1126' },
+    p: {
+      page: '#050913', bg: '#0d1328', bg2: '#111936', card: '#18213f', glass: '#121a36d0', veil: '#070b1a70', ink: '#f1ecdf', soft: '#aab0c8', accent: '#e2c78f', line: '#36426a',
+      script: F.vibes, script2: 'Alex Brush', serif: F.corm, sans: F.mont, display: F.playfair,
+      t: {
+        tag: 'Written in the stars', quote: '“Giữa muôn vàn vì sao, chúng ta đã tìm thấy nhau.”', count: 'Mỗi ngôi sao rơi là một ngày gần nhau hơn', song: 'Starlight', songLine: '“Có những bản nhạc chỉ cần nghe một lần là nhớ cả đời – như em.”',
+        dressLine: 'Mời Quý Khách khoác lên mình sắc màu của bầu trời đêm và những vì sao băng.',
+        dress: [{ c: '#1d2a52', n: 'Xanh Đêm' }, { c: '#c9ccd6', n: 'Bạc Trăng' }, { c: '#5b4a8a', n: 'Tím Ngân Hà' }, { c: '#e2c78f', n: 'Vàng Sâm Panh' }],
+        timeline: [['✦', '17:30', 'Đón khách'], ['♡', '18:00', 'Cử hành hôn lễ'], ['✧', '18:30', 'Khai tiệc'], ['♫', '19:30', 'Giao lưu âm nhạc'], ['❀', '20:30', 'Chụp ảnh dưới bầu trời sao']],
+      },
+    },
+    build: (p, ph) => glassBuild(p, ph, { coverFull: true, stars: true, full: true, groom: 13, bride: 14, venue: 'Ngân Hà Palace' }),
+    photos: [4, 6, 13, 5, 1, 9, 11, 8, 2, 7, 12, 15, 6, 16, 17],
+  },
+  {
+    key: 'phao-hoa-champagne', name: 'Pháo Hoa Champagne', folder: 'a36', tier: 'premium', opener: 'curtain', featured: 1, noAuto: true, song: 'cant-stop-the-feeling', tags: ['Lấp lánh', 'Sang trọng'],
+    desc: 'Pháo hoa que và ly champagne, tông kem – vàng sâm panh, rèm lụa mở thiệp cùng bướm bay.',
+    op: { color: '#b08a3e', paper: '#f3e7d3' },
+    p: {
+      page: '#e9dfcf', bg: '#fbf7f0', bg2: '#f3eadb', card: '#ffffff', glass: '#fffaf2cc', veil: '#ffffff40', ink: '#3a2c1e', soft: '#8a7660', accent: '#b08a3e', line: '#e2d3b5',
+      script: F.vibes, script2: 'Alex Brush', serif: F.corm, sans: F.mont, display: F.playfair,
+      t: {
+        tag: 'Cheers to forever', quote: '“Nâng ly cho những điều rực rỡ nhất – và cho hai ta.”', count: 'Pháo hoa đã sẵn sàng, chỉ còn chờ ngày ấy thôi!', song: 'Our Song',
+        dressLine: 'Một chút lấp lánh, một chút sâm panh – mời Quý Khách chọn trang phục theo các tông màu dưới đây.',
+        dress: [{ c: '#1d1b19', n: 'Đen Huyền' }, { c: '#e3c88f', n: 'Vàng Champagne' }, { c: '#f4efe4', n: 'Trắng Ngà' }, { c: '#6b4a35', n: 'Nâu Cacao' }],
+        timeline: [['✧', '17:30', 'Đón khách · Tháp champagne'], ['♡', '18:00', 'Nghi thức thành hôn'], ['✦', '18:45', 'Nâng ly chúc mừng'], ['♫', '19:30', 'Tiệc & âm nhạc'], ['❀', '21:00', 'Pháo hoa que tiễn khách']],
+      },
+    },
+    build: (p, ph) => glassBuild(p, ph, { coverFull: true, full: true, groom: 13, bride: 14, venue: 'Lumière Garden' }),
+    photos: [6, 4, 7, 1, 2, 3, 10, 13, 11, 14, 15, 16, 12, 12, 8],
+  },
+  {
+    key: 'cung-dien-anh-vang', name: 'Cung Điện Ánh Vàng', folder: 'a38', tier: 'premium', opener: 'curtain', featured: 1, noAuto: true, song: 'canon-in-d', tags: ['Cổ điển', 'Sang trọng'],
+    desc: 'Cung điện cổ điển ánh vàng, rèm nhung đỏ rượu mở thiệp, chữ Prata sang trọng và hộp quà chạm để mở.',
+    op: { color: '#c9a04a', paper: '#5a1a22' },
+    p: {
+      page: '#e6dccb', bg: '#fbf6ec', bg2: '#f2e8d6', card: '#fffdf8', glass: '#fffaf0cc', veil: '#ffffff38', ink: '#3b2a1c', soft: '#86715a', accent: '#a8813a', line: '#dcc89c',
+      script: F.vibes, script2: 'Alex Brush', serif: F.corm, sans: F.mont, display: F.prata,
+      t: {
+        tag: 'A royal love story', quote: '“Tình yêu là lâu đài đẹp nhất mà hai ta cùng nhau xây nên.”', count: 'Cánh cửa cung điện sẽ mở sau…', song: 'Waltz of Us',
+        dressLine: 'Kính mời Quý Khách diện trang phục theo sắc màu hoàng gia dưới đây.',
+        dress: [{ c: '#c9a24a', n: 'Vàng Hoàng Gia' }, { c: '#7a1f2b', n: 'Đỏ Rượu' }, { c: '#f3eee4', n: 'Trắng Ngọc Trai' }, { c: '#2f5d57', n: 'Xanh Ngọc' }],
+      },
+    },
+    build: (p, ph) => glassBuild(p, ph, { full: true, groom: 13, bride: 14, venue: 'Grand Palace' }),
+    photos: [9, 1, 3, 4, 8, 2, 13, 11, 7, 10, 12, 6, 3, 15, 17],
+  },
+  {
+    key: 'buom-hong-studio', name: 'Bướm Hồng Studio', folder: 'a32', tier: 'basic', opener: 'curtain', featured: 1, noAuto: true, song: 'beautiful-in-white', tags: ['Hàn Quốc', 'Lãng mạn'],
+    desc: 'Studio trắng hồng dịu dàng, rèm lụa mở thiệp với bướm bay, ngày cưới lớn in trên ảnh vòm.',
+    op: { color: '#b37a72', paper: '#f4e4e1' },
+    p: {
+      page: '#efe3df', bg: '#fbf6f4', bg2: '#f5ebe7', card: '#ffffff', glass: '#fff8f6cc', veil: '#ffffff44', ink: '#4a3632', soft: '#94807b', accent: '#b37a72', line: '#e7d3cd',
+      script: F.vibes, script2: 'Alex Brush', serif: F.corm, sans: F.mont, display: F.playfair,
+      t: { tag: 'Together for life', quote: '“Yêu là khi hai trái tim cùng chọn chung một hướng.”', song: 'Our Song' },
+    },
+    build: (p, ph) => glassBuild(p, ph, { full: true, groom: 13, bride: 14 }),
+    photos: [12, 7, 1, 6, 3, 8, 2, 9, 4, 5, 10, 7, 1, 11, 10],
+  },
+  {
+    key: 'vuon-lua-trang', name: 'Vườn Lụa Trắng', folder: 'a33', tier: 'basic', opener: 'curtain', featured: 1, noAuto: true, song: 'em-dong-y', tags: ['Thiên nhiên', 'Hàn Quốc'],
+    desc: 'Váy lụa trắng giữa vườn xanh, tông xanh xô thơm thanh mát, thẻ kính mờ và timeline buổi tiệc.',
+    op: { color: '#6f8160', paper: '#eef0e6' },
+    p: {
+      page: '#e3e7dc', bg: '#fafbf6', bg2: '#f0f2e9', card: '#ffffff', glass: '#fbfcf7cc', veil: '#ffffff40', ink: '#2f3a2c', soft: '#77806f', accent: '#6f8160', line: '#d3dac8',
+      script: F.vibes, script2: 'Alex Brush', serif: F.corm, sans: F.mont, display: F.playfair,
+      t: {
+        tag: 'In full bloom', quote: '“Như khu vườn sau cơn mưa, tình yêu mình lại nở hoa.”', count: 'Vườn hoa đang đếm từng ngày cùng chúng mình', song: 'Garden Song',
+        dress: [{ c: '#f5f3ec', n: 'Trắng Lụa' }, { c: '#a7b59a', n: 'Xanh Xô Thơm' }, { c: '#5f6f52', n: 'Xanh Rêu' }, { c: '#d9cfbf', n: 'Be Đá' }],
+      },
+    },
+    build: (p, ph) => glassBuild(p, ph, { full: true, groom: 13, bride: 14, venue: 'Vườn Tiệc Thảo Điền' }),
+    photos: [3, 13, 1, 7, 10, 8, 11, 12, 4, 9, 5, 14, 1, 6, 2],
+  },
+  {
+    key: 'hoang-hon-san-thuong', name: 'Hoàng Hôn Sân Thượng', folder: 'a39', tier: 'basic', opener: 'stars', featured: 1, noAuto: true, song: 'mai-mai-ben-nhau', tags: ['Hoàng hôn', 'Lãng mạn'],
+    desc: 'Sân thượng thành phố lúc hoàng hôn, trời tím hồng và những vì sao đầu tiên mở thiệp.',
+    op: { color: '#f2b89a', paper: '#33243f' },
+    p: {
+      page: '#eddcd3', bg: '#fdf7f3', bg2: '#f7ebe4', card: '#ffffff', glass: '#fff7f2cc', veil: '#ffffff38', ink: '#3d2c33', soft: '#8f7a7f', accent: '#cf7f69', line: '#ecd2c6',
+      script: F.vibes, script2: 'Alex Brush', serif: F.corm, sans: F.mont, display: F.playfair,
+      t: {
+        tag: 'Golden hour love', quote: '“Hoàng hôn nào cũng đẹp, nếu bên cạnh là người mình thương.”', count: 'Còn bấy nhiêu buổi hoàng hôn nữa là tới ngày vui', song: 'Sunset Song',
+        dressLine: 'Mời Quý Khách mang theo sắc trời hoàng hôn trong trang phục của mình nhé.',
+        dress: [{ c: '#f2b89a', n: 'Cam Đào' }, { c: '#9b7fa6', n: 'Tím Hoàng Hôn' }, { c: '#f0cf8a', n: 'Vàng Nắng' }, { c: '#f7efe6', n: 'Trắng Kem' }],
+        timeline: [['✧', '17:00', 'Đón khách trên sân thượng'], ['♡', '17:45', 'Hôn lễ lúc hoàng hôn'], ['✦', '18:30', 'Khai tiệc'], ['♫', '19:30', 'Âm nhạc & khiêu vũ'], ['❀', '21:00', 'Chụp ảnh đêm thành phố']],
+      },
+    },
+    build: (p, ph) => glassBuild(p, ph, { coverFull: true, stars: true, full: true, groom: 13, bride: 14, venue: 'Skyline Rooftop' }),
+    photos: [3, 10, 4, 8, 7, 5, 6, 1, 9, 11, 2, 4, 10, 1, 2],
+  },
+  {
+    key: 'may-trang-tinh-khoi', name: 'Mây Trắng Tinh Khôi', folder: 'a34', tier: 'free', featured: 1, noAuto: true, song: 'i-do', tags: ['Tươi sáng', 'Hàn Quốc'],
+    desc: 'Cổng hoa trắng và bầu trời trong xanh, thẻ bo tròn nhẹ nhàng, có ký tên lưu bút và dresscode.',
+    p: {
+      page: '#e4ebf2', bg: '#fbfcfe', bg2: '#eff4f9', card: '#ffffff', glass: '#fbfdffcc', veil: '#ffffff44', ink: '#2b3644', soft: '#748194', accent: '#6c8fb5', line: '#d4dfeb',
+      script: F.vibes, script2: 'Alex Brush', serif: F.corm, sans: F.mont, display: F.playfair,
+      t: {
+        tag: 'Love is in the air', quote: '“Bầu trời hôm nay trong xanh như lời hứa của hai ta.”', count: 'Từng áng mây trôi, ngày vui đến gần',
+        dress: [{ c: '#ffffff', n: 'Trắng Mây' }, { c: '#b9cfe6', n: 'Xanh Trời' }, { c: '#c9ced6', n: 'Xám Bạc' }, { c: '#f1d4d8', n: 'Hồng Phấn' }],
+      },
+    },
+    build: (p, ph) => glassBuild(p, ph, {}),
+    photos: [8, 4, 11, 1, 2, 7, 10, 12, 5, 9, 3, 6, 11],
+  },
+  {
+    key: 'kien-truc-trang', name: 'Kiến Trúc Trắng', folder: 'a37', tier: 'free', featured: 1, noAuto: true, song: 'le-duong', tags: ['Tối giản', 'Studio'],
+    desc: 'Kiến trúc trắng tối giản và trời xanh, chữ dọc HAPPY WEDDING, timeline và lịch Google một chạm.',
+    p: {
+      page: '#e6e6e3', bg: '#fafaf8', bg2: '#efefec', card: '#ffffff', glass: '#ffffffcc', veil: '#ffffff40', ink: '#222222', soft: '#76736e', accent: '#5c7ea3', line: '#d6d4cf',
+      script: F.vibes, script2: 'Alex Brush', serif: F.corm, sans: F.mont, display: F.playfair,
+      t: {
+        tag: 'Simply us', quote: '“Tối giản như một khoảng trời – chỉ cần có nhau.”',
+        dress: [{ c: '#ffffff', n: 'Trắng' }, { c: '#1f1f1f', n: 'Đen' }, { c: '#9a9a98', n: 'Xám Khói' }, { c: '#5c7ea3', n: 'Xanh Thép' }],
+      },
+    },
+    build: (p, ph) => glassBuild(p, ph, { thanks: 0 }),
+    photos: [1, 3, 2, 4, 7, 9, 11, 10, 12, 6, 5, 3, 4],
+  },
 ];
 
 function futureDate() {
@@ -857,10 +1241,10 @@ function buildAll() {
     const sections = d.build(d.p, ph);
     // Trang "Hai gia đình" ngay sau lời mời; phong bì ảnh sau trang cô dâu chú rể
     // (mẫu có bìa phong bì đặt noEnvelope để không lặp)
-    sections.splice(2, 0, secFamily(d.p));
-    if (!d.noEnvelope) sections.splice(4, 0, secEnvelope(d.p, d.envPhotos ? img(d.folder, d.envPhotos) : [ph[ph.length - 1], ph[ph.length - 2]]));
+    if (!d.noAuto) sections.splice(2, 0, secFamily(d.p));
+    if (!d.noAuto && !d.noEnvelope) sections.splice(4, 0, secEnvelope(d.p, d.envPhotos ? img(d.folder, d.envPhotos) : [ph[ph.length - 1], ph[ph.length - 2]]));
     // Mẫu trả phí: có màn mở thiệp (mặc định theo bảng màu của mẫu)
-    const op = d.tier === 'free' ? { style: 'none' } : { style: d.opener || 'envelope', color: d.op?.color || d.p.accent, paper: d.op?.paper || d.p.bg, font: d.p.script };
+    const op = d.tier === 'free' ? { style: 'none' } : { style: d.opener || 'envelope', color: d.op?.color || d.p.accent, paper: d.op?.paper || d.p.bg, font: d.p.script2 || d.p.script };
     return {
       key: d.key,
       name: d.name,

@@ -197,3 +197,6 @@ body.dz { margin: 0; font: 14px/1.45 'Be Vietnam Pro', system-ui, sans-serif; co
   .dz-zoom { display: none; }
   .dz-fbar .dz-ib { width: 36px; height: 36px; }
 }
+
+/* Dòng 2 cột: ô màu + tên (Dresscode) */
+.dz-row2 { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; margin-bottom: 6px; }

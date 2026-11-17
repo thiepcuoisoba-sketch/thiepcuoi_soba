@@ -18,6 +18,7 @@ const FONT_SPEC = {
   Oswald: { q: 'Oswald:wght@400;500;600;700', fb: 'sans-serif' },
   'Dancing Script': { q: 'Dancing+Script:wght@500;600;700', fb: 'cursive' },
   'Great Vibes': { q: 'Great+Vibes', fb: 'cursive' },
+  'Alex Brush': { q: 'Alex+Brush', fb: 'cursive' },
   Charm: { q: 'Charm:wght@400;700', fb: 'cursive' },
   'Noto Serif': { q: 'Noto+Serif:wght@700', fb: 'serif' },
 };

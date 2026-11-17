@@ -16,12 +16,12 @@ const canvas = require('../services/canvas');
 const photoStarters = canvas.STARTERS.filter((s) => s.thumb).sort((a, b) => Number(b.featured || 0) - Number(a.featured || 0));
 /** Danh mục của mẫu ảnh – suy ra từ nhãn (tags) */
 const TAG_CAT = {
-  'lang-man': ['Lãng mạn', 'Pastel', 'Hoa', 'Phong bì', 'Khung vòm', 'Thiên nhiên', 'Ngoài trời'],
+  'lang-man': ['Lãng mạn', 'Pastel', 'Hoa', 'Phong bì', 'Khung vòm', 'Thiên nhiên', 'Ngoài trời', 'Hoàng hôn'],
   'toi-gian': ['Tối giản', 'Studio', 'Thanh lịch'],
   'truyen-thong': ['Truyền thống', 'Chữ Hỷ', 'Đỏ đô'],
   'han-quoc': ['Hàn Quốc'],
-  'thinh-hanh': ['Poster', 'Tạp chí', 'Báo cưới', 'Trẻ trung', 'Du lịch', 'Cá tính', 'Tươi sáng'],
-  'dien-anh': ['Điện ảnh', 'Đen trắng', 'Đêm'],
+  'thinh-hanh': ['Poster', 'Tạp chí', 'Báo cưới', 'Trẻ trung', 'Du lịch', 'Cá tính', 'Tươi sáng', 'Lấp lánh'],
+  'dien-anh': ['Điện ảnh', 'Đen trắng', 'Đêm', 'Ngân hà'],
   vintage: ['Vintage', 'Cổ điển', 'Châu Âu', 'Báo cưới'],
 };
 photoStarters.forEach((s) => {

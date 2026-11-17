@@ -12,7 +12,7 @@ const { PLANS, planOf } = require('./plans');
 
 const W = 420;
 const FONTS = Object.keys(FONT_SPEC);
-const WIDGETS = ['countdown', 'calendar', 'map', 'rsvp', 'wishes', 'gift', 'album', 'call'];
+const WIDGETS = ['countdown', 'calendar', 'map', 'rsvp', 'wishes', 'gift', 'album', 'call', 'signature', 'dresscode', 'addcal'];
 const SHAPES = ['rect', 'circle', 'line', 'heart', 'star', 'ring', 'tri'];
 /** Giai điệu nhạc nền gốc của SOBA (phát bằng Web Audio, xem public/js/soba-music.js) */
 const MELODIES = [
@@ -58,10 +58,14 @@ const OPENERS = [
   { key: 'fingerprint', name: 'Chạm vân tay – rèm mở' },
   { key: 'doors', name: 'Cửa hai cánh' },
   { key: 'book', name: 'Lật bìa thiệp' },
+  { key: 'curtain', name: 'Rèm lụa & bướm bay' },
+  { key: 'stars', name: 'Bầu trời sao rơi' },
 ];
 const OPENER_KEYS = OPENERS.map((o) => o.key);
-const ANIMS = ['none', 'fade', 'up', 'down', 'left', 'right', 'zoom', 'rise'];
-const FILTERS = ['none', 'warm', 'bw', 'film', 'soft'];
+// spin: xoay liên tục (đĩa nhạc) – chạy khi nhạc đang phát
+const ANIMS = ['none', 'fade', 'up', 'down', 'left', 'right', 'zoom', 'rise', 'spin'];
+// blur: ảnh nền làm mờ cho thẻ kính mờ
+const FILTERS = ['none', 'warm', 'bw', 'film', 'soft', 'blur'];
 const LIMITS = { sections: 20, elements: 80, album: 30, text: 2000 };
 
 // ===== Hàm làm sạch =====
@@ -160,8 +164,16 @@ function sanitizeElement(e = {}) {
   };
   if (widget === 'map') Object.assign(out, { address: clean(e.address, 200), label: clean(e.label, 40) || 'Chỉ đường', style: pick(e.style, ['full', 'button'], 'full') });
   if (widget === 'rsvp') out.title = clean(e.title, 80);
-  if (widget === 'wishes') out.title = clean(e.title, 80);
-  if (widget === 'gift') Object.assign(out, { groom: bank(e.groom), bride: bank(e.bride) });
+  if (widget === 'wishes') Object.assign(out, { title: clean(e.title, 80), privacy: bool(e.privacy) });
+  if (widget === 'gift') Object.assign(out, { groom: bank(e.groom), bride: bank(e.bride), style: pick(e.style, ['cards', 'box'], 'cards') });
+  if (widget === 'signature') Object.assign(out, { label: clean(e.label, 40) || 'Ký tên của bạn' });
+  if (widget === 'dresscode') {
+    out.colors = (Array.isArray(e.colors) ? e.colors : [])
+      .slice(0, 6)
+      .map((c = {}) => ({ c: color(c.c), n: clean(c.n, 24) }))
+      .filter((c) => c.c);
+  }
+  if (widget === 'addcal') Object.assign(out, { label: clean(e.label, 40) || 'Thêm vào lịch', title: clean(e.title, 80), address: clean(e.address, 200), time: timeStr(e.time) });
   if (widget === 'album') {
     Object.assign(out, {
       images: (Array.isArray(e.images) ? e.images : []).map(url).filter(Boolean).slice(0, LIMITS.album),
@@ -420,7 +432,7 @@ function blankDoc() {
 }
 
 /** Biến cho view invitation/canvas.ejs (trang khách xem + xem trước) */
-function pageLocals(card, { owner, guestName = '', preview = false, wishes = [], demo = false, doc } = {}) {
+function pageLocals(card, { owner, guestName = '', preview = false, wishes = [], signatures = [], demo = false, doc } = {}) {
   const d = doc || parseDoc(card);
   const plan = owner ? planOf(owner) : PLANS.premium;
   const title = `Thiệp cưới ${d.groom.name} & ${d.bride.name}`;
@@ -443,6 +455,7 @@ function pageLocals(card, { owner, guestName = '', preview = false, wishes = [],
       toolbar: plan.features.effects && d.effects.toolbar,
       gift: plan.features.gift,
       wishes: wishes.map((w) => ({ name: w.name, message: w.message, at: Number(w.created_at) })),
+      signatures: signatures.map((g) => ({ name: g.name, img: g.data })),
     }),
     meta: { title, description: d.date ? `Trân trọng kính mời bạn tới dự lễ cưới của chúng tôi – ${formatDateVi(parseDate(d.date, d.time))}.` : '' },
   };

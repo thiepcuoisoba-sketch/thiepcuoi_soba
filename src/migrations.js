@@ -169,6 +169,20 @@ const MIGRATIONS = [
       ],
     ],
   },
+  {
+    // Chữ ký lưu bút của khách (ảnh PNG dạng data URL, tối đa ~80KB)
+    id: '003_signatures',
+    steps: [
+      table('signatures', {
+        id: T.id,
+        card_id: [T.ref, 'NOT NULL'],
+        name: [T.str(60), 'NOT NULL'],
+        data: [T.text, 'NOT NULL'],
+        created_at: [T.big, 'NOT NULL'],
+      }),
+      index('ix_signatures_card', 'signatures', 'card_id'),
+    ],
+  },
 ];
 
 async function migrate({ log = console.log } = {}) {

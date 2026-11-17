@@ -225,7 +225,7 @@ router.post('/api/thiep/:id/xuat-ban', requireAuth, loadCard, async (req, res) =
 router.post('/thiep/:id/xoa', requireAuth, loadCard, async (req, res) => {
   const id = req.card.id;
   const files = await db.all('SELECT file FROM uploads WHERE card_id = ?', [id]);
-  for (const t of ['rsvps', 'wishes', 'guests', 'uploads']) await db.run(`DELETE FROM ${t} WHERE card_id = ?`, [id]);
+  for (const t of ['rsvps', 'wishes', 'guests', 'uploads', 'signatures']) await db.run(`DELETE FROM ${t} WHERE card_id = ?`, [id]);
   await db.run('DELETE FROM cards WHERE id = ?', [id]);
   for (const f of files) fs.unlink(path.join(config.uploadDir, f.file), () => {});
   req.flash('success', 'Đã xoá thiệp.');
@@ -298,10 +298,11 @@ router.post('/api/thiep/:id/tai-len', requireAuth, loadCard, upload.array('files
 // ===== Khách mời, RSVP, lời chúc =====
 router.get('/thiep/:id/khach-moi', requireAuth, loadCard, async (req, res) => {
   const id = req.card.id;
-  const [guests, rsvps, wishes] = await Promise.all([
+  const [guests, rsvps, wishes, signatures] = await Promise.all([
     db.all('SELECT * FROM guests WHERE card_id = ? ORDER BY id DESC', [id]),
     db.all('SELECT * FROM rsvps WHERE card_id = ? ORDER BY id DESC', [id]),
     db.all('SELECT * FROM wishes WHERE card_id = ? ORDER BY id DESC', [id]),
+    db.all('SELECT * FROM signatures WHERE card_id = ? ORDER BY id DESC', [id]),
   ]);
   const stat = {
     yes: rsvps.filter((r) => r.attending === 'yes').length,
@@ -318,8 +319,9 @@ router.get('/thiep/:id/khach-moi', requireAuth, loadCard, async (req, res) => {
     guests,
     rsvps,
     wishes,
+    signatures,
     stat,
-    tab: ['khach', 'phan-hoi', 'loi-chuc'].includes(req.query.tab) ? req.query.tab : 'khach',
+    tab: ['khach', 'phan-hoi', 'loi-chuc', 'chu-ky'].includes(req.query.tab) ? req.query.tab : 'khach',
     planObj: planOf(req.user),
     formatDateTime,
   });
@@ -344,6 +346,11 @@ router.post('/thiep/:id/khach-moi', requireAuth, loadCard, async (req, res) => {
 router.post('/thiep/:id/khach-moi/:gid/xoa', requireAuth, loadCard, async (req, res) => {
   await db.run('DELETE FROM guests WHERE id = ? AND card_id = ?', [Number(req.params.gid) || 0, req.card.id]);
   res.redirect(`/thiep/${req.card.id}/khach-moi`);
+});
+
+router.post('/thiep/:id/chu-ky/:sid/xoa', requireAuth, loadCard, async (req, res) => {
+  await db.run('DELETE FROM signatures WHERE id = ? AND card_id = ?', [Number(req.params.sid) || 0, req.card.id]);
+  res.redirect(`/thiep/${req.card.id}/khach-moi?tab=chu-ky`);
 });
 
 router.post('/thiep/:id/loi-chuc/:wid/an', requireAuth, loadCard, async (req, res) => {

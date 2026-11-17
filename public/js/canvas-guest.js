@@ -6,7 +6,7 @@
   var doc = boot.doc;
   var viewport = document.getElementById('cv-viewport');
   var stage = document.getElementById('cv-stage');
-  var ctx = { doc: doc, guestName: boot.guestName, mode: 'view', wishes: boot.wishes, demo: boot.demo, noGift: !boot.gift };
+  var ctx = { doc: doc, guestName: boot.guestName, mode: 'view', wishes: boot.wishes, signatures: boot.signatures || [], demo: boot.demo, noGift: !boot.gift };
   var readOnly = boot.preview || boot.demo;
 
   if (boot.preview && window.self === window.top) viewport.parentNode.insertBefore(CV.h('div', { class: 'cv-preview-bar', text: boot.demo ? 'Bản xem thử mẫu thiệp' : 'Bản xem trước – khách mời sẽ thấy thiệp như thế này' }), viewport);
@@ -99,11 +99,13 @@
           form.replaceWith(CV.h('p', { class: 'cv-empty', style: 'padding:20px', text: j.message || 'Cảm ơn bạn!' }));
         } else {
           var list = form.parentNode.querySelector('[data-wish-list]');
-          var empty = list.querySelector('.cv-empty');
-          if (empty) empty.remove();
-          if (j.wish) list.insertBefore(CV.wishItem(j.wish), list.firstChild);
+          if (j.wish) {
+            var empty = list.querySelector('.cv-empty');
+            if (empty) empty.remove();
+            list.insertBefore(CV.wishItem(j.wish), list.firstChild);
+          }
           form.reset();
-          toast('Cảm ơn bạn đã gửi lời chúc!');
+          toast(j.private ? 'Lời chúc đã được gửi riêng tới cô dâu, chú rể 💌' : 'Cảm ơn bạn đã gửi lời chúc!');
         }
       })
       .catch(function (e) {
@@ -143,6 +145,13 @@
     lb.querySelector('img').src = albumImgs[lbIndex];
   }
   stage.addEventListener('click', function (ev) {
+    var gb = ev.target.closest('[data-giftbox]');
+    if (gb) {
+      gb.parentNode.classList.toggle('open');
+      return;
+    }
+    if (ev.target.closest('[data-sign]')) return openSignPad();
+    if (ev.target.closest('.cv-anim-spin')) return toggleMusic();
     var sg = ev.target.closest('[data-suggest]');
     if (sg) {
       var ta = sg.parentNode.querySelector('textarea');
@@ -192,6 +201,7 @@
 
   // Nhạc nền
   var playMusic = function () {};
+  var toggleMusic = function () {};
   var musicOn = function () {
     return false;
   };
@@ -206,19 +216,24 @@
       return audio.play().then(
         function () {
           mbtn.classList.add('on');
+          document.body.classList.add('cv-playing');
         },
         function () {}
       );
+    };
+    toggleMusic = function () {
+      if (audio.paused) playMusic();
+      else {
+        audio.pause();
+        mbtn.classList.remove('on');
+        document.body.classList.remove('cv-playing');
+      }
     };
     musicOn = function () {
       return !audio.paused;
     };
     mbtn.addEventListener('click', function () {
-      if (audio.paused) playMusic();
-      else {
-        audio.pause();
-        mbtn.classList.remove('on');
-      }
+      toggleMusic();
     });
     if (doc.music.autoplay && !boot.opener) {
       var once = function () {
@@ -289,6 +304,39 @@
         h('div', { class: 'cvo-card' }, [h('div', { class: 'cvo-hy', text: '囍' }), h('div', { class: 'cvo-pre', text: 'Lễ thành hôn' }), names, date, guest, hint]),
       ];
     }
+    if (o.style === 'curtain') {
+      // Rèm lụa hai bên + khung vòm: ảnh trái tim, "Kính gửi" tên khách, nút mở thiệp
+      var pic = firstPhoto();
+      return [
+        h('div', { class: 'cvo-cur l' }),
+        h('div', { class: 'cvo-cur r' }),
+        h('div', { class: 'cvo-card cvo-arch' }, [
+          h('div', { class: 'cvo-pre', text: 'Kính gửi' }),
+          h('div', { class: 'cvo-to', text: boot.guestName || 'Quý Khách' }),
+          pic ? h('div', { class: 'cvo-heart' }, [h('img', { src: pic, alt: '' })]) : null,
+          h('div', { class: 'cvo-names cvo-names-stack' }, [h('span', { text: (doc.groom && doc.groom.name) || 'Chú rể' }), h('i', { text: '&' }), h('span', { text: (doc.bride && doc.bride.name) || 'Cô dâu' })]),
+          h('span', { class: 'cvo-btn', text: 'Ấn mở thiệp' }),
+        ]),
+      ];
+    }
+    if (o.style === 'stars') {
+      // Bầu trời sao lấp lánh + sao băng
+      var sky = h('div', { class: 'cvo-sky', 'aria-hidden': 'true' });
+      for (var i = 0; i < 70; i++) {
+        sky.appendChild(h('span', { class: 'cvo-star', style: 'left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;animation-delay:' + (Math.random() * 3).toFixed(2) + 's;--s:' + (1 + Math.random() * 2.2).toFixed(1) + 'px' }));
+      }
+      for (var k = 0; k < 3; k++) sky.appendChild(h('span', { class: 'cvo-shoot', style: 'top:' + (8 + k * 18) + '%;left:' + (55 + k * 12) + '%;animation-delay:' + (k * 2.3 + 0.6) + 's' }));
+      return [
+        sky,
+        h('div', { class: 'cvo-card cvo-night' }, [
+          h('div', { class: 'cvo-pre', text: 'Thiệp mời cưới' }),
+          names,
+          date,
+          h('div', { class: 'cvo-guest' }, ['Kính mời', h('b', { text: boot.guestName || 'Quý Khách' })]),
+          h('span', { class: 'cvo-btn', text: 'Mở thiệp' }),
+        ]),
+      ];
+    }
     // book: bìa thiệp có ảnh, lật sang trái
     var src = firstPhoto();
     return [
@@ -298,6 +346,38 @@
       ]),
       hint,
     ];
+  }
+  /** Bướm bay lên khi rèm mở (SVG tự vẽ, màu theo màu chính của thiệp) */
+  function butterflies() {
+    var ns = 'http://www.w3.org/2000/svg';
+    var col = (boot.opener && boot.opener.color) || '#c9a46a';
+    for (var i = 0; i < 14; i++) {
+      var s = document.createElementNS(ns, 'svg');
+      s.setAttribute('viewBox', '0 0 40 30');
+      s.setAttribute('class', 'cvo-fly');
+      ['M20 15C14 2 2 2 3 10s9 9 17 5', 'M20 15C26 2 38 2 37 10s-9 9-17 5', 'M20 15c-6 6-12 13-6 14s6-8 6-14', 'M20 15c6 6 12 13 6 14s-6-8-6-14'].forEach(function (d, j) {
+        var p = document.createElementNS(ns, 'path');
+        p.setAttribute('d', d);
+        p.setAttribute('fill', col);
+        p.setAttribute('fill-opacity', j < 2 ? '.85' : '.6');
+        p.setAttribute('class', j % 2 ? 'w-r' : 'w-l');
+        s.appendChild(p);
+      });
+      var size = 22 + Math.random() * 22;
+      s.style.cssText = 'left:' + (30 + Math.random() * 40) + 'vw;top:' + (45 + Math.random() * 30) + 'vh;width:' + size + 'px;height:' + size * 0.75 + 'px';
+      document.body.appendChild(s);
+      var dx = (Math.random() - 0.5) * 120;
+      var anim = s.animate(
+        [
+          { transform: 'translate(0,0) rotate(0deg)', opacity: 0 },
+          { opacity: 1, offset: 0.15 },
+          { transform: 'translate(' + dx * 0.6 + 'vw,-45vh) rotate(' + (dx > 0 ? 18 : -18) + 'deg)', opacity: 1, offset: 0.7 },
+          { transform: 'translate(' + dx + 'vw,-80vh) rotate(' + (dx > 0 ? 30 : -30) + 'deg)', opacity: 0 },
+        ],
+        { duration: 2600 + Math.random() * 1600, delay: i * 70, easing: 'cubic-bezier(.3,.6,.4,1)', fill: 'forwards' }
+      );
+      anim.onfinish = s.remove.bind(s);
+    }
   }
   var afterOpen = [];
   function showOpener() {
@@ -315,7 +395,8 @@
       opened = true;
       if (doc.music && doc.music.autoplay) playMusic(); // trình duyệt cho phát vì đây là thao tác của khách
       root.classList.add('opening');
-      var wait = reduced ? 50 : o.style === 'fingerprint' ? 1100 : 250;
+      if (o.style === 'curtain' && !reduced) butterflies();
+      var wait = reduced ? 50 : o.style === 'fingerprint' ? 1100 : o.style === 'curtain' || o.style === 'stars' ? 700 : 250;
       setTimeout(function () {
         root.classList.add('open');
         document.body.classList.remove('cvo-lock');
@@ -439,6 +520,7 @@
     var wf = h('form', { class: 'cvt-form' }, [
       h('input', { name: 'name', placeholder: 'Tên của bạn *', maxlength: '120', required: true, value: boot.guestName || '' }),
       h('textarea', { name: 'message', rows: '3', placeholder: 'Viết lời chúc của bạn…', maxlength: '1000', required: true }),
+      wishPrivacy ? h('select', { name: 'visibility', 'aria-label': 'Ai sẽ thấy lời nhắn này?' }, [h('option', { value: 'public', text: 'Ai thấy: Tất cả mọi người' }), h('option', { value: 'private', text: 'Ai thấy: Chỉ cô dâu, chú rể' })]) : null,
       h('input', { name: 'website', class: 'cv-hp', tabindex: '-1', autocomplete: 'off' }),
       h(
         'div',
@@ -492,8 +574,10 @@
       post('/loi-chuc', formData(wf))
         .then(function (j) {
           var w = { n: wf.elements.name.value.trim(), m: wf.elements.message.value.trim() };
-          pool.push(w);
-          bubble(w, true);
+          if (!j.private) {
+            pool.push(w);
+            bubble(w, true);
+          }
           var list = stage.querySelector('[data-wish-list]');
           if (list && j.wish) {
             var empty = list.querySelector('.cv-empty');
@@ -503,7 +587,7 @@
           wf.elements.message.value = '';
           closeSheet();
           hearts(r.left + r.width / 2, r.top, 14);
-          toast('Cảm ơn bạn đã gửi lời chúc!');
+          toast(j.private ? 'Lời chúc đã được gửi riêng tới cô dâu, chú rể 💌' : 'Cảm ơn bạn đã gửi lời chúc!');
         })
         .catch(function (e) {
           toast(e.message);
@@ -580,6 +664,98 @@
     requestAnimationFrame(function () {
       document.body.classList.add('cvt-show');
     });
+  }
+
+  // ===== Ký tên lưu bút: bảng vẽ chữ ký =====
+  var wishPrivacy = doc.sections.some(function (sec) {
+    return sec.els.some(function (e) {
+      return e.widget === 'wishes' && e.privacy;
+    });
+  });
+  var signSheet = null;
+  function openSignPad() {
+    if (!signSheet) {
+      var pad = h('canvas', { class: 'cvs-pad', width: '600', height: '300', 'aria-label': 'Vùng ký tên – dùng ngón tay hoặc chuột để ký' });
+      var nameIn = h('input', { name: 'name', placeholder: 'Tên của bạn *', maxlength: '60', value: boot.guestName || '' });
+      var again = h('button', { type: 'button', class: 'cvs-clear', text: 'Ký lại' });
+      var send = h('button', { type: 'button', class: 'cvt-send', text: 'Gửi chữ ký' });
+      var g = pad.getContext('2d');
+      var drawing = false;
+      var dirty = false;
+      var last = null;
+      var setPen = function () {
+        g.lineCap = 'round';
+        g.lineJoin = 'round';
+        g.lineWidth = 5;
+        g.strokeStyle = '#2b2622';
+      };
+      setPen();
+      var pos = function (e) {
+        var r = pad.getBoundingClientRect();
+        return { x: ((e.clientX - r.left) * pad.width) / r.width, y: ((e.clientY - r.top) * pad.height) / r.height };
+      };
+      pad.addEventListener('pointerdown', function (e) {
+        drawing = true;
+        last = pos(e);
+        pad.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      });
+      pad.addEventListener('pointermove', function (e) {
+        if (!drawing) return;
+        var p = pos(e);
+        g.beginPath();
+        g.moveTo(last.x, last.y);
+        g.lineTo(p.x, p.y);
+        g.stroke();
+        last = p;
+        dirty = true;
+        pad.parentNode.classList.add('signed');
+      });
+      ['pointerup', 'pointercancel'].forEach(function (t) {
+        pad.addEventListener(t, function () {
+          drawing = false;
+        });
+      });
+      again.addEventListener('click', function () {
+        g.clearRect(0, 0, pad.width, pad.height);
+        setPen();
+        dirty = false;
+        pad.parentNode.classList.remove('signed');
+      });
+      send.addEventListener('click', function () {
+        var name = nameIn.value.trim();
+        if (!name) return nameIn.focus();
+        if (!dirty) return toast('Bạn hãy ký vào khung trước nhé!');
+        if (readOnly) {
+          closeSheet();
+          return toast('Đây là bản xem trước – khách mời sẽ ký được khi thiệp được xuất bản.');
+        }
+        send.disabled = true;
+        post('/ky-ten', { name: name, data: pad.toDataURL('image/png') })
+          .then(function (j) {
+            if (j.signature) {
+              stage.querySelectorAll('[data-sign-wall]').forEach(function (w) {
+                var em = w.querySelector('.cv-sign-empty');
+                if (em) em.remove();
+                w.insertBefore(CV.signItem(j.signature, 0), w.firstChild);
+              });
+            }
+            again.click();
+            closeSheet();
+            toast('Cảm ơn bạn đã ký tên chúc phúc! ✍');
+          })
+          .catch(function (e) {
+            toast(e.message);
+          })
+          .finally(function () {
+            send.disabled = false;
+          });
+      });
+      signSheet = sheet('Ký tên lưu bút', 'Chữ ký của bạn sẽ được lưu trên thiệp như một cuốn sổ kỷ niệm', [
+        h('div', { class: 'cvt-form' }, [nameIn, h('div', { class: 'cvs-wrap' }, [pad, h('span', { class: 'cvs-hint', 'aria-hidden': 'true', text: 'Ký vào đây' })]), h('div', { class: 'cvs-row' }, [again, send])]),
+      ]);
+    }
+    signSheet.show();
   }
 
   if (boot.toolbar) {

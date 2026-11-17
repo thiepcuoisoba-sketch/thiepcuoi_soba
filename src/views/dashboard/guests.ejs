@@ -25,6 +25,7 @@
   <a href="?tab=khach" <%- tab === 'khach' ? 'aria-current="page"' : '' %>>Link khách mời (<%= guests.length %>)</a>
   <a href="?tab=phan-hoi" <%- tab === 'phan-hoi' ? 'aria-current="page"' : '' %>>Phản hồi (<%= rsvps.length %>)</a>
   <a href="?tab=loi-chuc" <%- tab === 'loi-chuc' ? 'aria-current="page"' : '' %>>Lời chúc (<%= wishes.length %>)</a>
+  <a href="?tab=chu-ky" <%- tab === 'chu-ky' ? 'aria-current="page"' : '' %>>Chữ ký (<%= signatures.length %>)</a>
 </nav>
 
 <% if (tab === 'khach') { %>
@@ -87,6 +88,22 @@
   </table>
 </div>
 <% } %>
+<% } else if (tab === 'chu-ky') { %>
+<% if (!signatures.length) { %>
+  <div class="card empty"><svg class="ic"><use href="#i-heart"/></svg><p>Chưa có chữ ký nào. Khách ký tên ở mục “Ký tên” trên thiệp (mẫu thiết kế tự do có tiện ích Ký tên).</p></div>
+<% } else { %>
+<div class="grid grid-3">
+  <% signatures.forEach(function (g) { %>
+  <div class="card" style="padding:16px">
+    <div style="background:#2b2622;border-radius:12px;padding:8px"><img src="<%= g.data %>" alt="Chữ ký của <%= g.name %>" style="width:100%;height:auto;display:block"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px">
+      <div><strong><%= g.name %></strong><div class="small muted"><%= formatDateTime(g.created_at) %></div></div>
+      <form method="post" action="/thiep/<%= card.id %>/chu-ky/<%= g.id %>/xoa" data-confirm="Xoá chữ ký của “<%= g.name %>”?"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-icon btn-sm" type="submit" aria-label="Xoá chữ ký <%= g.name %>"><svg class="ic"><use href="#i-trash"/></svg></button></form>
+    </div>
+  </div>
+  <% }) %>
+</div>
+<% } %>
 <% } else { %>
 <% if (!wishes.length) { %>
   <div class="card empty"><svg class="ic"><use href="#i-chat-heart"/></svg><p>Chưa có lời chúc nào.</p></div>
@@ -95,7 +112,7 @@
   <% wishes.forEach(function (w) { %>
   <div class="card" style="padding:20px;<%= w.hidden ? 'opacity:.55' : '' %>">
     <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
-      <div><strong><%= w.name %></strong><div class="small muted"><%= formatDateTime(w.created_at) %></div></div>
+      <div><strong><%= w.name %></strong><div class="small muted"><%= formatDateTime(w.created_at) %><%= w.hidden ? ' · Đang ẩn khỏi thiệp' : '' %></div></div>
       <form method="post" action="/thiep/<%= card.id %>/loi-chuc/<%= w.id %>/an"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit"><%= w.hidden ? 'Hiện lại' : 'Ẩn' %></button></form>
     </div>
     <p style="margin:10px 0 0;color:var(--ink)"><%= w.message %></p>

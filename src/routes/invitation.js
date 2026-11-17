@@ -18,6 +18,10 @@ async function wishesOf(cardId) {
   return db.all('SELECT name, message, created_at FROM wishes WHERE card_id = ? AND hidden = 0 ORDER BY id DESC LIMIT 200', [cardId]);
 }
 
+async function signaturesOf(cardId) {
+  return db.all('SELECT name, data FROM signatures WHERE card_id = ? ORDER BY id DESC LIMIT 40', [cardId]);
+}
+
 /** Xem demo mẫu thiệp với dữ liệu mẫu */
 router.get('/demo/:key', (req, res, next) => {
   if (!exists(req.params.key)) return next();
@@ -51,7 +55,7 @@ router.get('/t/:slug', async (req, res, next) => {
     db.run('UPDATE cards SET views = views + 1 WHERE id = ?', [card.id]).catch(() => {});
   }
   if (card.kind === 'canvas') {
-    return res.render('invitation/canvas', canvas.pageLocals(card, { owner, guestName: req.query.to || '', wishes: await wishesOf(card.id) }));
+    return res.render('invitation/canvas', canvas.pageLocals(card, { owner, guestName: req.query.to || '', wishes: await wishesOf(card.id), signatures: await signaturesOf(card.id) }));
   }
   const view = buildView(card, { data: d, owner, guestName: req.query.to || '' });
   res.render('invitation/show', { layout: false, ...view, wishes: await wishesOf(card.id), meta: { title } });
@@ -119,8 +123,27 @@ router.post('/t/:slug/loi-chuc', express.json(), writeLimiter, async (req, res) 
   const name = clean(b.name, 120);
   const message = clean(b.message, 1000);
   if (!name || !message) return res.status(400).json({ error: 'Vui lòng nhập tên và lời chúc.' });
-  await db.run('INSERT INTO wishes (card_id, name, message, hidden, created_at) VALUES (?, ?, ?, 0, ?)', [card.id, name, message, Date.now()]);
-  res.json({ ok: true, wish: { name, message, created_at: Date.now() } });
+  // Khách chọn "Chỉ cô dâu, chú rể" → lưu ẩn (chủ thiệp vẫn xem được ở trang Khách mời)
+  const priv = b.visibility === 'private';
+  await db.run('INSERT INTO wishes (card_id, name, message, hidden, created_at) VALUES (?, ?, ?, ?, ?)', [card.id, name, message, priv ? 1 : 0, Date.now()]);
+  res.json({ ok: true, private: priv, wish: priv ? null : { name, message, created_at: Date.now() } });
+});
+
+// Ký tên lưu bút: ảnh PNG nét ký (data URL) + tên khách
+const SIGN_RE = /^data:image\/png;base64,[A-Za-z0-9+/]+=*$/;
+router.post('/t/:slug/ky-ten', express.json({ limit: '120kb' }), writeLimiter, async (req, res) => {
+  const card = await publicCard(req, res);
+  if (!card) return;
+  const b = req.body || {};
+  if (b.website) return res.json({ ok: true });
+  const name = clean(b.name, 60);
+  const data = String(b.data || '');
+  if (!name) return res.status(400).json({ error: 'Vui lòng nhập tên của bạn.' });
+  if (!SIGN_RE.test(data) || data.length > 80000) return res.status(400).json({ error: 'Chữ ký không hợp lệ, bạn thử ký lại nhé.' });
+  const n = Number((await db.get('SELECT COUNT(*) AS n FROM signatures WHERE card_id = ?', [card.id])).n);
+  if (n >= 500) return res.status(400).json({ error: 'Thiệp đã nhận đủ chữ ký.' });
+  await db.run('INSERT INTO signatures (card_id, name, data, created_at) VALUES (?, ?, ?, ?)', [card.id, name, data, Date.now()]);
+  res.json({ ok: true, signature: { name, img: data } });
 });
 
 module.exports = router;
