@@ -1,0 +1,19 @@
+<div class="auth-wrap">
+  <%- include('art') %>
+  <div class="auth-form">
+    <div class="auth-box">
+      <h1>Đặt lại mật khẩu</h1>
+      <% if (!valid) { %>
+        <div class="alert alert-error" role="alert" style="margin:20px 0"><svg class="ic"><use href="#i-x"/></svg><span>Liên kết không hợp lệ hoặc đã hết hạn.</span></div>
+        <a class="btn btn-primary btn-block" href="/quen-mat-khau">Gửi lại liên kết</a>
+      <% } else { %>
+        <% if (typeof error !== 'undefined' && error) { %><div class="alert alert-error" role="alert" style="margin:16px 0"><svg class="ic"><use href="#i-x"/></svg><span><%= error %></span></div><% } %>
+        <form class="form" method="post" action="/dat-lai-mat-khau/<%= token %>" style="margin-top:20px">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="field"><label for="password">Mật khẩu mới</label><input class="input" id="password" name="password" type="password" minlength="8" required autocomplete="new-password"><span class="hint">Tối thiểu 8 ký tự.</span></div>
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Lưu mật khẩu mới</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</div>

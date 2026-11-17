@@ -1,0 +1,81 @@
+<div class="page-title">
+  <div>
+    <h1>Xin chào, <%= (user.name || '').split(' ').pop() || 'bạn' %></h1>
+    <p>Quản lý thiệp cưới, khách mời và lời chúc của bạn.</p>
+  </div>
+  <a class="btn btn-primary" href="/thiep/tao"><svg class="ic"><use href="#i-plus"/></svg>Tạo thiệp mới</a>
+</div>
+
+<div class="stat-grid">
+  <div class="stat">
+    <div class="label"><svg class="ic"><use href="#i-cards"/></svg>Thiệp đã tạo</div>
+    <div class="value"><%= usage.cards %><span class="muted" style="font-size:18px">/<%= planObj.limits.cards %></span></div>
+    <div class="meter"><span style="width:<%= Math.min(100, usage.cards / planObj.limits.cards * 100) %>%"></span></div>
+  </div>
+  <div class="stat">
+    <div class="label"><svg class="ic"><use href="#i-photo"/></svg>Ảnh đã tải</div>
+    <div class="value"><%= usage.photos %><span class="muted" style="font-size:18px">/<%= planObj.limits.photos %></span></div>
+    <div class="meter"><span style="width:<%= Math.min(100, usage.photos / planObj.limits.photos * 100) %>%"></span></div>
+  </div>
+  <div class="stat">
+    <div class="label"><svg class="ic"><use href="#i-eye"/></svg>Tổng lượt xem</div>
+    <div class="value"><%= cards.reduce(function (s, c) { return s + Number(c.views); }, 0).toLocaleString('vi-VN') %></div>
+  </div>
+  <div class="stat">
+    <div class="label"><svg class="ic"><use href="#i-users"/></svg>Khách sẽ tham dự</div>
+    <div class="value"><%= cards.reduce(function (s, c) { return s + c.rsvp.coming; }, 0) %></div>
+  </div>
+</div>
+
+<% if (!cards.length) { %>
+  <div class="card empty">
+    <svg class="ic"><use href="#i-heart"/></svg>
+    <h2 class="h3">Bạn chưa có thiệp nào</h2>
+    <p>Chọn một mẫu thiệp yêu thích để bắt đầu – chỉ mất khoảng 10 phút.</p>
+    <a class="btn btn-primary btn-lg" href="/thiep/tao">Chọn mẫu thiệp</a>
+  </div>
+<% } else { %>
+<div class="my-cards">
+  <% cards.forEach(function (c) { %>
+  <article class="my-card">
+    <a class="tpl-thumb" href="/thiep/<%= c.id %>/sua" aria-label="Chỉnh sửa thiệp <%= c.title %>">
+      <% if (c.kind === 'canvas') { %>
+        <span class="dz-mycard-thumb" style="background:<%= (c.d.sections && c.d.sections[0] && c.d.sections[0].bg) || '#fff1f3' %>"><span>Thiết kế tự do</span><strong><%= c.d.groom.name %> &amp; <%= c.d.bride.name %></strong></span>
+      <% } else { %>
+      <%- include('../partials/mini', { tpl: c.tpl, names: { g: c.d.groom.name, b: c.d.bride.name }, date: util.formatDateVi(c.d.date).split(', ')[1] }) %>
+      <% } %>
+    </a>
+    <div class="my-card-body">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+        <h3><%= c.title %></h3>
+        <span class="badge <%= c.status === 'published' ? 'badge-success' : 'badge-muted' %>"><%= c.status === 'published' ? 'Đã xuất bản' : 'Bản nháp' %></span>
+      </div>
+      <div class="my-card-stats">
+        <span><svg class="ic"><use href="#i-palette"/></svg><%= c.kind === 'canvas' ? 'Thiết kế tự do' : c.tpl.name %></span>
+        <span><svg class="ic"><use href="#i-eye"/></svg><%= c.views %> lượt xem</span>
+        <span><svg class="ic"><use href="#i-check-circle"/></svg><%= c.rsvp.n %> phản hồi</span>
+      </div>
+      <% if (c.status === 'published') { %>
+      <div class="share-box"><input value="<%= c.url %>" readonly aria-label="Đường link thiệp"><button class="btn btn-soft btn-sm" type="button" data-copy="<%= c.url %>"><svg class="ic"><use href="#i-copy"/></svg>Sao chép</button></div>
+      <% } %>
+      <div class="my-card-actions">
+        <a class="btn btn-primary btn-sm" href="/thiep/<%= c.id %>/sua"><svg class="ic"><use href="#i-edit"/></svg>Chỉnh sửa</a>
+        <a class="btn btn-outline btn-sm" href="/thiep/<%= c.id %>/khach-moi"><svg class="ic"><use href="#i-users"/></svg>Khách mời</a>
+        <div class="dropdown" data-dropdown style="margin-left:auto">
+          <button class="btn btn-ghost btn-icon btn-sm" type="button" data-dropdown-btn aria-label="Thêm thao tác" aria-expanded="false" style="width:40px;height:40px;min-height:40px">⋯</button>
+          <div class="dropdown-menu">
+            <% if (c.status === 'published') { %><a href="/t/<%= c.slug %>" target="_blank" rel="noopener"><svg class="ic"><use href="#i-eye"/></svg>Mở thiệp</a><% } %>
+            <a href="/thiep/<%= c.id %>/phan-hoi.csv"><svg class="ic"><use href="#i-download"/></svg>Tải phản hồi (CSV)</a>
+            <form method="post" action="/thiep/<%= c.id %>/nhan-ban"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button type="submit"><svg class="ic"><use href="#i-copy"/></svg>Nhân bản</button></form>
+            <form method="post" action="/thiep/<%= c.id %>/xoa" data-confirm="Xoá vĩnh viễn thiệp “<%= c.title %>” cùng toàn bộ phản hồi, lời chúc và ảnh? Không thể hoàn tác."><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button type="submit" class="danger"><svg class="ic"><use href="#i-trash"/></svg>Xoá thiệp</button></form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+  <% }) %>
+  <% if (usage.cards < planObj.limits.cards) { %>
+  <a class="new-card" href="/thiep/tao"><span><svg class="ic" style="margin:0 auto 8px"><use href="#i-plus"/></svg>Tạo thiệp mới</span></a>
+  <% } %>
+</div>
+<% } %>

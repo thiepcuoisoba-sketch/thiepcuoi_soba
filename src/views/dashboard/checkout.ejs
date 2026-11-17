@@ -1,0 +1,30 @@
+<div class="page-title">
+  <div>
+    <h1><%= renew ? 'Gia hạn' : 'Nâng cấp' %> gói <%= buyPlan.name %></h1>
+    <p>Quét mã QR bằng ứng dụng ngân hàng bất kỳ. Gói được kích hoạt tự động sau khi nhận tiền.</p>
+  </div>
+</div>
+<% if (!configured) { %>
+<div class="alert alert-warning" style="margin-bottom:20px"><svg class="ic"><use href="#i-lock"/></svg><span>Quản trị viên chưa cấu hình tài khoản nhận tiền (BANK_ACCOUNT_NO trong file .env).</span></div>
+<% } %>
+<div class="checkout" data-checkout data-code="<%= order.code %>" data-status="<%= order.status %>">
+  <div class="card qr-box">
+    <img src="<%= qr %>" alt="Mã VietQR thanh toán đơn <%= order.code %>" width="320" height="380">
+    <div class="pay-status" data-pay-status>
+      <% if (order.status === 'paid') { %><svg class="ic" style="color:var(--success)"><use href="#i-check-circle"/></svg>Đã thanh toán thành công
+      <% } else { %><span class="pulse" aria-hidden="true"></span>Đang chờ thanh toán…<% } %>
+    </div>
+  </div>
+  <div class="card">
+    <h2 class="h3">Thông tin chuyển khoản</h2>
+    <p class="small muted">Nếu không quét được mã, hãy chuyển khoản thủ công với <strong>đúng nội dung</strong> bên dưới.</p>
+    <div class="kv"><span>Ngân hàng</span><strong><%= bank.id %></strong></div>
+    <div class="kv"><span>Số tài khoản</span><strong><%= bank.accountNo %><button class="btn btn-soft btn-sm" type="button" data-copy="<%= bank.accountNo %>">Sao chép</button></strong></div>
+    <div class="kv"><span>Chủ tài khoản</span><strong><%= bank.accountName %></strong></div>
+    <div class="kv"><span>Số tiền</span><strong><%= vnd(order.amount) %><button class="btn btn-soft btn-sm" type="button" data-copy="<%= order.amount %>">Sao chép</button></strong></div>
+    <div class="kv"><span>Nội dung chuyển khoản</span><strong style="color:var(--primary)"><%= order.code %><button class="btn btn-soft btn-sm" type="button" data-copy="<%= order.code %>">Sao chép</button></strong></div>
+    <div class="alert alert-info" style="margin-top:16px"><svg class="ic"><use href="#i-sparkle"/></svg><span>Gói <strong><%= buyPlan.name %></strong>: <%= buyPlan.limits.cards %> thiệp, <%= buyPlan.limits.photos %> ảnh, <%= buyPlan.limits.views.toLocaleString('vi-VN') %> lượt xem, sử dụng <%= buyPlan.durationMonths %> tháng.</span></div>
+    <p class="small muted" style="margin-top:16px">Cần hỗ trợ? <a href="/lien-he">Liên hệ SOBA</a> và cung cấp mã đơn <strong><%= order.code %></strong>.</p>
+  </div>
+</div>
+<script src="/js/checkout.js?v=<%= assetVersion %>" defer></script>

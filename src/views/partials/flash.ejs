@@ -1,0 +1,10 @@
+<% if (typeof flashes !== 'undefined' && flashes.length) { %>
+<div class="flash-stack" role="status" aria-live="polite">
+  <% flashes.forEach(function (f) { %>
+  <div class="alert alert-<%= f.type === 'error' ? 'error' : f.type === 'success' ? 'success' : 'info' %>" data-autohide>
+    <svg class="ic"><use href="#i-<%= f.type === 'error' ? 'x' : 'check-circle' %>"/></svg>
+    <span><%= f.msg %></span>
+  </div>
+  <% }) %>
+</div>
+<% } %>

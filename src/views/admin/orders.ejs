@@ -1,0 +1,44 @@
+<div class="page-title">
+  <div><h1>Đơn hàng</h1><p>Đơn được tự xác nhận qua webhook SePay. Có thể xác nhận thủ công khi cần.</p></div>
+  <nav class="tabs" style="margin:0;border:0">
+    <a href="/quan-tri/don-hang" <%- !status ? 'aria-current="page"' : '' %>>Tất cả</a>
+    <a href="?status=pending" <%- status === 'pending' ? 'aria-current="page"' : '' %>>Chờ thanh toán</a>
+    <a href="?status=paid" <%- status === 'paid' ? 'aria-current="page"' : '' %>>Đã thanh toán</a>
+  </nav>
+</div>
+<div class="table-wrap" style="margin-bottom:32px">
+  <table class="table">
+    <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Gói</th><th>Số tiền</th><th>Trạng thái</th><th>Thời gian</th><th>Thao tác</th></tr></thead>
+    <tbody>
+      <% if (!orders.length) { %><tr><td colspan="7" class="muted">Không có đơn hàng.</td></tr><% } %>
+      <% orders.forEach(function (o) { %>
+      <tr>
+        <td><strong><%= o.code %></strong><% if (o.transaction_ref) { %><br><span class="small muted"><%= o.transaction_ref %></span><% } %></td>
+        <td><%= o.name %><br><span class="small muted"><%= o.email %></span></td>
+        <td><%= PLANS[o.plan] ? PLANS[o.plan].name : o.plan %></td>
+        <td><%= vnd(o.amount) %></td>
+        <td><span class="badge <%= o.status === 'paid' ? 'badge-success' : o.status === 'pending' ? 'badge-warning' : 'badge-muted' %>"><%= o.status === 'paid' ? 'Đã thanh toán' : o.status === 'pending' ? 'Chờ' : 'Đã huỷ' %></span></td>
+        <td class="small muted"><%= formatDateTime(o.paid_at || o.created_at) %></td>
+        <td>
+          <% if (o.status === 'pending') { %>
+          <div style="display:flex;gap:6px">
+            <form method="post" action="/quan-tri/don-hang/<%= o.id %>/xac-nhan" data-confirm="Xác nhận đã nhận <%= vnd(o.amount) %> cho đơn <%= o.code %> và kích hoạt gói?"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-soft btn-sm" type="submit">Xác nhận</button></form>
+            <form method="post" action="/quan-tri/don-hang/<%= o.id %>/huy" data-confirm="Huỷ đơn <%= o.code %>?"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit">Huỷ</button></form>
+          </div>
+          <% } %>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<h2 class="h3">Nhật ký webhook gần đây</h2>
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Mã giao dịch</th><th>Ghi chú</th><th>Thời gian</th></tr></thead>
+    <tbody>
+      <% if (!logs.length) { %><tr><td colspan="3" class="muted">Chưa nhận webhook nào.</td></tr><% } %>
+      <% logs.forEach(function (l) { %><tr><td class="small"><%= l.provider_id || '—' %></td><td><%= l.note %></td><td class="small muted"><%= formatDateTime(l.created_at) %></td></tr><% }) %>
+    </tbody>
+  </table>
+</div>

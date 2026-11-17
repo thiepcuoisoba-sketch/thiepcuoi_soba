@@ -1,0 +1,8 @@
+<a class="post-card reveal" href="/cam-nang/<%= a.slug %>">
+  <div class="post-cover" aria-hidden="true"><svg class="ic"><use href="#i-<%= a.category === 'Hướng dẫn' ? 'share' : a.category === 'Kinh nghiệm' ? 'check-circle' : 'heart' %>"/></svg></div>
+  <div class="post-body">
+    <div class="post-meta"><span class="badge"><%= a.category %></span><span><%= a.minutes %> phút đọc</span></div>
+    <h3><%= a.title %></h3>
+    <p><%= a.excerpt %></p>
+  </div>
+</a>

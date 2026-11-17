@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title><%= meta.title %></title>
+  <meta name="robots" content="noindex">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="<%= ALL_FONTS_URL %>">
+  <link rel="stylesheet" href="/css/canvas.css?v=<%= assetVersion %>">
+  <link rel="stylesheet" href="/css/designer.css?v=<%= assetVersion %>">
+</head>
+<body class="dz">
+  <header class="dz-top">
+    <a class="dz-back" href="/tai-khoan" aria-label="Về trang thiệp của tôi">‹</a>
+    <a class="dz-logo" href="/tai-khoan">SOBA</a>
+    <div class="dz-hist">
+      <button type="button" class="dz-ib" data-act="undo" title="Hoàn tác (Ctrl+Z)" aria-label="Hoàn tác" disabled>↶</button>
+      <button type="button" class="dz-ib" data-act="redo" title="Làm lại (Ctrl+Y)" aria-label="Làm lại" disabled>↷</button>
+    </div>
+    <span class="dz-status" data-status>Đã lưu</span>
+    <div class="dz-top-r">
+      <a class="dz-btn dz-btn-ghost" href="/thiep/<%= card.id %>/xem-truoc" target="_blank" rel="noopener" data-preview>Xem trước</a>
+      <a class="dz-btn dz-btn-ghost hide-sm" href="/thiep/<%= card.id %>/khach-moi">Khách mời</a>
+      <button type="button" class="dz-btn dz-btn-primary" data-act="publish">Xuất bản</button>
+    </div>
+  </header>
+
+  <div class="dz-body">
+    <nav class="dz-rail" aria-label="Công cụ">
+      <button type="button" data-tool="text"><span>T</span>Văn bản</button>
+      <button type="button" data-tool="image"><span>🖼</span>Hình ảnh</button>
+      <button type="button" data-tool="shape"><span>◆</span>Hình dạng</button>
+      <button type="button" data-tool="widget"><span>✦</span>Tiện ích</button>
+      <button type="button" data-tool="bg"><span>▧</span>Nền</button>
+      <button type="button" data-tool="music"><span>♫</span>Âm nhạc</button>
+      <button type="button" data-tool="pages"><span>☰</span>Trang</button>
+      <button type="button" data-tool="info"><span>♥</span>Thông tin</button>
+    </nav>
+
+    <aside class="dz-panel" data-panel hidden>
+      <div class="dz-panel-head"><strong data-panel-title></strong><button type="button" class="dz-ib" data-act="close-panel" aria-label="Đóng">×</button></div>
+      <div class="dz-panel-body" data-panel-body></div>
+    </aside>
+
+    <main class="dz-work" data-work>
+      <div class="dz-canvas" data-canvas></div>
+      <div class="dz-zoom">
+        <button type="button" class="dz-ib" data-act="zoom-out" aria-label="Thu nhỏ">−</button>
+        <span data-zoom>100%</span>
+        <button type="button" class="dz-ib" data-act="zoom-in" aria-label="Phóng to">+</button>
+      </div>
+    </main>
+
+    <aside class="dz-props" data-props aria-label="Thuộc tính">
+      <div class="dz-panel-head"><strong data-props-title>Trang</strong><button type="button" class="dz-ib dz-props-close" data-act="close-props" aria-label="Đóng">×</button></div>
+      <div class="dz-panel-body" data-props-body></div>
+    </aside>
+  </div>
+
+  <div class="dz-quick" data-quick>
+    <button type="button" class="dz-quick-head" data-act="toggle-quick">🖼 Thay ảnh nhanh <span data-quick-count></span></button>
+    <div class="dz-quick-list" data-quick-list></div>
+  </div>
+
+  <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden data-file-image>
+  <input type="file" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,.mp3,.m4a" hidden data-file-audio>
+  <script type="application/json" id="dz-boot"><%- boot %></script>
+  <script src="/js/cv-render.js?v=<%= assetVersion %>" defer></script>
+  <script src="/js/soba-music.js?v=<%= assetVersion %>" defer></script>
+  <script src="/js/designer.js?v=<%= assetVersion %>" defer></script>
+</body>
+</html>

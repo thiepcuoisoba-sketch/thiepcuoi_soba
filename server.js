@@ -1,0 +1,20 @@
+'use strict';
+/**
+ * SOBA – điểm khởi chạy ứng dụng (Hostinger: "Entry file" = server.js)
+ */
+const config = require('./src/config');
+const { migrate } = require('./src/migrations');
+const createApp = require('./src/app');
+
+(async () => {
+  try {
+    await migrate();
+  } catch (e) {
+    console.error('[SOBA] Không kết nối / khởi tạo được database:', e.message);
+    process.exit(1);
+  }
+  const app = createApp();
+  app.listen(config.port, () => {
+    console.log(`[SOBA] Đang chạy tại ${config.appUrl} (cổng ${config.port}, db: ${config.db.client})`);
+  });
+})();

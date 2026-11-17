@@ -1,0 +1,18 @@
+<div class="page-title"><div><h1>Thiệp</h1><p>Đánh dấu “Nổi bật” để thiệp xuất hiện ở mục Thiệp khách hàng (chỉ khi khách đồng ý).</p></div></div>
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Thiệp</th><th>Chủ thiệp</th><th>Mẫu</th><th>Trạng thái</th><th>Lượt xem</th><th>Nổi bật</th></tr></thead>
+    <tbody>
+      <% cards.forEach(function (c) { %>
+      <tr>
+        <td><strong><%= c.title %></strong><br><% if (c.status === 'published') { %><a class="small" href="/t/<%= c.slug %>" target="_blank" rel="noopener">/t/<%= c.slug %></a><% } else { %><span class="small muted">/t/<%= c.slug %></span><% } %></td>
+        <td class="small"><%= c.email %></td>
+        <td><%= c.tpl.name %></td>
+        <td><span class="badge <%= c.status === 'published' ? 'badge-success' : 'badge-muted' %>"><%= c.status === 'published' ? 'Xuất bản' : 'Nháp' %></span></td>
+        <td><%= c.views %></td>
+        <td><form method="post" action="/quan-tri/thiep/<%= c.id %>/noi-bat"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn <%= c.is_showcase ? 'btn-primary' : 'btn-outline' %> btn-sm" type="submit" aria-pressed="<%= c.is_showcase ? 'true' : 'false' %>"><%= c.is_showcase ? 'Đang nổi bật' : 'Đặt nổi bật' %></button></form></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

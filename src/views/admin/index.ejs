@@ -1,0 +1,26 @@
+<div class="page-title"><div><h1>Tổng quan</h1><p>Tình hình hoạt động của SOBA.</p></div></div>
+<div class="stat-grid">
+  <div class="stat"><div class="label"><svg class="ic"><use href="#i-users"/></svg>Người dùng</div><div class="value"><%= stats.users %></div><div class="small muted"><%= stats.paidUsers %> đang dùng gói trả phí</div></div>
+  <div class="stat"><div class="label"><svg class="ic"><use href="#i-cards"/></svg>Thiệp</div><div class="value"><%= stats.cards %></div><div class="small muted"><%= stats.published %> đã xuất bản</div></div>
+  <div class="stat"><div class="label"><svg class="ic"><use href="#i-receipt"/></svg>Doanh thu tháng này</div><div class="value" style="font-size:24px"><%= vnd(stats.revenueMonth) %></div><div class="small muted">Tổng: <%= vnd(stats.revenue) %></div></div>
+  <div class="stat"><div class="label"><svg class="ic"><use href="#i-clock"/></svg>Đơn chờ thanh toán</div><div class="value"><%= stats.pending %></div><div class="small muted"><a href="/quan-tri/lien-he"><%= stats.contacts %> liên hệ</a></div></div>
+</div>
+<div class="grid grid-2">
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:18px 20px;display:flex;justify-content:space-between;align-items:center"><h2 class="h3" style="margin:0">Đơn hàng mới</h2><a class="small" href="/quan-tri/don-hang">Xem tất cả</a></div>
+    <div class="table-wrap" style="border:0;border-radius:0"><table class="table"><tbody>
+      <% if (!recentOrders.length) { %><tr><td class="muted">Chưa có đơn hàng.</td></tr><% } %>
+      <% recentOrders.forEach(function (o) { %>
+      <tr><td><strong><%= o.code %></strong><br><span class="small muted"><%= o.email %></span></td><td><%= vnd(o.amount) %></td><td><span class="badge <%= o.status === 'paid' ? 'badge-success' : o.status === 'pending' ? 'badge-warning' : 'badge-muted' %>"><%= o.status %></span></td></tr>
+      <% }) %>
+    </tbody></table></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:18px 20px;display:flex;justify-content:space-between;align-items:center"><h2 class="h3" style="margin:0">Người dùng mới</h2><a class="small" href="/quan-tri/nguoi-dung">Xem tất cả</a></div>
+    <div class="table-wrap" style="border:0;border-radius:0"><table class="table"><tbody>
+      <% recentUsers.forEach(function (u) { %>
+      <tr><td><strong><%= u.name || '—' %></strong><br><span class="small muted"><%= u.email %></span></td><td><span class="badge badge-<%= u.plan %>"><%= PLANS[u.plan] ? PLANS[u.plan].name : u.plan %></span></td><td class="small muted"><%= formatDateTime(u.created_at) %></td></tr>
+      <% }) %>
+    </tbody></table></div>
+  </div>
+</div>

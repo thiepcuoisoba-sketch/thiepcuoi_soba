@@ -1,0 +1,43 @@
+<section class="section" style="padding-top:clamp(32px,5vw,64px)">
+  <div class="container">
+    <nav class="breadcrumb" style="justify-content:flex-start" aria-label="Breadcrumb"><a href="/">Trang chủ</a><span>/</span><a href="/mau-thiep">Mẫu thiệp</a><span>/</span><span><%= tpl.name %></span></nav>
+    <div class="hero-grid" style="align-items:center">
+      <div>
+        <span class="badge badge-<%= tpl.tier %>" style="margin-bottom:14px"><% if (tpl.tier === 'premium') { %><svg class="ic"><use href="#i-crown"/></svg><% } %>Gói <%= TIER_LABEL[tpl.tier] %></span>
+        <h1 class="h1" style="font-size:clamp(36px,5vw,58px)">Mẫu thiệp <span class="accent-italic"><%= tpl.name %></span></h1>
+        <p class="lead"><%= tpl.description %></p>
+        <ul class="price-list" style="margin:24px 0 32px">
+          <li><svg class="ic"><use href="#i-check"/></svg>Hiệu ứng mở thiệp <%= tpl.cover === 'envelope' ? 'phong bì' : tpl.cover === 'film' ? 'kiểu điện ảnh' : tpl.cover === 'letter' ? 'lá thư & dấu sáp' : tpl.cover === 'hy' ? 'chữ Hỷ' : 'monogram' %></li>
+          <li><svg class="ic"><use href="#i-check"/></svg>Tên khách mời riêng, đếm ngược, bản đồ, album ảnh</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>Xác nhận tham dự, sổ lời chúc, hộp mừng cưới QR</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>Tuỳ chỉnh màu nhấn, ảnh, nhạc nền</li>
+        </ul>
+        <div class="hero-cta">
+          <% if (user) { %>
+          <form method="post" action="/thiep/tao">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="template" value="<%= tpl.key %>">
+            <button class="btn btn-primary btn-lg" type="submit">Dùng mẫu này <svg class="ic"><use href="#i-arrow-right"/></svg></button>
+          </form>
+          <% } else { %>
+          <a class="btn btn-primary btn-lg" href="/dang-ky">Dùng mẫu này <svg class="ic"><use href="#i-arrow-right"/></svg></a>
+          <% } %>
+          <a class="btn btn-outline btn-lg" href="/demo/<%= tpl.key %>" target="_blank" rel="noopener"><svg class="ic"><use href="#i-eye"/></svg>Mở toàn màn hình</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="phone">
+          <div class="phone-screen"><iframe src="/demo/<%= tpl.key %>?to=Bạn%20Thân%20Mến" title="Xem trước mẫu thiệp <%= tpl.name %>"></iframe></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-head"><h2 class="h2">Mẫu thiệp khác</h2></div>
+    <div class="tpl-grid">
+      <% others.forEach(function (t) { %><%- include('../partials/tpl-card', { tpl: t }) %><% }) %>
+    </div>
+  </div>
+</section>

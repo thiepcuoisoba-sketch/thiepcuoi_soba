@@ -1,0 +1,106 @@
+<div class="page-title">
+  <div>
+    <a class="small" href="/tai-khoan" style="text-decoration:none">&larr; Thiệp của tôi</a>
+    <h1 style="margin-top:6px"><%= card.title %></h1>
+    <p>Quản lý khách mời, phản hồi tham dự và lời chúc.</p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a class="btn btn-outline" href="/thiep/<%= card.id %>/sua"><svg class="ic"><use href="#i-edit"/></svg>Chỉnh sửa thiệp</a>
+    <% if (card.status === 'published') { %><a class="btn btn-primary" href="<%= url %>" target="_blank" rel="noopener"><svg class="ic"><use href="#i-eye"/></svg>Mở thiệp</a><% } %>
+  </div>
+</div>
+
+<% if (card.status !== 'published') { %>
+<div class="alert alert-warning" style="margin-bottom:24px"><svg class="ic"><use href="#i-lock"/></svg><span>Thiệp đang ở chế độ <strong>bản nháp</strong> – khách chưa thể mở link. Hãy <a href="/thiep/<%= card.id %>/sua">xuất bản</a> trước khi gửi.</span></div>
+<% } %>
+
+<div class="stat-grid">
+  <div class="stat"><div class="label"><svg class="ic"><use href="#i-check-circle"/></svg>Tham dự</div><div class="value"><%= stat.yes %></div></div>
+  <div class="stat"><div class="label"><svg class="ic"><use href="#i-users"/></svg>Tổng số người</div><div class="value"><%= stat.people %></div></div>
+  <div class="stat"><div class="label"><svg class="ic"><use href="#i-clock"/></svg>Chưa chắc</div><div class="value"><%= stat.maybe %></div></div>
+  <div class="stat"><div class="label"><svg class="ic"><use href="#i-x"/></svg>Không tham dự</div><div class="value"><%= stat.no %></div></div>
+</div>
+
+<nav class="tabs" aria-label="Mục quản lý">
+  <a href="?tab=khach" <%- tab === 'khach' ? 'aria-current="page"' : '' %>>Link khách mời (<%= guests.length %>)</a>
+  <a href="?tab=phan-hoi" <%- tab === 'phan-hoi' ? 'aria-current="page"' : '' %>>Phản hồi (<%= rsvps.length %>)</a>
+  <a href="?tab=loi-chuc" <%- tab === 'loi-chuc' ? 'aria-current="page"' : '' %>>Lời chúc (<%= wishes.length %>)</a>
+</nav>
+
+<% if (tab === 'khach') { %>
+<div class="grid" style="grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:24px;align-items:start" data-stack-mobile>
+  <form class="card form" method="post" action="/thiep/<%= card.id %>/khach-moi">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <h2 class="h3" style="margin:0">Thêm khách mời</h2>
+    <div class="field"><label for="g-names">Danh sách tên (mỗi dòng một người)</label><textarea class="textarea" id="g-names" name="names" rows="7" placeholder="Anh Huy&#10;Chị Lan và gia đình&#10;Bạn Minh" required></textarea><span class="hint">Tên sẽ hiển thị sau câu “<%= d.invitation %>”. Gói <%= planObj.name %>: tối đa <%= planObj.limits.guests %> khách.</span></div>
+    <div class="field"><label for="g-group">Nhóm (tuỳ chọn)</label><input class="input" id="g-group" name="group" placeholder="Bạn đại học, Đồng nghiệp..."></div>
+    <button class="btn btn-primary" type="submit"><svg class="ic"><use href="#i-plus"/></svg>Tạo link</button>
+  </form>
+  <div class="card" style="padding:0;overflow:hidden">
+    <% if (!guests.length) { %>
+      <div class="empty"><svg class="ic"><use href="#i-link"/></svg><p>Thêm tên khách để tạo đường link mời riêng cho từng người.</p></div>
+    <% } else { %>
+    <div class="table-wrap" style="border:0;border-radius:0">
+      <table class="table">
+        <thead><tr><th>Khách mời</th><th>Đường link riêng</th><th><span class="sr-only">Thao tác</span></th></tr></thead>
+        <tbody>
+          <% guests.forEach(function (g) { var link = url + '?to=' + encodeURIComponent(g.name); %>
+          <tr>
+            <td><strong><%= g.name %></strong><% if (g.group_name) { %><br><span class="small muted"><%= g.group_name %></span><% } %></td>
+            <td style="min-width:200px">
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <button class="btn btn-soft btn-sm" type="button" data-copy="<%= link %>"><svg class="ic"><use href="#i-copy"/></svg>Sao chép</button>
+                <button class="btn btn-outline btn-sm" type="button" data-share="<%= link %>" data-title="Thiệp mời <%= card.title %>"><svg class="ic"><use href="#i-share"/></svg>Gửi</button>
+              </div>
+            </td>
+            <td style="text-align:right">
+              <form method="post" action="/thiep/<%= card.id %>/khach-moi/<%= g.id %>/xoa" data-confirm="Xoá khách “<%= g.name %>” khỏi danh sách?"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-icon btn-sm" type="submit" aria-label="Xoá <%= g.name %>"><svg class="ic"><use href="#i-trash"/></svg></button></form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+</div>
+<% } else if (tab === 'phan-hoi') { %>
+<div style="display:flex;justify-content:flex-end;margin-bottom:14px"><a class="btn btn-outline btn-sm" href="/thiep/<%= card.id %>/phan-hoi.csv"><svg class="ic"><use href="#i-download"/></svg>Tải file Excel (CSV)</a></div>
+<% if (!rsvps.length) { %>
+  <div class="card empty"><svg class="ic"><use href="#i-check-circle"/></svg><p>Chưa có phản hồi nào. Gửi thiệp cho khách để nhận xác nhận tham dự.</p></div>
+<% } else { %>
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Khách</th><th>Phản hồi</th><th>Số người</th><th>Khách của</th><th>Lời nhắn</th><th>Thời gian</th></tr></thead>
+    <tbody>
+      <% rsvps.forEach(function (r) { %>
+      <tr>
+        <td><strong><%= r.name %></strong><% if (r.phone) { %><br><a class="small" href="tel:<%= r.phone %>"><%= r.phone %></a><% } %></td>
+        <td><span class="badge <%= r.attending === 'yes' ? 'badge-success' : r.attending === 'no' ? 'badge-muted' : 'badge-warning' %>"><%= r.attending === 'yes' ? 'Tham dự' : r.attending === 'no' ? 'Không tham dự' : 'Chưa chắc' %></span></td>
+        <td><%= r.guests %></td>
+        <td><%= r.side === 'groom' ? 'Nhà trai' : r.side === 'bride' ? 'Nhà gái' : '—' %></td>
+        <td style="max-width:280px"><%= r.message || '—' %></td>
+        <td class="small muted" style="white-space:nowrap"><%= formatDateTime(r.created_at) %></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } %>
+<% } else { %>
+<% if (!wishes.length) { %>
+  <div class="card empty"><svg class="ic"><use href="#i-chat-heart"/></svg><p>Chưa có lời chúc nào.</p></div>
+<% } else { %>
+<div class="grid grid-2">
+  <% wishes.forEach(function (w) { %>
+  <div class="card" style="padding:20px;<%= w.hidden ? 'opacity:.55' : '' %>">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+      <div><strong><%= w.name %></strong><div class="small muted"><%= formatDateTime(w.created_at) %></div></div>
+      <form method="post" action="/thiep/<%= card.id %>/loi-chuc/<%= w.id %>/an"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit"><%= w.hidden ? 'Hiện lại' : 'Ẩn' %></button></form>
+    </div>
+    <p style="margin:10px 0 0;color:var(--ink)"><%= w.message %></p>
+  </div>
+  <% }) %>
+</div>
+<% } %>
+<% } %>

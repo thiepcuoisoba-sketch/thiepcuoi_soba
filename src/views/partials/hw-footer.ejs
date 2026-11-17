@@ -1,0 +1,39 @@
+<% var navIs = function (p) { return path === p ? 'aria-current="page"' : ''; }; %>
+  <footer class="hw-foot">
+    <div class="hw-wrap">
+      <div class="hw-foot-grid">
+        <div>
+          <a class="logo" href="/" aria-label="SOBA – trang chủ"><%- include('../partials/logo') %></a>
+          <p>Thiệp cưới online – gửi lời mời trọn vẹn yêu thương chỉ bằng một đường link.</p>
+          <div class="hw-social">
+            <% if (contact.facebook) { %><a href="<%= contact.facebook %>" target="_blank" rel="noopener" aria-label="Facebook SOBA"><svg class="ic"><use href="#i-facebook"/></svg></a><% } %>
+            <% if (contact.instagram) { %><a href="<%= contact.instagram %>" target="_blank" rel="noopener" aria-label="Instagram SOBA"><svg class="ic"><use href="#i-instagram"/></svg></a><% } %>
+            <% if (contact.tiktok) { %><a href="<%= contact.tiktok %>" target="_blank" rel="noopener" aria-label="TikTok SOBA"><svg class="ic"><use href="#i-tiktok"/></svg></a><% } %>
+          </div>
+        </div>
+        <div><h4>Sản phẩm</h4><a href="/mau-thiep">Mẫu thiệp</a><a href="/tinh-nang">Tính năng</a><a href="/bang-gia">Bảng giá</a><a href="/thiep-khach-hang">Thiệp khách hàng</a></div>
+        <div><h4>Hỗ trợ</h4><a href="/huong-dan">Hướng dẫn tạo thiệp</a><a href="/cau-hoi-thuong-gap">Câu hỏi thường gặp</a><a href="/cam-nang">Cẩm nang cưới</a><a href="/gioi-thieu">Giới thiệu SOBA</a></div>
+        <div><h4>Liên hệ</h4>
+          <% if (contact.phone) { %><a href="tel:<%= contact.phone.replace(/\s/g, '') %>">Hotline <%= contact.phone %></a><% } %>
+          <% if (contact.zalo) { %><a href="<%= contact.zalo %>" target="_blank" rel="noopener">Chat qua Zalo</a><% } %>
+          <% if (contact.email) { %><a href="mailto:<%= contact.email %>"><%= contact.email %></a><% } %>
+        </div>
+      </div>
+      <div class="hw-foot-bottom"><span>© <%= new Date().getFullYear() %> SOBA</span><span><a href="/dieu-khoan">Điều khoản</a> · <a href="/chinh-sach-bao-mat">Bảo mật</a></span></div>
+    </div>
+  </footer>
+
+  <div class="ex-tools" aria-label="Hỗ trợ nhanh">
+    <% if (contact.zalo) { %><a href="<%= contact.zalo %>" target="_blank" rel="noopener" aria-label="Chat Zalo"><span class="zalo-txt">Zalo</span></a><% } %>
+    <% if (contact.phone) { %><a href="tel:<%= contact.phone.replace(/\s/g, '') %>" aria-label="Gọi hotline <%= contact.phone %>"><svg class="ic"><use href="#i-phone"/></svg></a><% } %>
+    <button type="button" data-to-top aria-label="Lên đầu trang"><svg class="ic"><use href="#i-arrow-up"/></svg></button>
+  </div>
+
+  <nav class="ex-bottom" aria-label="Điều hướng di động">
+    <a href="/" <%- navIs('/') %>><svg class="ic"><use href="#i-heart"/></svg><span>Trang chủ</span></a>
+    <a href="/mau-thiep" <%- navIs('/mau-thiep') %>><svg class="ic"><use href="#i-cards"/></svg><span>Mẫu thiệp</span></a>
+    <a href="/thiep/tao" class="ex-bottom-main" aria-label="Tạo thiệp"><svg class="ic"><use href="#i-plus"/></svg></a>
+    <a href="/tai-khoan"><svg class="ic"><use href="#i-photo"/></svg><span>Thiệp của tôi</span></a>
+    <a href="<%= user ? '/tai-khoan/cai-dat' : '/dang-nhap' %>"><svg class="ic"><use href="#i-user"/></svg><span><%= user ? 'Tài khoản' : 'Đăng nhập' %></span></a>
+  </nav>
+

@@ -1,0 +1,201 @@
+<%
+  var byKey = function (k) { return templates.find(function (t) { return t.key === k; }); };
+  var cvByKey = function (k) { return photoStarters.find(function (s) { return s.key === k; }); };
+  var heroFan = [cvByKey('hong-pastel-ngot-ngao'), cvByKey('tap-chi-tinh-yeu'), cvByKey('do-son-song-hy')].filter(Boolean);
+  var bubbles = [
+    ['', 'Nổi bật', 'heart', '#ffe4ea', '#d6456c'],
+    ['lang-man', 'Lãng mạn', 'sparkle', '#ffe9f3', '#c94f86'],
+    ['toi-gian', 'Tối giản', 'cards', '#f3efe9', '#8a6d57'],
+    ['truyen-thong', 'Truyền thống', 'hy', '#ffe7e2', '#c8102e'],
+    ['han-quoc', 'Hàn Quốc', 'photo', '#eef0ff', '#5b63c9'],
+    ['thinh-hanh', 'Thịnh hành', 'chart', '#fff1dc', '#c47a12'],
+    ['dien-anh', 'Điện ảnh', 'music', '#efe8ff', '#7a4cc2'],
+    ['vintage', 'Vintage', 'mail', '#e7f5ee', '#2f8a5c'],
+  ];
+%>
+<!-- ===== Hero ===== -->
+<section class="hw-hero hw-hero-photo">
+  <div class="hw-mosaic" aria-hidden="true">
+    <% photoStarters.concat(photoStarters).slice(0, 18).forEach(function (s) { %><img src="<%= s.thumb %>" alt="" loading="lazy"><% }) %>
+  </div>
+  <div class="hw-wrap hw-hero-grid">
+    <div class="hw-hero-text">
+      <p class="hw-eyebrow">Thiệp cưới online · SOBA</p>
+      <h1 class="hw-h1">Thiệp cưới xinh xắn,<br><span>tự tay thiết kế</span></h1>
+      <p class="hw-lead">Chọn mẫu bạn thích, thêm ảnh và thông tin lễ cưới, rồi gửi lời mời thật đáng yêu cho mọi người qua Zalo, Messenger.</p>
+      <div class="hw-cta">
+        <a class="hw-btn hw-btn-lg" href="<%= user ? '/thiep/tao' : '/dang-ky' %>">Tạo thiệp miễn phí<svg class="ic"><use href="#i-arrow-right"/></svg></a>
+        <a class="hw-underline" href="#mau">Xem mẫu thiệp<svg class="ic"><use href="#i-arrow-down"/></svg></a>
+      </div>
+      <p class="hw-note">
+        <span><svg class="ic"><use href="#i-check-circle"/></svg>Bắt đầu 0đ</span>
+        <span><svg class="ic"><use href="#i-check-circle"/></svg>Tên khách riêng</span>
+        <span><svg class="ic"><use href="#i-check-circle"/></svg>Mừng cưới QR</span>
+      </p>
+    </div>
+    <div class="hw-hero-visual">
+      <div class="hw-fan">
+        <% heroFan.forEach(function (s, i) { %>
+          <button type="button" class="tpl-thumb f<%= i + 1 %> hw-fan-photo" data-preview="cv:<%= s.key %>" aria-label="Xem trước mẫu <%= s.name %>">
+            <img src="<%= s.thumb %>" alt="">
+            <span><%= s.name %></span>
+          </button>
+        <% }) %>
+      </div>
+      <span class="hw-sticker s1" aria-hidden="true"><svg class="ic"><use href="#i-heart-fill"/></svg></span>
+      <span class="hw-sticker s2" aria-hidden="true">✦</span>
+      <span class="hw-sticker s3" aria-hidden="true">♡</span>
+      <div class="hw-hero-chip" aria-hidden="true"><span class="chip-ic"><svg class="ic"><use href="#i-check-circle"/></svg></span><span><strong>Anh Huy đã xác nhận</strong><small>Tham dự · 2 người</small></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Danh mục + lối tắt ===== -->
+<section class="hw-wrap" aria-label="Danh mục mẫu thiệp">
+  <nav class="hw-cats">
+    <% bubbles.forEach(function (b) { %>
+      <a href="/mau-thiep<%= b[0] ? '?dm=' + b[0] : '' %>"><span class="hw-cat-ic <%= b[2] === 'hy' ? 'hy' : '' %>" style="--c:<%= b[3] %>;--ci:<%= b[4] %>"><% if (b[2] === 'hy') { %>囍<% } else { %><svg class="ic"><use href="#i-<%= b[2] %>"/></svg><% } %></span><%= b[1] %></a>
+    <% }) %>
+  </nav>
+  <div class="hw-quick">
+    <a href="<%= user ? '/thiep/tao' : '/dang-ky' %>"><span><strong>Thiệp cưới online</strong><small>Tạo miễn phí</small></span><span class="hw-quick-ic"><svg class="ic"><use href="#i-heart"/></svg></span></a>
+    <a href="/mau-thiep?dm=truyen-thong"><span><strong>Vu Quy · Tân Hôn</strong><small>Mẫu chữ Hỷ</small></span><span class="hw-quick-ic">囍</span></a>
+    <a href="/huong-dan"><span><strong>Mời theo tên khách</strong><small>Mỗi người một link</small></span><span class="hw-quick-ic"><svg class="ic"><use href="#i-user-heart"/></svg></span></a>
+    <a href="/tinh-nang"><span><strong>Mừng cưới QR</strong><small>Mọi ngân hàng VN</small></span><span class="hw-quick-ic"><svg class="ic"><use href="#i-qr"/></svg></span></a>
+  </div>
+</section>
+
+<!-- ===== Mẫu thiết kế phổ biến (thiệp ảnh, kéo thả) ===== -->
+<section class="hw-section hw-popular" id="pho-bien" aria-labelledby="row-pho-bien">
+  <div class="hw-wrap">
+    <div class="ex-row">
+      <div class="ex-row-head">
+        <h3 id="row-pho-bien">Mẫu thiết kế phổ biến <small>Thiệp ảnh cưới thật · có nhạc nền · kéo thả tự do</small></h3>
+        <div class="ex-row-nav">
+          <button class="hw-arrow" type="button" data-row-prev aria-label="Cuộn trái"><svg class="ic"><use href="#i-chevron-left"/></svg></button>
+          <button class="hw-arrow" type="button" data-row-next aria-label="Cuộn phải"><svg class="ic"><use href="#i-chevron-right"/></svg></button>
+          <a class="ex-more" href="<%= user ? '/thiep/tao' : '/dang-ky' %>">Xem tất cả<svg class="ic"><use href="#i-chevron-right"/></svg></a>
+        </div>
+      </div>
+      <div class="ex-track" data-track>
+        <% photoStarters.forEach(function (s) { %>
+        <article class="xc xc-photo">
+          <div class="xc-thumb tpl-thumb">
+            <img src="<%= s.thumb %>" alt="Mẫu thiệp <%= s.name %>" loading="lazy">
+            <span class="badge tpl-badge badge-<%= s.tier %>"><% if (s.tier === 'premium') { %><svg class="ic"><use href="#i-crown"/></svg><% } %><%= TIER_LABEL[s.tier] %></span>
+            <span class="xc-photo-name"><%= s.name %></span>
+            <span class="xc-music" aria-label="Có nhạc nền"><svg class="ic"><use href="#i-music"/></svg></span>
+            <a class="xc-hit" href="/demo-thiet-ke/<%= s.key %>" data-preview="cv:<%= s.key %>" aria-label="Xem trước mẫu <%= s.name %>">
+              <span class="xc-hover" aria-hidden="true"><span>Mở thiệp<svg class="ic"><use href="#i-arrow-right"/></svg></span></span>
+            </a>
+          </div>
+          <div class="xc-meta">
+            <div class="xc-title"><h3><%= s.name %></h3><span class="xc-kind"><%= s.tags.join(' · ') %></span></div>
+            <p class="xc-price <%= s.tier === 'free' ? 'free' : '' %>"><%= s.tier === 'free' ? 'Miễn phí' : 'Gói ' + TIER_LABEL[s.tier] %></p>
+          </div>
+        </article>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</section>
+<script type="application/json" id="cv-data"><%- cvJson %></script>
+
+<!-- ===== Mẫu thiệp ===== -->
+<section class="hw-section" id="mau">
+  <div class="hw-wrap">
+    <div class="hw-sec-head hw-center">
+      <p class="hw-eyebrow">Mobile wedding invitation</p>
+      <h2 class="hw-h2">Mẫu thiệp cho <span class="script">ngày vui</span></h2>
+      <p class="hw-lead">Mỗi thẻ là màn hình đầu tiên của tấm thiệp thật. Bấm vào để xem trọn vẹn từ đầu đến cuối.</p>
+    </div>
+    <form class="hw-search" action="/mau-thiep" method="get" role="search" style="margin:0 auto">
+      <svg class="ic"><use href="#i-search"/></svg>
+      <label class="sr-only" for="home-q">Tìm mẫu thiệp</label>
+      <input id="home-q" name="q" type="search" placeholder="Tìm mẫu: hồng, chữ Hỷ, Hàn Quốc…" autocomplete="off">
+      <button type="submit" class="hw-btn">Tìm</button>
+    </form>
+
+    <% rows.forEach(function (row) { if (!row.items.length) return; %>
+    <div class="ex-row" aria-labelledby="row-<%= row.key %>">
+      <div class="ex-row-head">
+        <h3 id="row-<%= row.key %>"><%= row.title %> <small><%= row.sub %></small></h3>
+        <div class="ex-row-nav">
+          <button class="hw-arrow" type="button" data-row-prev aria-label="Cuộn trái"><svg class="ic"><use href="#i-chevron-left"/></svg></button>
+          <button class="hw-arrow" type="button" data-row-next aria-label="Cuộn phải"><svg class="ic"><use href="#i-chevron-right"/></svg></button>
+          <a class="ex-more" href="<%= row.href %>">Xem tất cả<svg class="ic"><use href="#i-chevron-right"/></svg></a>
+        </div>
+      </div>
+      <div class="ex-track" data-track>
+        <% row.items.forEach(function (tpl) { %><%- include('card', { tpl: tpl }) %><% }) %>
+      </div>
+    </div>
+    <% }) %>
+    <p class="hw-fine">Ảnh minh hoạ và thông tin trong thiệp mẫu chỉ mang tính ví dụ – bạn thay bằng ảnh và thông tin của hai bạn khi tạo thiệp.</p>
+  </div>
+</section>
+
+<!-- ===== Cách tạo ===== -->
+<section class="hw-section hw-tint" id="cach-tao">
+  <div class="hw-wrap">
+    <div class="hw-sec-head hw-center">
+      <p class="hw-eyebrow">Chỉ 3 bước</p>
+      <h2 class="hw-h2">Tạo thiệp trong <span class="script">10 phút</span></h2>
+      <p class="hw-lead">Không cần biết thiết kế. Điền đến đâu, thiệp xinh đến đó.</p>
+    </div>
+    <ol class="hw-steps">
+      <li><span>01</span><h3>Chọn mẫu ưng ý</h3><p>Từ thiệp ảnh lớn đến thiệp chữ Hỷ truyền thống. Xem trước toàn màn hình để so sánh.</p></li>
+      <li><span>02</span><h3>Thêm ảnh &amp; câu chuyện</h3><p>Điền tên, ảnh, lời mời, giờ lễ và địa chỉ. Bản xem trước thay đổi ngay khi bạn gõ.</p></li>
+      <li><span>03</span><h3>Gửi cho khách mời</h3><p>Tạo link có tên riêng cho từng người, gửi qua Zalo, Messenger và theo dõi phản hồi.</p></li>
+    </ol>
+    <p class="center"><a class="hw-btn-line" href="/huong-dan">Xem hướng dẫn chi tiết<svg class="ic" style="width:16px;height:16px"><use href="#i-arrow-right"/></svg></a></p>
+  </div>
+</section>
+
+<!-- ===== Tiện ích ===== -->
+<section class="hw-section" id="tien-ich">
+  <div class="hw-wrap hw-feat">
+    <div>
+      <div class="hw-sec-head">
+        <p class="hw-eyebrow">Cho người nhận thiệp</p>
+        <h2 class="hw-h2">Đẹp xinh, lại còn <span class="script">chu đáo</span></h2>
+        <p class="hw-lead">Mọi thông tin khách mời cần đều nằm gọn trong một đường link.</p>
+      </div>
+      <ul class="hw-list">
+        <% [['user-heart', 'Tên khách mời riêng', '“Trân trọng kính mời anh Huy” trên từng đường link'],
+            ['map', 'Chỉ đường Google Maps', 'Bản đồ nhà hàng, tư gia và nút chỉ đường một chạm'],
+            ['check-circle', 'Xác nhận tham dự', 'Khách báo số người – bạn chốt bàn, xuất file Excel'],
+            ['qr', 'Hộp mừng cưới VietQR', 'QR hai bên gia đình, sao chép số tài khoản nhanh'],
+            ['music', 'Album, nhạc nền & lời chúc', 'Lưu giữ khoảnh khắc và lời chúc phúc của mọi người']].forEach(function (f) { %>
+        <li><a href="/tinh-nang"><span class="li-ic"><svg class="ic"><use href="#i-<%= f[0] %>"/></svg></span><strong><%= f[1] %></strong><span class="li-sub"><%= f[2] %></span><svg class="ic li-go"><use href="#i-chevron-right"/></svg></a></li>
+        <% }) %>
+      </ul>
+    </div>
+    <div class="hw-feat-phone">
+      <div class="phone"><div class="phone-screen"><iframe src="/demo/anh-dao?to=Anh%20Huy" title="Thiệp mẫu Anh Đào" loading="lazy" tabindex="-1"></iframe></div></div>
+    </div>
+  </div>
+</section>
+
+<% if (showcase.length) { %>
+<section class="hw-section hw-tint">
+  <div class="hw-wrap">
+    <div class="ex-row-head"><h3>Thiệp khách hàng <small>Các cặp đôi đã gửi bằng SOBA</small></h3><a class="ex-more" href="/thiep-khach-hang">Xem tất cả<svg class="ic"><use href="#i-chevron-right"/></svg></a></div>
+    <div class="ex-track" data-track>
+      <% showcase.forEach(function (c) { %>
+      <article class="xc">
+        <a class="xc-thumb tpl-thumb" href="/t/<%= c.slug %>" target="_blank" rel="noopener"><%- include('../partials/mini', { tpl: c.tpl, names: { g: c.d.groom.name, b: c.d.bride.name }, date: util.formatDateVi(c.d.date).split(', ')[1] }) %></a>
+        <div class="xc-meta"><div class="xc-title"><h3><%= c.title %></h3></div><span class="xc-kind"><%= c.tpl.name %></span></div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== CTA ===== -->
+<section class="hw-cta-band">
+  <p class="hw-eyebrow">Ngày vui sắp đến rồi</p>
+  <h2 class="hw-h2">Bắt đầu tấm thiệp của hai bạn<br>ngay hôm nay</h2>
+  <a class="hw-btn hw-btn-light hw-btn-lg" href="<%= user ? '/thiep/tao' : '/dang-ky' %>">Tạo thiệp miễn phí<svg class="ic"><use href="#i-arrow-right"/></svg></a>
+</section>

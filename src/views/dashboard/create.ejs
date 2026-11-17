@@ -1,0 +1,78 @@
+<div class="page-title">
+  <div>
+    <h1>Chọn mẫu thiệp</h1>
+    <p>Bạn có thể đổi mẫu bất kỳ lúc nào trong trình chỉnh sửa.</p>
+  </div>
+</div>
+<section class="dz-pick">
+  <div class="dz-pick-head">
+    <h2>Thiết kế tự do <span class="badge badge-free">Mới</span></h2>
+    <p>Kéo thả chữ, ảnh, hình trang trí và tiện ích (đếm ngược, bản đồ, xác nhận tham dự, mừng cưới…) ở bất kỳ vị trí nào trên thiệp.</p>
+  </div>
+  <div class="tpl-grid">
+    <% starters.forEach(function (s) {
+         var order = ['free', 'basic', 'premium'];
+         var locked = order.indexOf(planKey) < order.indexOf(s.tier); %>
+    <div class="tpl-card">
+      <div class="tpl-thumb dz-pick-thumb">
+        <span class="badge tpl-badge badge-<%= s.tier %>"><% if (locked) { %><svg class="ic"><use href="#i-lock"/></svg><% } %><%= TIER_LABEL[s.tier] %></span>
+        <% if (s.thumb) { %>
+          <img src="<%= s.thumb %>" alt="Mẫu <%= s.name %>" loading="lazy">
+          <span class="dz-pick-name"><%= s.name %></span>
+        <% } else { %>
+          <iframe src="/demo-thiet-ke/<%= s.key %>" title="Xem trước mẫu <%= s.name %>" loading="lazy" tabindex="-1" scrolling="no"></iframe>
+        <% } %>
+      </div>
+      <div class="tpl-meta"><div><h3><%= s.name %></h3><p><%= s.tags.join(' · ') %> · ♫ nhạc nền</p></div></div>
+      <div style="display:flex;gap:8px">
+        <% if (locked) { %>
+          <a class="btn btn-soft btn-sm" style="flex:1" href="/nang-cap?goi=<%= s.tier %>"><svg class="ic"><use href="#i-crown"/></svg>Mở khoá</a>
+        <% } else { %>
+        <form method="post" action="/thiep/tao-thiet-ke" style="flex:1">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="starter" value="<%= s.key %>">
+          <button class="btn btn-primary btn-sm btn-block" type="submit">Thiết kế từ mẫu này</button>
+        </form>
+        <% } %>
+        <a class="btn btn-outline btn-sm" href="/demo-thiet-ke/<%= s.key %>" target="_blank" rel="noopener" aria-label="Xem trước mẫu <%= s.name %>"><svg class="ic"><use href="#i-eye"/></svg></a>
+      </div>
+    </div>
+    <% }) %>
+    <form method="post" action="/thiep/tao-thiet-ke" class="new-card dz-pick-blank">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button type="submit"><svg class="ic" style="margin:0 auto 8px"><use href="#i-plus"/></svg>Bắt đầu từ thiệp trống</button>
+    </form>
+  </div>
+</section>
+
+<div class="page-title" style="margin-top:36px">
+  <div>
+    <h2 style="margin:0">Mẫu thiệp có sẵn</h2>
+    <p>Điền thông tin theo từng mục, bố cục được thiết kế sẵn.</p>
+  </div>
+</div>
+<div class="tpl-grid">
+  <% templates.forEach(function (tpl) {
+       var order = ['free', 'basic', 'premium'];
+       var locked = order.indexOf(planKey) < order.indexOf(tpl.tier); %>
+  <div class="tpl-card">
+    <div class="tpl-thumb" <%- selected === tpl.key ? 'style="outline:3px solid var(--primary);outline-offset:3px"' : '' %>>
+      <span class="badge tpl-badge badge-<%= tpl.tier %>"><% if (locked) { %><svg class="ic"><use href="#i-lock"/></svg><% } %><%= TIER_LABEL[tpl.tier] %></span>
+      <%- include('../partials/mini', { tpl: tpl }) %>
+    </div>
+    <div class="tpl-meta"><div><h3><%= tpl.name %></h3><p><%= tpl.tags.join(' · ') %></p></div></div>
+    <div style="display:flex;gap:8px">
+      <% if (locked) { %>
+        <a class="btn btn-soft btn-sm" style="flex:1" href="/nang-cap?goi=<%= tpl.tier %>"><svg class="ic"><use href="#i-crown"/></svg>Mở khoá</a>
+      <% } else { %>
+        <form method="post" action="/thiep/tao" style="flex:1">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="template" value="<%= tpl.key %>">
+          <button class="btn btn-primary btn-sm btn-block" type="submit">Dùng mẫu này</button>
+        </form>
+      <% } %>
+      <a class="btn btn-outline btn-sm" href="/demo/<%= tpl.key %>" target="_blank" rel="noopener" aria-label="Xem trước mẫu <%= tpl.name %>"><svg class="ic"><use href="#i-eye"/></svg></a>
+    </div>
+  </div>
+  <% }) %>
+</div>

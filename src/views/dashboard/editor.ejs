@@ -1,0 +1,195 @@
+<%
+  var order = ['free', 'basic', 'premium'];
+  var tplNow = templates.find(function (t) { return t.key === card.template; }) || templates[0];
+  var swatches = ['', '#c8336b', '#d04a78', '#e46f95', '#b5546f', '#b3203f', '#9b4dca', '#c9567a', '#e08a5f'];
+  var v = function (val) { return val == null ? '' : val; };
+  var sw = function (k, on, label) { return { k: k, on: on, label: label }; };
+  var sectionToggles = [sw('countdown', data.sections.countdown, 'Đếm ngược & lịch'), sw('couple', data.sections.couple, 'Cô dâu & chú rể'), sw('story', data.sections.story, 'Chuyện tình yêu'), sw('events', data.sections.events, 'Sự kiện & bản đồ'), sw('album', data.sections.album, 'Album ảnh'), sw('rsvp', data.sections.rsvp, 'Xác nhận tham dự'), sw('wishes', data.sections.wishes, 'Sổ lời chúc'), sw('gift', data.sections.gift, 'Hộp mừng cưới')];
+%>
+<div class="editor" data-editor data-card-id="<%= card.id %>" data-csrf="<%= csrfToken %>" data-status="<%= card.status %>" data-url="<%= url %>" data-photo-limit="<%= planObj.limits.photos %>" data-custom-music="<%= planObj.features.customMusic ? 1 : 0 %>">
+  <div class="editor-form">
+    <div class="editor-bar">
+      <a class="btn btn-ghost btn-icon" href="/tai-khoan" aria-label="Quay lại danh sách thiệp"><svg class="ic"><use href="#i-arrow-left"/></svg></a>
+      <span class="save-state saved" data-save-state aria-live="polite">Đã lưu</span>
+      <button class="btn btn-outline btn-sm preview-toggle" type="button" data-preview-open><svg class="ic"><use href="#i-eye"/></svg>Xem</button>
+      <button class="btn btn-primary btn-sm" type="button" data-publish><%= card.status === 'published' ? 'Chia sẻ' : 'Xuất bản' %></button>
+    </div>
+
+    <form data-form autocomplete="off">
+      <!-- Mẫu & màu -->
+      <details class="ed-section" open>
+        <summary><svg class="ic"><use href="#i-palette"/></svg>Mẫu thiệp &amp; màu sắc<svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
+        <div class="ed-body">
+          <div class="tpl-pick" role="radiogroup" aria-label="Chọn mẫu thiệp">
+            <% templates.forEach(function (t) { var locked = order.indexOf(planKey) < order.indexOf(t.tier); %>
+            <label title="<%= t.name %><%= locked ? ' – cần gói ' + TIER_LABEL[t.tier] : '' %>">
+              <input type="radio" name="template" value="<%= t.key %>" <%= t.key === card.template ? 'checked' : '' %> data-locked="<%= locked ? 1 : 0 %>" data-tier="<%= t.tier %>">
+              <div class="tpl-thumb"><% if (locked) { %><span class="lock"><svg class="ic"><use href="#i-lock"/></svg></span><% } %><%- include('../partials/mini', { tpl: t, names: { g: 'Anh', b: 'Em' } }) %></div>
+              <span><%= t.name %></span>
+            </label>
+            <% }) %>
+          </div>
+          <div class="field">
+            <span class="label">Màu nhấn</span>
+            <div class="swatches" role="radiogroup" aria-label="Màu nhấn">
+              <% swatches.forEach(function (c, i) { %>
+              <label title="<%= c ? c : 'Mặc định của mẫu' %>">
+                <input type="radio" name="accent" value="<%= c %>" data-path="accent" <%= (data.accent || '') === c ? 'checked' : '' %>>
+                <span class="sw" style="background:<%= c || tplNow.theme.accent %>;<%= c ? '' : 'background-image:linear-gradient(135deg,transparent 46%,#fff 46%,#fff 54%,transparent 54%)' %>"></span>
+                <span class="sr-only"><%= c || 'Mặc định' %></span>
+              </label>
+              <% }) %>
+            </div>
+          </div>
+          <label class="switch"><input type="checkbox" data-path="effects.petals" <%= data.effects.petals ? 'checked' : '' %>><span class="track"></span><span>Hiệu ứng cánh hoa rơi <% if (!planObj.features.effects) { %><span class="badge badge-basic">Basic+</span><% } %></span></label>
+        </div>
+      </details>
+
+      <!-- Cô dâu chú rể -->
+      <details class="ed-section" open>
+        <summary><svg class="ic"><use href="#i-heart"/></svg>Cô dâu &amp; chú rể<svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
+        <div class="ed-body">
+          <% [['groom', 'Chú rể', 'Nhà trai'], ['bride', 'Cô dâu', 'Nhà gái']].forEach(function (p) { var o = data[p[0]]; %>
+          <div class="ed-group">
+            <strong><%= p[1] %></strong>
+            <div class="field"><label for="f-<%= p[0] %>-name">Tên hiển thị</label><input class="input" id="f-<%= p[0] %>-name" data-path="<%= p[0] %>.name" value="<%= v(o.name) %>" maxlength="60"></div>
+            <div class="row-2">
+              <div class="field"><label for="f-<%= p[0] %>-father">Bố (<%= p[2] %>)</label><input class="input" id="f-<%= p[0] %>-father" data-path="<%= p[0] %>.father" value="<%= v(o.father) %>" placeholder="Ông Nguyễn Văn A"></div>
+              <div class="field"><label for="f-<%= p[0] %>-mother">Mẹ (<%= p[2] %>)</label><input class="input" id="f-<%= p[0] %>-mother" data-path="<%= p[0] %>.mother" value="<%= v(o.mother) %>" placeholder="Bà Trần Thị B"></div>
+            </div>
+            <div class="field"><label for="f-<%= p[0] %>-intro">Giới thiệu ngắn</label><textarea class="textarea" id="f-<%= p[0] %>-intro" data-path="<%= p[0] %>.intro" rows="2" maxlength="300"><%= v(o.intro) %></textarea></div>
+            <div class="field"><span class="label">Ảnh <%= p[1].toLowerCase() %></span>
+              <div class="photo-slot" style="max-width:180px;aspect-ratio:3/4" data-photo="photos.<%= p[0] %>" tabindex="0" role="button" aria-label="Tải ảnh <%= p[1].toLowerCase() %>"></div>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+      </details>
+
+      <!-- Thông tin lời mời -->
+      <details class="ed-section">
+        <summary><svg class="ic"><use href="#i-calendar"/></svg>Ngày cưới &amp; lời mời<svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
+        <div class="ed-body">
+          <div class="row-2">
+            <div class="field"><label for="f-date">Ngày cưới</label><input class="input" type="date" id="f-date" data-path="date" value="<%= v(data.date) %>"></div>
+            <div class="field"><label for="f-time">Giờ</label><input class="input" type="time" id="f-time" data-path="time" value="<%= v(data.time) %>"></div>
+          </div>
+          <div class="field"><label for="f-lunar">Ngày âm lịch (tuỳ chọn)</label><input class="input" id="f-lunar" data-path="lunarDate" value="<%= v(data.lunarDate) %>" placeholder="Nhằm ngày 28 tháng 10 năm Bính Ngọ"></div>
+          <div class="field"><label for="f-headline">Dòng tiêu đề</label><input class="input" id="f-headline" data-path="headline" value="<%= v(data.headline) %>" placeholder="Save the date"></div>
+          <div class="field"><label for="f-invitation">Câu mời</label><input class="input" id="f-invitation" data-path="invitation" value="<%= v(data.invitation) %>"></div>
+          <div class="field"><label for="f-message">Lời nhắn tới khách</label><textarea class="textarea" id="f-message" data-path="message" rows="3" maxlength="600"><%= v(data.message) %></textarea></div>
+        </div>
+      </details>
+
+      <!-- Ảnh -->
+      <details class="ed-section">
+        <summary><svg class="ic"><use href="#i-photo"/></svg>Ảnh bìa &amp; album<svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
+        <div class="ed-body">
+          <div class="field"><span class="label">Ảnh bìa</span><div class="photo-slot" data-photo="photos.cover" tabindex="0" role="button" aria-label="Tải ảnh bìa"></div><span class="hint">Nên dùng ảnh dọc, tối thiểu 1080px.</span></div>
+          <div class="field">
+            <span class="label">Album ảnh <span class="muted" data-photo-count></span></span>
+            <div class="album-grid" data-album></div>
+            <button class="btn btn-outline btn-sm" type="button" data-album-add><svg class="ic"><use href="#i-upload"/></svg>Thêm ảnh vào album</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- Sự kiện -->
+      <details class="ed-section">
+        <summary><svg class="ic"><use href="#i-map"/></svg>Sự kiện &amp; địa điểm<svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
+        <div class="ed-body">
+          <div data-repeat="events" class="grid" style="gap:14px"></div>
+          <button class="btn btn-outline btn-sm" type="button" data-add="events"><svg class="ic"><use href="#i-plus"/></svg>Thêm sự kiện</button>
+          <span class="hint">Nhập địa chỉ đầy đủ – SOBA tự tạo bản đồ và nút chỉ đường.</span>
+        </div>
+      </details>
+
+      <!-- Chuyện tình -->
+      <details class="ed-section">
+        <summary><svg class="ic"><use href="#i-chat-heart"/></svg>Chuyện tình yêu<svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
+        <div class="ed-body">
+          <div data-repeat="story" class="grid" style="gap:14px"></div>
+          <button class="btn btn-outline btn-sm" type="button" data-add="story"><svg class="ic"><use href="#i-plus"/></svg>Thêm cột mốc</button>
+          <div class="field"><label for="f-quote">Câu trích dẫn</label><input class="input" id="f-quote" data-path="quote" value="<%= v(data.quote) %>"></div>
+        </div>
+      </details>
+
+      <!-- Mừng cưới -->
+      <details class="ed-section">
+        <summary><svg class="ic"><use href="#i-gift"/></svg>Hộp mừng cưới (QR)<svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
+        <div class="ed-body">
+          <p class="small muted" style="margin:0">Khách chuyển khoản trực tiếp vào tài khoản của bạn. SOBA không giữ tiền.</p>
+          <% [['groom', 'Tài khoản chú rể'], ['bride', 'Tài khoản cô dâu']].forEach(function (p) { var gft = data.gift[p[0]] || {}; %>
+          <div class="ed-group">
+            <strong><%= p[1] %></strong>
+            <div class="field"><label for="f-gift-<%= p[0] %>-bin">Ngân hàng</label>
+              <select class="select" id="f-gift-<%= p[0] %>-bin" data-path="gift.<%= p[0] %>.bin">
+                <option value="">— Không hiển thị —</option>
+                <% banks.forEach(function (bk) { %><option value="<%= bk.bin %>" <%= gft.bin === bk.bin ? 'selected' : '' %>><%= bk.name %></option><% }) %>
+              </select>
+            </div>
+            <div class="row-2">
+              <div class="field"><label for="f-gift-<%= p[0] %>-no">Số tài khoản</label><input class="input" id="f-gift-<%= p[0] %>-no" inputmode="numeric" data-path="gift.<%= p[0] %>.accountNo" value="<%= v(gft.accountNo) %>"></div>
+              <div class="field"><label for="f-gift-<%= p[0] %>-name">Chủ tài khoản</label><input class="input" id="f-gift-<%= p[0] %>-name" data-path="gift.<%= p[0] %>.accountName" value="<%= v(gft.accountName) %>" style="text-transform:uppercase"></div>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+      </details>
+
+      <!-- RSVP + nhạc -->
+      <details class="ed-section">
+        <summary><svg class="ic"><use href="#i-music"/></svg>Nhạc nền &amp; xác nhận tham dự<svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
+        <div class="ed-body">
+          <div class="field"><label for="f-music">Đường dẫn nhạc nền (.mp3, https)</label><input class="input" id="f-music" data-path="music.url" value="<%= v(data.music.url) %>" placeholder="https://..."></div>
+          <button class="btn btn-outline btn-sm" type="button" data-music-upload <%= planObj.features.customMusic ? '' : 'disabled' %>><svg class="ic"><use href="#i-upload"/></svg>Tải nhạc của bạn<% if (!planObj.features.customMusic) { %> (Basic+)<% } %></button>
+          <label class="switch"><input type="checkbox" data-path="music.autoplay" <%= data.music.autoplay ? 'checked' : '' %>><span class="track"></span><span>Tự phát nhạc khi khách mở thiệp</span></label>
+          <div class="field"><label for="f-deadline">Hạn xác nhận tham dự (tuỳ chọn)</label><input class="input" type="date" id="f-deadline" data-path="rsvpDeadline" value="<%= v(data.rsvpDeadline) %>"></div>
+        </div>
+      </details>
+
+      <!-- Hiển thị -->
+      <details class="ed-section">
+        <summary><svg class="ic"><use href="#i-eye"/></svg>Bật / tắt các mục<svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
+        <div class="ed-body" style="gap:4px">
+          <% sectionToggles.forEach(function (s) { %>
+          <label class="switch"><input type="checkbox" data-path="sections.<%= s.k %>" <%= s.on ? 'checked' : '' %>><span class="track"></span><span><%= s.label %></span></label>
+          <% }) %>
+        </div>
+      </details>
+    </form>
+  </div>
+
+  <div class="editor-preview" data-preview>
+    <div class="preview-tools">
+      <button class="btn btn-outline btn-sm preview-toggle" type="button" data-preview-close><svg class="ic"><use href="#i-x"/></svg>Đóng xem trước</button>
+      <a class="btn btn-outline btn-sm" href="/thiep/<%= card.id %>/xem-truoc" target="_blank" rel="noopener"><svg class="ic"><use href="#i-eye"/></svg>Mở tab mới</a>
+      <a class="btn btn-outline btn-sm" href="/thiep/<%= card.id %>/khach-moi"><svg class="ic"><use href="#i-users"/></svg>Khách mời</a>
+    </div>
+    <div class="phone">
+      <div class="phone-screen"><iframe data-preview-frame src="/thiep/<%= card.id %>/xem-truoc?mo=1" title="Xem trước thiệp"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal xuất bản -->
+<div class="modal" data-publish-modal role="dialog" aria-modal="true" aria-labelledby="pub-title">
+  <div class="modal-box">
+    <h2 id="pub-title" class="h3">Thiệp đã sẵn sàng!</h2>
+    <p class="muted">Gửi đường link dưới đây cho khách mời. Để ghi tên riêng từng khách, hãy dùng mục Khách mời.</p>
+    <div class="share-box" style="margin-bottom:16px"><input value="<%= url %>" readonly aria-label="Đường link thiệp"><button class="btn btn-soft btn-sm" type="button" data-copy="<%= url %>">Sao chép</button></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn btn-primary" href="/thiep/<%= card.id %>/khach-moi"><svg class="ic"><use href="#i-users"/></svg>Tạo link khách mời</a>
+      <a class="btn btn-outline" href="<%= url %>" target="_blank" rel="noopener">Mở thiệp</a>
+      <button class="btn btn-ghost" type="button" data-unpublish>Ẩn thiệp</button>
+      <button class="btn btn-ghost" type="button" data-modal-close style="margin-left:auto">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" data-file-image hidden>
+<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple data-file-album hidden>
+<input type="file" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,.mp3,.m4a" data-file-audio hidden>
+
+<script type="application/json" id="card-data"><%- JSON.stringify(data).replace(/</g, '\\u003c') %></script>
+<script src="/js/editor.js?v=<%= assetVersion %>" defer></script>

@@ -1,0 +1,49 @@
+<section class="hw-section hw-page-top">
+  <div class="hw-wrap">
+    <div class="hw-sec-head hw-center" style="margin-bottom:28px">
+      <p class="hw-eyebrow"><%= favMode ? 'Mẫu đã lưu' : 'Mobile wedding invitation' %></p>
+      <h1 class="hw-h2"><%- favMode ? 'Những mẫu bạn đã <span class="script">thương</span>' : 'Mẫu thiệp <span class="script">cưới</span>' %></h1>
+      <p class="hw-lead"><%= favMode ? 'Danh sách được lưu trên trình duyệt này. Bấm biểu tượng tim trên mẫu để thêm hoặc bỏ.' : 'Mỗi thẻ là màn hình đầu tiên của tấm thiệp thật. Bấm vào để xem trọn vẹn từ đầu đến cuối.' %></p>
+    </div>
+
+    <div class="hw-center" id="tim">
+      <form class="hw-search" action="/mau-thiep" method="get" role="search">
+        <svg class="ic"><use href="#i-search"/></svg>
+        <label class="sr-only" for="tq">Tìm mẫu thiệp</label>
+        <input id="tq" name="q" type="search" placeholder="Tìm theo tên mẫu hoặc phong cách…" value="<%= q %>" autocomplete="off">
+        <% if (dm) { %><input type="hidden" name="dm" value="<%= dm %>"><% } %>
+        <% if (goi) { %><input type="hidden" name="goi" value="<%= goi %>"><% } %>
+        <button type="submit" class="hw-btn">Tìm</button>
+      </form>
+      <nav class="hw-tabs" aria-label="Danh mục">
+        <a href="/mau-thiep<%= goi ? '?goi=' + goi : '' %>" aria-current="<%= !dm && !favMode ? 'true' : 'false' %>">Tất cả</a>
+        <% CATEGORIES.forEach(function (c) { %>
+          <a href="/mau-thiep?dm=<%= c.key %><%= goi ? '&goi=' + goi : '' %>" aria-current="<%= dm === c.key ? 'true' : 'false' %>"><%= c.name %></a>
+        <% }) %>
+        <a href="/mau-thiep?luu=1" aria-current="<%= favMode ? 'true' : 'false' %>"><svg class="ic"><use href="#i-heart"/></svg>Đã lưu</a>
+      </nav>
+    </div>
+    <div>
+      <% if (!favMode) { %>
+      <div class="hw-filter-row">
+        <p class="hw-count"><b><%= list.length %></b> mẫu<%= q ? ' cho “' + q + '”' : '' %><% if (q) { %> · <a href="/mau-thiep">Xoá tìm kiếm</a><% } %></p>
+        <nav class="ex-tier" aria-label="Lọc theo gói">
+          <% [['', 'Mọi gói'], ['free', 'Miễn phí'], ['basic', 'Basic'], ['premium', 'Premium']].forEach(function (t) { %>
+            <a href="/mau-thiep?<%= dm ? 'dm=' + dm + '&' : '' %><%= q ? 'q=' + encodeURIComponent(q) + '&' : '' %><%= t[0] ? 'goi=' + t[0] : '' %>" aria-current="<%= goi === t[0] ? 'true' : 'false' %>"><%= t[1] %></a>
+          <% }) %>
+        </nav>
+      </div>
+      <% } %>
+    </div>
+
+    <div class="ex-grid" data-grid <%- favMode ? 'data-fav-mode' : '' %>>
+      <% list.forEach(function (tpl) { %><%- include('card', { tpl: tpl }) %><% }) %>
+    </div>
+    <div class="empty" data-empty <%- list.length && !favMode ? 'hidden' : '' %>>
+      <svg class="ic"><use href="#i-heart"/></svg>
+      <p><%= favMode ? 'Bạn chưa lưu mẫu nào. Bấm biểu tượng tim trên mẫu thiệp để lưu lại.' : 'Không tìm thấy mẫu phù hợp. Thử từ khoá khác nhé.' %></p>
+      <a class="hw-btn" href="/mau-thiep">Xem tất cả mẫu</a>
+    </div>
+    <p class="hw-fine">Ảnh minh hoạ và thông tin trong thiệp mẫu chỉ mang tính ví dụ – bạn thay bằng ảnh và thông tin của hai bạn khi tạo thiệp.</p>
+  </div>
+</section>

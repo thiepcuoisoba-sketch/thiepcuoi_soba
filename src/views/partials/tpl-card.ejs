@@ -1,0 +1,13 @@
+<a class="tpl-card reveal" href="/mau-thiep/<%= tpl.key %>" data-tier="<%= tpl.tier %>" data-tags="<%= tpl.tags.join('|') %>">
+  <div class="tpl-thumb">
+    <span class="badge tpl-badge badge-<%= tpl.tier %>"><% if (tpl.tier === 'premium') { %><svg class="ic"><use href="#i-crown"/></svg><% } %><%= TIER_LABEL[tpl.tier] %></span>
+    <%- include('mini', { tpl: tpl }) %>
+    <div class="tpl-hover" aria-hidden="true"><span class="btn btn-primary btn-sm"><svg class="ic"><use href="#i-eye"/></svg>Xem mẫu</span></div>
+  </div>
+  <div class="tpl-meta">
+    <div>
+      <h3><%= tpl.name %></h3>
+      <p><%= tpl.tags.join(' · ') %></p>
+    </div>
+  </div>
+</a>

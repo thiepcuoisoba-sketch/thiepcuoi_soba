@@ -1,0 +1,21 @@
+<article>
+  <section class="page-hero">
+    <div class="container container-sm">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Trang chủ</a><span>/</span><a href="/cam-nang">Cẩm nang</a></nav>
+      <span class="badge"><%= article.category %> · <%= article.minutes %> phút đọc</span>
+      <h1 class="h2" style="margin-top:16px"><%= article.title %></h1>
+      <p class="lead"><%= article.excerpt %></p>
+    </div>
+  </section>
+  <div class="container container-sm prose" style="padding-bottom:64px">
+    <% article.body.forEach(function (b) { %>
+      <% if (b[0] === 'h2') { %><h2><%= b[1] %></h2><% } else { %><p><%= b[1] %></p><% } %>
+    <% }) %>
+  </div>
+</article>
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-head"><h2 class="h2">Bài viết liên quan</h2></div>
+    <div class="grid grid-2"><% related.forEach(function (a) { %><%- include('../partials/post-card', { a: a }) %><% }) %></div>
+  </div>
+</section>

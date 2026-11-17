@@ -1,0 +1,11 @@
+<% if (kind === 'floral') { %>
+<g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"><path d="M10 15h48M102 15h48"/><path d="M80 6c3 4 3 14 0 18-3-4-3-14 0-18Z"/><path d="M80 15c5-6 13-7 16-4-4 4-11 5-16 4ZM80 15c-5-6-13-7-16-4 4 4 11 5 16 4Z"/><circle cx="80" cy="15" r="1.8" fill="currentColor"/><path d="M58 15c4-4 8-4 10 0M102 15c-4-4-8-4-10 0"/><circle cx="10" cy="15" r="1.5" fill="currentColor"/><circle cx="150" cy="15" r="1.5" fill="currentColor"/></g>
+<% } else if (kind === 'leaf') { %>
+<g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"><path d="M14 15c22 0 44 0 66 0s44 0 66 0"/><path d="M40 15c4-7 10-9 14-8-2 5-8 8-14 8ZM54 15c-2 6-8 9-13 9 1-5 7-9 13-9ZM120 15c-4-7-10-9-14-8 2 5 8 8 14 8ZM106 15c2 6 8 9 13 9-1-5-7-9-13-9Z"/><circle cx="80" cy="15" r="4"/><circle cx="80" cy="15" r="1.4" fill="currentColor"/></g>
+<% } else if (kind === 'star') { %>
+<g fill="currentColor"><path d="M80 5l2 8 8 2-8 2-2 8-2-8-8-2 8-2z"/><circle cx="56" cy="15" r="1.2"/><circle cx="104" cy="15" r="1.2"/><circle cx="40" cy="15" r=".9"/><circle cx="120" cy="15" r=".9"/></g><g stroke="currentColor" stroke-width=".8"><path d="M14 15h20M126 15h20"/></g>
+<% } else if (kind === 'hy') { %>
+<g fill="none" stroke="currentColor" stroke-width="1.1"><path d="M10 15h52M98 15h52"/><rect x="70" y="5" width="20" height="20" transform="rotate(45 80 15)"/><rect x="74" y="9" width="12" height="12" transform="rotate(45 80 15)"/></g>
+<% } else { %>
+<g fill="none" stroke="currentColor" stroke-width="1"><path d="M20 15h50M90 15h50"/><circle cx="80" cy="15" r="3"/></g>
+<% } %>

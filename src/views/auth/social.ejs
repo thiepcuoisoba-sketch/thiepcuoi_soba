@@ -1,0 +1,7 @@
+<% if (socialEnabled.google || socialEnabled.facebook) { %>
+<div class="grid" style="gap:10px;margin-bottom:20px">
+  <% if (socialEnabled.google) { %><a class="btn btn-social" href="/auth/google"><svg class="ic"><use href="#i-google"/></svg>Tiếp tục với Google</a><% } %>
+  <% if (socialEnabled.facebook) { %><a class="btn btn-social btn-facebook" href="/auth/facebook"><svg class="ic"><use href="#i-facebook"/></svg>Tiếp tục với Facebook</a><% } %>
+</div>
+<div class="divider" style="margin-bottom:20px">hoặc dùng email</div>
+<% } %>

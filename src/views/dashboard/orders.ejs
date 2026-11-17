@@ -1,0 +1,22 @@
+<div class="page-title"><div><h1>Lịch sử thanh toán</h1><p>Các đơn nâng cấp gói của bạn.</p></div><a class="btn btn-primary" href="/bang-gia">Xem các gói</a></div>
+<% if (!orders.length) { %>
+  <div class="card empty"><svg class="ic"><use href="#i-receipt"/></svg><p>Bạn chưa có giao dịch nào.</p></div>
+<% } else { %>
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Mã đơn</th><th>Gói</th><th>Số tiền</th><th>Trạng thái</th><th>Thời gian</th><th></th></tr></thead>
+    <tbody>
+      <% orders.forEach(function (o) { %>
+      <tr>
+        <td><strong><%= o.code %></strong></td>
+        <td><%= PLANS[o.plan] ? PLANS[o.plan].name : o.plan %></td>
+        <td><%= vnd(o.amount) %></td>
+        <td><span class="badge <%= o.status === 'paid' ? 'badge-success' : o.status === 'pending' ? 'badge-warning' : 'badge-muted' %>"><%= o.status === 'paid' ? 'Đã thanh toán' : o.status === 'pending' ? 'Chờ thanh toán' : 'Đã huỷ' %></span></td>
+        <td class="small muted"><%= formatDateTime(o.paid_at || o.created_at) %></td>
+        <td><% if (o.status === 'pending') { %><a class="btn btn-soft btn-sm" href="/nang-cap?goi=<%= o.plan %>">Thanh toán</a><% } %></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } %>

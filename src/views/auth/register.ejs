@@ -1,0 +1,20 @@
+<div class="auth-wrap">
+  <%- include('art') %>
+  <div class="auth-form">
+    <div class="auth-box">
+      <h1>Tạo tài khoản SOBA</h1>
+      <p class="muted" style="margin-bottom:28px">Miễn phí – bắt đầu thiết kế thiệp cưới của bạn ngay.</p>
+      <%- include('social') %>
+      <% if (error) { %><div class="alert alert-error" role="alert" style="margin-bottom:16px"><svg class="ic"><use href="#i-x"/></svg><span><%= error %></span></div><% } %>
+      <form class="form" method="post" action="/dang-ky">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="field"><label for="name">Họ và tên</label><input class="input" id="name" name="name" required autocomplete="name" value="<%= form.name || '' %>"></div>
+        <div class="field"><label for="email">Email</label><input class="input" id="email" name="email" type="email" required autocomplete="email" value="<%= form.email || '' %>"></div>
+        <div class="field"><label for="password">Mật khẩu</label><input class="input" id="password" name="password" type="password" required minlength="8" autocomplete="new-password" aria-describedby="pw-hint"><span class="hint" id="pw-hint">Tối thiểu 8 ký tự.</span></div>
+        <label class="check"><input type="checkbox" name="agree" required> <span>Tôi đồng ý với <a href="/dieu-khoan" target="_blank">Điều khoản sử dụng</a> và <a href="/chinh-sach-bao-mat" target="_blank">Chính sách bảo mật</a>.</span></label>
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Tạo tài khoản</button>
+      </form>
+      <p class="center muted" style="margin-top:24px">Đã có tài khoản? <a href="/dang-nhap">Đăng nhập</a></p>
+    </div>
+  </div>
+</div>

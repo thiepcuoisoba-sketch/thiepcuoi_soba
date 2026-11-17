@@ -1,0 +1,222 @@
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">Thiệp cưới online</span>
+      <h1 class="h1">Gửi lời mời <span class="script">yêu thương</span><br>chỉ bằng một đường link</h1>
+      <p class="lead">SOBA giúp bạn tạo thiệp cưới online lãng mạn trong 10 phút – tên khách mời riêng, xác nhận tham dự, bản đồ chỉ đường và hộp mừng cưới QR, tất cả trong một tấm thiệp.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href="<%= user ? '/thiep/tao' : '/dang-ky' %>">Tạo thiệp miễn phí <svg class="ic"><use href="#i-arrow-right"/></svg></a>
+        <a class="btn btn-outline btn-lg" href="/mau-thiep">Xem mẫu thiệp</a>
+      </div>
+      <div class="hero-trust">
+        <span><svg class="ic"><use href="#i-check-circle"/></svg>Bắt đầu với 0đ</span>
+        <span><svg class="ic"><use href="#i-check-circle"/></svg>Không cần biết thiết kế</span>
+        <span><svg class="ic"><use href="#i-check-circle"/></svg>Gửi qua Zalo, Messenger</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="phone">
+        <div class="phone-screen">
+          <iframe src="/demo/hong-phan?to=Anh%20Huy" title="Xem trước thiệp cưới mẫu Hồng Phấn" loading="eager" tabindex="-1"></iframe>
+        </div>
+      </div>
+      <div class="float-card fc-1" aria-hidden="true">
+        <span class="fc-ic"><svg class="ic"><use href="#i-check-circle"/></svg></span>
+        <span><strong>Anh Huy đã xác nhận</strong><small>Tham dự · 2 người</small></span>
+      </div>
+      <div class="float-card fc-2" aria-hidden="true">
+        <span class="fc-ic"><svg class="ic"><use href="#i-gift"/></svg></span>
+        <span><strong>Mừng cưới QR</strong><small>Vào thẳng tài khoản</small></span>
+      </div>
+      <div class="float-card fc-3" aria-hidden="true">
+        <span class="fc-ic"><svg class="ic"><use href="#i-chat-heart"/></svg></span>
+        <span><strong>+12 lời chúc mới</strong><small>Hôm nay</small></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-tint">
+  <div class="container pain">
+    <div class="reveal">
+      <span class="eyebrow">Bạn đang chuẩn bị</span>
+      <div class="pain-number">100+<small> khách mời?</small></div>
+      <p class="lead" style="margin-top:16px">Mời cưới theo cách truyền thống tốn nhiều công sức hơn bạn nghĩ.</p>
+    </div>
+    <div class="pain-list">
+      <% PAINS.forEach(function (p, i) { %>
+      <div class="pain-item reveal">
+        <span class="num">0<%= i + 1 %></span>
+        <div><strong><%= p.title %></strong><span><%= p.text %></span></div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="mau-thiep">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Kho mẫu SOBA</span>
+      <h2 class="h2">Mẫu thiệp được <span class="accent-italic">yêu thích</span></h2>
+      <p class="lead">Mỗi mẫu là một câu chuyện: từ dịu dàng hoa lá, tối giản thanh lịch đến truyền thống và điện ảnh.</p>
+    </div>
+    <div class="tpl-grid">
+      <% templates.forEach(function (tpl) { %>
+        <%- include('../partials/tpl-card', { tpl: tpl }) %>
+      <% }) %>
+    </div>
+    <div class="center" style="margin-top:44px">
+      <a class="btn btn-outline btn-lg" href="/mau-thiep">Xem tất cả mẫu thiệp <svg class="ic"><use href="#i-arrow-right"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-tint" id="tinh-nang">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Tính năng</span>
+      <h2 class="h2">Mọi thứ cho ngày trọng đại, <span class="accent-italic">trong một tấm thiệp</span></h2>
+    </div>
+    <div class="grid grid-4">
+      <% FEATURES.forEach(function (f) { %>
+      <div class="card card-hover reveal">
+        <div class="feature-ic"><svg class="ic"><use href="#i-<%= f.icon %>"/></svg></div>
+        <h3><%= f.title %></h3>
+        <p><%= f.text %></p>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Chỉ 3 bước</span>
+      <h2 class="h2">Tạo thiệp cưới online <span class="accent-italic">trong 10 phút</span></h2>
+    </div>
+    <div class="steps">
+      <% STEPS.forEach(function (s, i) { %>
+      <div class="step reveal">
+        <div class="step-num"><%= i + 1 %></div>
+        <h3><%= s.title %></h3>
+        <p><%= s.text %></p>
+      </div>
+      <% }) %>
+    </div>
+    <div class="center" style="margin-top:40px">
+      <a class="btn btn-primary btn-lg" href="<%= user ? '/thiep/tao' : '/dang-ky' %>">Bắt đầu tạo thiệp</a>
+      <a class="btn btn-ghost btn-lg" href="/huong-dan">Xem hướng dẫn chi tiết</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="band reveal">
+      <div class="band-grid">
+        <div class="band-stat"><strong>10 phút</strong><span>để hoàn thành một tấm thiệp</span></div>
+        <div class="band-stat"><strong><%= templates.length %> mẫu</strong><span>thiết kế độc quyền, cập nhật liên tục</span></div>
+        <div class="band-stat"><strong>0đ</strong><span>để bắt đầu, nâng cấp khi cần</span></div>
+        <div class="band-stat"><strong><%= publishedCount > 0 ? publishedCount.toLocaleString('vi-VN') : '1 link' %></strong><span><%= publishedCount > 0 ? 'thiệp đã được gửi đi' : 'cho tất cả khách mời' %></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<% if (showcase.length) { %>
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Thiệp thật</span>
+      <h2 class="h2">Được các cặp đôi <span class="accent-italic">tin chọn</span></h2>
+    </div>
+    <div class="tpl-grid">
+      <% showcase.slice(0, 8).forEach(function (c) { %>
+      <a class="show-card" href="/t/<%= c.slug %>" target="_blank" rel="noopener">
+        <div class="tpl-thumb"><%- include('../partials/mini', { tpl: c.tpl, names: { g: c.d.groom.name, b: c.d.bride.name }, date: util.formatDateVi(c.d.date).split(', ')[1] }) %></div>
+        <strong><%= c.title %></strong>
+      </a>
+      <% }) %>
+    </div>
+    <div class="center" style="margin-top:36px"><a class="btn btn-outline" href="/thiep-khach-hang">Xem thêm thiệp khách hàng</a></div>
+  </div>
+</section>
+<% } %>
+
+<% if (TESTIMONIALS.length) { %>
+<section class="section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Cảm nhận</span>
+      <h2 class="h2">Những lời <span class="accent-italic">yêu thương</span> gửi SOBA</h2>
+    </div>
+    <div class="grid grid-3">
+      <% TESTIMONIALS.forEach(function (t) { %>
+      <figure class="quote-card reveal" style="margin:0">
+        <div class="stars" aria-label="5 sao"><% for (var s = 0; s < 5; s++) { %><svg class="ic"><use href="#i-heart"/></svg><% } %></div>
+        <blockquote style="margin:0"><p>“<%= t.text %>”</p></blockquote>
+        <figcaption class="quote-who"><span class="avatar"><%= t.name.charAt(0) %></span><span><strong><%= t.name %></strong><br><small class="muted"><%= t.place %></small></span></figcaption>
+      </figure>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Bảng giá</span>
+      <h2 class="h2">Bắt đầu miễn phí, <span class="accent-italic">nâng cấp khi cần</span></h2>
+    </div>
+    <div class="pricing">
+      <% Object.values(PLANS).forEach(function (p) { %>
+      <div class="price-card <%= p.popular ? 'is-popular' : '' %> reveal">
+        <% if (p.popular) { %><span class="badge ribbon" style="background:var(--primary);color:#fff">Phổ biến nhất</span><% } %>
+        <h3><%= p.name %></h3>
+        <p class="tagline"><%= p.tagline %></p>
+        <div class="price"><strong><%= p.price ? util.vnd(p.price) : '0đ' %></strong><% if (p.originalPrice) { %><del><%= util.vnd(p.originalPrice) %></del><% } %></div>
+        <p class="price-note"><%= p.price ? 'Thanh toán một lần · dùng ' + p.durationMonths + ' tháng' : 'Miễn phí mãi mãi' %></p>
+        <ul class="price-list">
+          <li><svg class="ic"><use href="#i-check"/></svg><%= p.limits.cards %> thiệp · <%= p.limits.photos %> ảnh</li>
+          <li><svg class="ic"><use href="#i-check"/></svg><%= p.limits.views.toLocaleString('vi-VN') %> lượt xem</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>Lưu thiệp <%= p.limits.storageMonths >= 12 ? p.limits.storageMonths / 12 + ' năm' : p.limits.storageMonths + ' tháng' %></li>
+        </ul>
+        <a class="btn <%= p.popular ? 'btn-primary' : 'btn-outline' %> btn-block" href="/bang-gia">Xem chi tiết gói</a>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Cẩm nang</span>
+      <h2 class="h2">Kinh nghiệm cưới hỏi <span class="accent-italic">hữu ích</span></h2>
+    </div>
+    <div class="grid grid-3">
+      <% articles.forEach(function (a) { %><%- include('../partials/post-card', { a: a }) %><% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Hỏi đáp</span>
+      <h2 class="h2">Câu hỏi thường gặp</h2>
+    </div>
+    <%- include('../partials/faq', { items: FAQ }) %>
+    <p class="center" style="margin-top:24px"><a href="/cau-hoi-thuong-gap">Xem tất cả câu hỏi</a></p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <%- include('../partials/cta') %>
+  </div>
+</section>

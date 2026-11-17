@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="vi" class="no-js">
+<head>
+  <%- include('../partials/head') %>
+  <link rel="stylesheet" href="/css/explore.css?v=<%= assetVersion %>">
+</head>
+<body class="explore">
+  <%- include('../partials/icons') %>
+  <a class="skip-link" href="#main">Bỏ qua tới nội dung</a>
+  <%- include('../partials/flash') %>
+  <%- include('../partials/hw-header') %>
+  <main id="main">
+    <%- body %>
+  </main>
+
+  <%- include('../partials/hw-footer') %>
+  <%- include('../explore/preview-modal') %>
+  <script src="/js/app.js?v=<%= assetVersion %>" defer></script>
+  <script src="/js/explore.js?v=<%= assetVersion %>" defer></script>
+</body>
+</html>

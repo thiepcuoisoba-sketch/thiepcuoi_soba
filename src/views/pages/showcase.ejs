@@ -1,0 +1,23 @@
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Trang chủ</a><span>/</span><span>Thiệp khách hàng</span></nav>
+    <h1 class="h1" style="font-size:clamp(34px,5vw,56px)">Thiệp từ <span class="accent-italic">khách hàng thực tế</span></h1>
+    <p class="lead">Những tấm thiệp được chính các cặp đôi tạo trên SOBA.</p>
+  </div>
+</section>
+<section class="section" style="padding-top:24px">
+  <div class="container">
+    <% if (showcase.length) { %>
+    <div class="tpl-grid">
+      <% showcase.forEach(function (c) { %>
+      <a class="show-card" href="/t/<%= c.slug %>" target="_blank" rel="noopener">
+        <div class="tpl-thumb"><%- include('../partials/mini', { tpl: c.tpl, names: { g: c.d.groom.name, b: c.d.bride.name }, date: util.formatDateVi(c.d.date).split(', ')[1] }) %></div>
+        <strong><%= c.title %></strong>
+      </a>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <div class="empty"><svg class="ic"><use href="#i-heart"/></svg><p>Những tấm thiệp đầu tiên sẽ sớm xuất hiện tại đây.</p><a class="btn btn-primary" href="/mau-thiep">Tạo thiệp của bạn</a></div>
+    <% } %>
+  </div>
+</section>

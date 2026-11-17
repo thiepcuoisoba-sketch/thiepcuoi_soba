@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="vi" class="no-js">
+<head>
+  <%- include('../partials/head') %>
+  <meta name="robots" content="noindex">
+</head>
+<body class="<%= typeof bodyClass !== 'undefined' ? bodyClass : '' %>">
+  <%- include('../partials/icons') %>
+  <a class="skip-link" href="#main">Bỏ qua tới nội dung</a>
+  <%- include('../partials/flash') %>
+  <% var isAdminArea = path.indexOf('/quan-tri') === 0; %>
+  <div class="app-shell">
+    <aside class="app-side" data-side aria-label="Thanh điều hướng">
+      <a class="logo" href="/"><%- include('../partials/logo') %></a>
+      <% if (isAdminArea) { %>
+        <% [['/quan-tri','chart','Tổng quan'],['/quan-tri/nguoi-dung','users','Người dùng'],['/quan-tri/don-hang','receipt','Đơn hàng'],['/quan-tri/thiep','cards','Thiệp'],['/quan-tri/lien-he','inbox','Liên hệ']].forEach(function (l) { %>
+          <a class="side-link" href="<%= l[0] %>" <%- path === l[0] || (path === '/quan-tri/' && l[0] === '/quan-tri') ? 'aria-current="page"' : '' %>><svg class="ic"><use href="#i-<%= l[1] %>"/></svg><%= l[2] %></a>
+        <% }) %>
+        <div class="side-sep">Người dùng</div>
+        <a class="side-link" href="/tai-khoan"><svg class="ic"><use href="#i-arrow-left"/></svg>Về trang của tôi</a>
+      <% } else { %>
+        <a class="side-link" href="/tai-khoan" <%- path === '/tai-khoan' ? 'aria-current="page"' : '' %>><svg class="ic"><use href="#i-cards"/></svg>Thiệp của tôi</a>
+        <a class="side-link" href="/thiep/tao" <%- path === '/thiep/tao' ? 'aria-current="page"' : '' %>><svg class="ic"><use href="#i-plus"/></svg>Tạo thiệp mới</a>
+        <a class="side-link" href="/mau-thiep"><svg class="ic"><use href="#i-palette"/></svg>Kho mẫu thiệp</a>
+        <div class="side-sep">Tài khoản</div>
+        <a class="side-link" href="/bang-gia"><svg class="ic"><use href="#i-crown"/></svg>Nâng cấp gói</a>
+        <a class="side-link" href="/tai-khoan/don-hang" <%- path === '/tai-khoan/don-hang' ? 'aria-current="page"' : '' %>><svg class="ic"><use href="#i-receipt"/></svg>Lịch sử thanh toán</a>
+        <a class="side-link" href="/tai-khoan/cai-dat" <%- path === '/tai-khoan/cai-dat' ? 'aria-current="page"' : '' %>><svg class="ic"><use href="#i-settings"/></svg>Cài đặt</a>
+        <% if (user && user.role === 'admin') { %><a class="side-link" href="/quan-tri"><svg class="ic"><use href="#i-chart"/></svg>Quản trị</a><% } %>
+        <div class="plan-box">
+          <strong><svg class="ic" style="color:var(--primary)"><use href="#i-crown"/></svg>Gói <%= plan.name %></strong>
+          <p><% if (planKey !== 'free' && user.plan_expires_at) { %>Hết hạn <%= util.formatDateTime(user.plan_expires_at).split(' ')[1] %><% } else { %>Nâng cấp để mở khoá mẫu cao cấp, thêm ảnh &amp; lượt xem.<% } %></p>
+          <a class="btn btn-primary btn-sm btn-block" href="/bang-gia"><%= planKey === 'premium' ? 'Gia hạn' : 'Nâng cấp' %></a>
+        </div>
+      <% } %>
+    </aside>
+    <div class="scrim" data-scrim></div>
+    <div class="app-main">
+      <header class="app-top">
+        <button class="btn btn-ghost btn-icon menu-toggle" type="button" aria-label="Mở menu" aria-expanded="false" data-side-toggle><svg class="ic"><use href="#i-menu"/></svg></button>
+        <div class="user-chip dropdown" data-dropdown>
+          <button class="btn btn-ghost btn-sm" type="button" data-dropdown-btn aria-expanded="false" aria-haspopup="true" style="gap:10px;padding-left:6px">
+            <span class="avatar"><% if (user.avatar) { %><img src="<%= user.avatar %>" alt="" referrerpolicy="no-referrer"><% } else { %><%= (user.name || user.email).charAt(0).toUpperCase() %><% } %></span>
+            <span class="hide-mobile" style="max-width:160px;overflow:hidden;text-overflow:ellipsis"><%= user.name || user.email %></span>
+            <svg class="ic"><use href="#i-chevron-down"/></svg>
+          </button>
+          <div class="dropdown-menu" role="menu">
+            <div style="padding:8px 12px 10px;border-bottom:1px solid var(--line);margin-bottom:6px"><strong style="display:block;font-size:14.5px"><%= user.name %></strong><span class="small muted"><%= user.email %></span></div>
+            <a href="/tai-khoan" role="menuitem"><svg class="ic"><use href="#i-cards"/></svg>Thiệp của tôi</a>
+            <a href="/tai-khoan/cai-dat" role="menuitem"><svg class="ic"><use href="#i-settings"/></svg>Cài đặt</a>
+            <a href="/" role="menuitem"><svg class="ic"><use href="#i-heart"/></svg>Trang chủ SOBA</a>
+            <form method="post" action="/dang-xuat"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button type="submit" class="danger" role="menuitem"><svg class="ic"><use href="#i-logout"/></svg>Đăng xuất</button></form>
+          </div>
+        </div>
+      </header>
+      <main id="main" class="app-content">
+        <%- body %>
+      </main>
+    </div>
+  </div>
+  <script src="/js/app.js?v=<%= assetVersion %>" defer></script>
+  <%- typeof script !== 'undefined' ? script : '' %>
+</body>
+</html>

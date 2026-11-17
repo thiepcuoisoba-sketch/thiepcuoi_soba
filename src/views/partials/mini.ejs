@@ -1,0 +1,47 @@
+<%# Bìa thiệp thu nhỏ vẽ bằng CSS. Tham số: tpl, names ({g,b}, tuỳ chọn), date (tuỳ chọn) %>
+<% var _g = (typeof names !== 'undefined' && names && names.g) || 'Đức Minh'; var _b = (typeof names !== 'undefined' && names && names.b) || 'Bảo Ngọc'; var _date = (typeof date !== 'undefined' && date) || '18 · 01 · 2027'; var th = tpl.thumb || 'classic'; %>
+<div class="mini th-<%= th %> is-<%= tpl.cover %> <%= tpl.dark ? 'is-dark' : '' %>" style="--t-bg:<%= tpl.theme.bg %>;--t-surface:<%= tpl.theme.surface %>;--t-ink:<%= tpl.theme.ink %>;--t-muted:<%= tpl.theme.muted %>;--t-accent:<%= tpl.theme.accent %>;--t-accent2:<%= tpl.theme.accent2 %>;--t-line:<%= tpl.theme.line %>;--t-display:<%= tpl.fonts.display %>;--t-heading:<%= tpl.fonts.heading %>;--t-body:<%= tpl.fonts.body %>">
+<% if (th === 'photo') { %>
+  <div class="mini-photo"><div class="mini-art" style="--c2:<%= tpl.theme.surface %>;--c3:<%= tpl.theme.accent %>"><%- include('couple') %></div></div>
+  <div class="mini-cap">
+    <div class="mini-kicker"><%= tpl.title %></div>
+    <div class="mini-names one"><%= _g %> &amp; <%= _b %></div>
+    <div class="mini-date"><%= _date %></div>
+  </div>
+<% } else if (th === 'poster') { %>
+  <div class="mini-poster-title"><%= tpl.title %></div>
+  <div class="mini-art" style="--c2:<%= tpl.theme.surface %>;--c3:<%= tpl.theme.accent2 %>"><%- include('couple') %></div>
+  <div class="mini-names one"><%= _g %> &amp; <%= _b %></div>
+  <div class="mini-date"><%= _date %></div>
+<% } else if (th === 'newspaper') { %>
+  <div class="np-mast">BÁO CƯỚI</div>
+  <div class="np-meta"><span>Số đặc biệt</span><span><%= _date %></span></div>
+  <div class="np-head">Tin vui: <%= _g %> &amp; <%= _b %> chính thức về chung một nhà!</div>
+  <div class="np-body">
+    <div class="np-photo mini-art" style="--c2:<%= tpl.theme.surface %>;--c3:<%= tpl.theme.accent %>"><%- include('couple') %></div>
+    <div class="np-cols"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+<% } else if (th === 'arch') { %>
+  <div class="mini-arch"><div class="mini-art" style="--c2:<%= tpl.theme.surface %>;--c3:<%= tpl.theme.accent %>"><%- include('couple') %></div></div>
+  <div class="mini-kicker"><%= tpl.title %></div>
+  <div class="mini-names one"><%= _g %> &amp; <%= _b %></div>
+  <div class="mini-date"><%= _date %></div>
+<% } else if (th === 'hy') { %>
+  <div class="mini-lantern l"></div><div class="mini-lantern r"></div>
+  <div class="mini-hy" aria-hidden="true">囍</div>
+  <div class="mini-kicker"><%= tpl.title %></div>
+  <div class="mini-names"><%= _g %></div>
+  <div class="mini-amp">&amp;</div>
+  <div class="mini-names"><%= _b %></div>
+  <div class="mini-date"><%= _date %></div>
+<% } else { %>
+  <% if (tpl.cover !== 'film') { %><svg class="mini-orn" viewBox="0 0 160 30" aria-hidden="true"><%- include('ornament', { kind: tpl.ornament }) %></svg><% } %>
+  <div class="mini-kicker"><%= tpl.title %></div>
+  <div class="mini-names"><%= _g %></div>
+  <div class="mini-amp">&amp;</div>
+  <div class="mini-names"><%= _b %></div>
+  <div class="mini-date"><%= _date %></div>
+  <% if (tpl.cover === 'letter') { %><div class="mini-seal" aria-hidden="true">S</div><% } %>
+  <% if (tpl.cover === 'envelope') { %><div class="mini-env" aria-hidden="true"></div><% } %>
+<% } %>
+</div>

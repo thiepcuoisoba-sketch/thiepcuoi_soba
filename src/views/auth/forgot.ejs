@@ -1,0 +1,20 @@
+<div class="auth-wrap">
+  <%- include('art') %>
+  <div class="auth-form">
+    <div class="auth-box">
+      <h1>Quên mật khẩu</h1>
+      <% if (sent) { %>
+        <div class="alert alert-success" role="status" style="margin:20px 0"><svg class="ic"><use href="#i-mail"/></svg><span>Nếu email tồn tại trong hệ thống, chúng tôi đã gửi liên kết đặt lại mật khẩu. Vui lòng kiểm tra hộp thư (kể cả thư rác).</span></div>
+        <a class="btn btn-outline btn-block" href="/dang-nhap">Quay lại đăng nhập</a>
+      <% } else { %>
+        <p class="muted" style="margin-bottom:28px">Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết để bạn đặt lại mật khẩu.</p>
+        <form class="form" method="post" action="/quen-mat-khau">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="field"><label for="email">Email</label><input class="input" id="email" name="email" type="email" required autocomplete="email"></div>
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Gửi liên kết</button>
+        </form>
+        <p class="center muted" style="margin-top:24px"><a href="/dang-nhap">Quay lại đăng nhập</a></p>
+      <% } %>
+    </div>
+  </div>
+</div>

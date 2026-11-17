@@ -1,0 +1,8 @@
+<div class="faq">
+  <% items.forEach(function (f, i) { %>
+  <details <%= i === 0 ? 'open' : '' %>>
+    <summary><%= f.q %><svg class="ic"><use href="#i-chevron-down"/></svg></summary>
+    <div class="faq-a"><%= f.a %></div>
+  </details>
+  <% }) %>
+</div>

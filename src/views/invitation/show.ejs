@@ -1,0 +1,336 @@
+<%
+  var g = d.groom, b = d.bride;
+  var gName = g.name || 'Chú rể', bName = b.name || 'Cô dâu';
+  var initials = (gName.trim().split(' ').pop() || 'S').charAt(0) + '&' + (bName.trim().split(' ').pop() || 'B').charAt(0);
+  var dateShort = dateParts ? dateParts.day + ' · ' + dateParts.month + ' · ' + dateParts.year : '';
+  var monthsVi = ['Tháng Một','Tháng Hai','Tháng Ba','Tháng Tư','Tháng Năm','Tháng Sáu','Tháng Bảy','Tháng Tám','Tháng Chín','Tháng Mười','Tháng Mười Một','Tháng Mười Hai'];
+  var cal = null;
+  var md = util.parseDate(d.date);
+  if (md) {
+    var first = new Date(md.getFullYear(), md.getMonth(), 1);
+    var offset = (first.getDay() + 6) % 7; // bắt đầu từ Thứ Hai
+    var daysIn = new Date(md.getFullYear(), md.getMonth() + 1, 0).getDate();
+    cal = { title: monthsVi[md.getMonth()] + ' ' + md.getFullYear(), offset: offset, days: daysIn, wed: md.getDate() };
+  }
+  var slugBase = card.slug;
+  var orn = function () { return include('../partials/ornament', { kind: tpl.ornament }); };
+%><!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title><%= meta.title %></title>
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Trân trọng kính mời bạn tới dự lễ cưới của <%= gName %> & <%= bName %><%= mainDateText ? ' – ' + mainDateText : '' %>.">
+  <meta property="og:title" content="Thiệp cưới <%= gName %> & <%= bName %>">
+  <meta property="og:description" content="<%= guestName ? 'Trân trọng kính mời ' + guestName + '. ' : '' %><%= mainDateText %>">
+  <% if (d.photos.cover && d.photos.cover.indexOf('http') === 0) { %><meta property="og:image" content="<%= d.photos.cover %>"><% } %>
+  <meta name="theme-color" content="<%= theme.bg %>">
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="<%= tpl.fontsUrl %>">
+  <link rel="stylesheet" href="/css/invite.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>">
+  <style>
+    :root {
+      --bg: <%= theme.bg %>; --surface: <%= theme.surface %>; --ink: <%= theme.ink %>; --muted: <%= theme.muted %>;
+      --accent: <%= theme.accent %>; --accent2: <%= theme.accent2 %>; --line: <%= theme.line %>;
+      --f-display: <%- tpl.fonts.display %>; --f-heading: <%- tpl.fonts.heading %>; --f-body: <%- tpl.fonts.body %>;
+    }
+  </style>
+</head>
+<body class="tpl-<%= tpl.key %> ornament-<%= tpl.ornament %> <%= tpl.dark ? 'dark' : '' %> is-locked"
+      data-date="<%= mainDate %>" data-slug="<%= slugBase %>" data-preview="<%= preview ? 1 : 0 %>" data-demo="<%= typeof demo !== 'undefined' && demo ? 1 : 0 %>" data-effects="<%= effects ? 1 : 0 %>">
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><defs>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-8-4.9-8-11A4.5 4.5 0 0 1 12 6.6 4.5 4.5 0 0 1 20 9.5c0 6.1-8 11-8 11Z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4v-5Z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.6 2.5L16 9.5"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v7.5a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5V12M12 8v13M12 8S10.5 3.5 8 4c-2 .4-1.6 4 4 4ZM12 8s1.5-4.5 4-4c2 .4 1.6 4-4 4Z"/></symbol>
+  </defs></svg>
+
+  <% if (preview && !(typeof demo !== 'undefined' && demo)) { %><div class="preview-ribbon">Bản xem trước</div><% } %>
+
+  <!-- ===== Bìa mở thiệp ===== -->
+  <div class="cover is-<%= tpl.cover %>" id="cover" role="dialog" aria-modal="true" aria-label="Mở thiệp cưới">
+    <div class="cover-inner">
+      <% if (tpl.cover === 'envelope') { %>
+        <% if (guestName) { %><div class="cover-guest">Trân trọng kính mời<strong><%= guestName %></strong></div><% } %>
+        <div class="envelope" aria-hidden="true">
+          <div class="env-back"></div>
+          <div class="env-letter"><%= gName.split(' ').pop() %> &amp; <%= bName.split(' ').pop() %></div>
+          <div class="env-front"></div>
+          <div class="env-flap"></div>
+          <div class="env-seal"><svg class="ic"><use href="#i-heart"/></svg></div>
+        </div>
+        <div class="cover-date" style="margin-top:22px"><%= dateShort %></div>
+      <% } else if (tpl.cover === 'monogram') { %>
+        <div class="monogram" aria-hidden="true"><span><%= initials %></span></div>
+        <div class="cover-names"><%= gName %> &amp; <%= bName %></div>
+        <div class="cover-date"><%= dateShort %></div>
+        <% if (guestName) { %><div class="cover-guest" style="margin-top:22px">Trân trọng kính mời<strong><%= guestName %></strong></div><% } %>
+      <% } else if (tpl.cover === 'film') { %>
+        <div class="film-kicker">SOBA presents</div>
+        <div class="cover-names"><%= gName %><br>&amp; <%= bName %></div>
+        <div class="cover-date" style="color:var(--accent2)"><%= dateShort %></div>
+        <% if (guestName) { %><div class="cover-guest" style="margin-top:22px">Một lời mời dành riêng cho<strong><%= guestName %></strong></div><% } %>
+      <% } else if (tpl.cover === 'poster') { %>
+        <div class="poster-title"><%= tpl.title %></div>
+        <div class="poster-art" style="--c2:<%= theme.surface %>;--c3:<%= theme.accent %>"><%- include('../partials/couple') %></div>
+        <div class="cover-names poster-names"><%= gName %> &amp; <%= bName %></div>
+        <div class="cover-date"><%= dateShort %></div>
+        <% if (guestName) { %><div class="cover-guest" style="margin-top:14px">Trân trọng kính mời<strong><%= guestName %></strong></div><% } %>
+      <% } else if (tpl.cover === 'hy') { %>
+        <div class="hy-char" aria-hidden="true">囍</div>
+        <div class="cover-hy-sub" style="margin-top:8px"><%= tpl.title %></div>
+        <div class="cover-names" style="font-family:var(--f-heading);font-size:34px"><%= gName %> &amp; <%= bName %></div>
+        <div class="cover-date"><%= dateShort %></div>
+        <% if (guestName) { %><div class="cover-guest" style="margin-top:20px">Trân trọng kính mời<strong><%= guestName %></strong></div><% } %>
+      <% } else { %>
+        <% if (guestName) { %><div class="cover-guest">Gửi tới<strong><%= guestName %></strong></div><% } %>
+        <div class="cover-names"><%= gName %> &amp; <%= bName %></div>
+        <div class="cover-date"><%= dateShort %></div>
+        <div class="wax" aria-hidden="true"><%= gName.split(' ').pop().charAt(0) %></div>
+      <% } %>
+      <button class="open-btn" type="button" id="open-btn"><svg class="ic"><use href="#i-heart"/></svg>Mở thiệp</button>
+    </div>
+  </div>
+
+  <div class="petals" id="petals" aria-hidden="true"></div>
+
+  <main class="paper" id="top">
+    <!-- ===== Hero ===== -->
+    <header class="hero <%= d.photos.cover ? 'has-photo' : '' %>">
+      <% if (d.photos.cover) { %><div class="hero-photo"><img src="<%= d.photos.cover %>" alt="Ảnh cưới <%= gName %> và <%= bName %>" fetchpriority="high"></div><% } else if (['photo', 'poster', 'arch', 'newspaper'].indexOf(tpl.thumb) > -1) { %>
+        <div class="hero-arch" style="--c2:<%= theme.surface %>;--c3:<%= theme.accent %>"><%- include('../partials/couple') %></div>
+      <% } else { %>
+        <svg class="orn" viewBox="0 0 160 30" aria-hidden="true"><%- orn() %></svg>
+      <% } %>
+      <div class="hero-kicker"><%= d.headline || 'Save the date' %></div>
+      <h1 class="hero-names"><%= gName %></h1>
+      <div class="hero-amp" aria-hidden="true">&amp;</div>
+      <div class="hero-names"><%= bName %></div>
+      <% if (dateParts) { %>
+      <div class="hero-date">
+        <span class="side"><%= mainDateText.split(',')[0] %></span>
+        <span class="d"><%= dateParts.day %></span>
+        <span class="side"><%= dateParts.month %> · <%= dateParts.year %></span>
+      </div>
+      <% } %>
+      <% if (d.lunarDate) { %><div class="hero-lunar">(<%= d.lunarDate %>)</div><% } %>
+      <div class="scroll-hint" aria-hidden="true"></div>
+    </header>
+
+    <!-- ===== Lời mời ===== -->
+    <section class="sec rv" id="loi-moi">
+      <svg class="orn" viewBox="0 0 160 30" aria-hidden="true"><%- orn() %></svg>
+      <% if (g.father || g.mother || b.father || b.mother) { %>
+      <div class="families">
+        <div><h3>Nhà trai</h3><p><%= g.father %></p><p><%= g.mother %></p></div>
+        <div><h3>Nhà gái</h3><p><%= b.father %></p><p><%= b.mother %></p></div>
+      </div>
+      <% } %>
+      <div class="invite-to"><%= d.invitation %></div>
+      <div class="invite-guest"><%= guestName || 'Quý khách' %></div>
+      <% if (d.message) { %><p class="invite-msg"><%= d.message %></p><% } %>
+      <div class="couple-line"><span class="n"><%= gName %></span><span class="heart"><svg class="ic"><use href="#i-heart"/></svg></span><span class="n"><%= bName %></span></div>
+    </section>
+
+    <!-- ===== Đếm ngược ===== -->
+    <% if (show('countdown') && md) { %>
+    <section class="sec rv" id="ngay-cuoi">
+      <h2 class="sec-title">Ngày chung đôi</h2>
+      <p class="sec-sub"><%= mainDateText %> · <%= d.time %></p>
+      <div class="countdown" id="countdown" aria-live="off">
+        <div class="cd"><b data-cd="d">00</b><span>Ngày</span></div>
+        <div class="cd"><b data-cd="h">00</b><span>Giờ</span></div>
+        <div class="cd"><b data-cd="m">00</b><span>Phút</span></div>
+        <div class="cd"><b data-cd="s">00</b><span>Giây</span></div>
+      </div>
+      <% if (cal) { %>
+      <div class="cal" aria-label="Lịch <%= cal.title %>, ngày cưới <%= cal.wed %>">
+        <div class="cal-head"><%= cal.title %></div>
+        <div class="cal-grid">
+          <% ['T2','T3','T4','T5','T6','T7','CN'].forEach(function (w) { %><span class="wd"><%= w %></span><% }) %>
+          <% for (var i = 0; i < cal.offset; i++) { %><span></span><% } %>
+          <% for (var dd = 1; dd <= cal.days; dd++) { %><span class="day <%= dd === cal.wed ? 'is-wed' : '' %>"><%= dd %></span><% } %>
+        </div>
+      </div>
+      <% } %>
+    </section>
+    <% } %>
+
+    <!-- ===== Cô dâu chú rể ===== -->
+    <% if (show('couple')) { %>
+    <section class="sec rv" id="co-dau-chu-re">
+      <h2 class="sec-title">Cô dâu &amp; Chú rể</h2>
+      <p class="sec-sub">Bride &amp; Groom</p>
+      <div class="people">
+        <% [['groom', 'Chú rể', g, d.photos.groom], ['bride', 'Cô dâu', b, d.photos.bride]].forEach(function (p) { %>
+        <div>
+          <div class="person-photo"><% if (p[3]) { %><img src="<%= p[3] %>" alt="<%= p[1] %> <%= p[2].name %>" loading="lazy"><% } else { %><span class="ph" aria-hidden="true"><%= (p[2].name || p[1]).trim().split(' ').pop().charAt(0) %></span><% } %></div>
+          <div class="person-role"><%= p[1] %></div>
+          <div class="person-name"><%= p[2].name || p[1] %></div>
+          <% if (p[2].intro) { %><p class="person-intro"><%= p[2].intro %></p><% } %>
+        </div>
+        <% }) %>
+      </div>
+    </section>
+    <% } %>
+
+    <!-- ===== Chuyện tình ===== -->
+    <% if (show('story') && (d.story.length || d.quote)) { %>
+    <section class="sec rv" id="chuyen-tinh">
+      <h2 class="sec-title">Chuyện tình yêu</h2>
+      <p class="sec-sub">Our love story</p>
+      <% if (d.story.length) { %>
+      <div class="timeline">
+        <% d.story.forEach(function (s) { %>
+        <div class="tl"><% if (s.year) { %><div class="tl-year"><%= s.year %></div><% } %><h3><%= s.title %></h3><p><%= s.text %></p></div>
+        <% }) %>
+      </div>
+      <% } %>
+      <% if (d.quote) { %><p class="quote" style="margin-top:36px"><%= d.quote %></p><% } %>
+    </section>
+    <% } %>
+
+    <!-- ===== Sự kiện ===== -->
+    <% if (show('events') && events.length) { %>
+    <section class="sec rv" id="su-kien">
+      <h2 class="sec-title">Sự kiện cưới</h2>
+      <p class="sec-sub">Wedding events</p>
+      <div class="events">
+        <% events.forEach(function (e, idx) { %>
+        <article class="event">
+          <h3><%= e.title %></h3>
+          <div class="event-time">
+            <% if (e.time) { %><span><svg class="ic"><use href="#i-clock"/></svg><%= e.time %></span><% } %>
+            <% if (e.dateText) { %><span><svg class="ic"><use href="#i-calendar"/></svg><%= e.dateText %></span><% } %>
+          </div>
+          <% if (e.venue) { %><div class="event-venue"><%= e.venue %></div><% } %>
+          <% if (e.address) { %><div class="event-addr"><%= e.address %></div>
+          <div class="event-map"><iframe src="<%= e.embed %>" title="Bản đồ <%= e.title %>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+          <a class="btn btn-line btn-block" href="<%= e.link %>" target="_blank" rel="noopener"><svg class="ic"><use href="#i-map"/></svg>Chỉ đường</a>
+          <% } %>
+        </article>
+        <% }) %>
+      </div>
+    </section>
+    <% } %>
+
+    <!-- ===== Album ===== -->
+    <% if (show('album') && d.album.length) { %>
+    <section class="sec rv" id="album">
+      <h2 class="sec-title">Album ảnh cưới</h2>
+      <p class="sec-sub">Our moments</p>
+      <div class="album" id="album-grid">
+        <% d.album.forEach(function (src, i) { %><button type="button" data-lb="<%= i %>" aria-label="Xem ảnh <%= i + 1 %>"><img src="<%= src %>" alt="" loading="lazy"></button><% }) %>
+      </div>
+    </section>
+    <% } %>
+
+    <!-- ===== RSVP ===== -->
+    <% if (show('rsvp')) { %>
+    <section class="sec rv" id="xac-nhan">
+      <h2 class="sec-title">Xác nhận tham dự</h2>
+      <p class="sec-sub"><%= d.rsvpDeadline ? 'Vui lòng phản hồi trước ' + util.formatDateVi(d.rsvpDeadline) : 'Sự hiện diện của bạn là niềm vui của chúng tôi' %></p>
+      <form class="form" id="rsvp-form" novalidate>
+        <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
+        <div class="field"><label for="r-name">Họ tên của bạn</label><input class="input" id="r-name" name="name" required autocomplete="name" value="<%= guestName %>"></div>
+        <div class="field"><label for="r-phone">Số điện thoại (không bắt buộc)</label><input class="input" id="r-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel"></div>
+        <fieldset style="border:0;padding:0;margin:0" class="field">
+          <legend class="legend" style="margin-bottom:6px">Bạn sẽ tham dự chứ?</legend>
+          <div class="seg">
+            <label><input type="radio" name="attending" value="yes" checked><span>Chắc chắn rồi</span></label>
+            <label><input type="radio" name="attending" value="maybe"><span>Chưa chắc</span></label>
+            <label><input type="radio" name="attending" value="no"><span>Rất tiếc</span></label>
+          </div>
+        </fieldset>
+        <div class="row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="field"><label for="r-guests">Số người</label><select class="select" id="r-guests" name="guests"><% for (var n = 1; n <= 6; n++) { %><option value="<%= n %>"><%= n %> người</option><% } %></select></div>
+          <div class="field"><label for="r-side">Khách của</label><select class="select" id="r-side" name="side"><option value="">Cả hai</option><option value="groom">Nhà trai</option><option value="bride">Nhà gái</option></select></div>
+        </div>
+        <div class="field"><label for="r-msg">Lời nhắn</label><textarea class="textarea" id="r-msg" name="message" rows="3"></textarea></div>
+        <div class="form-msg" role="status" aria-live="polite"></div>
+        <button class="btn btn-block" type="submit"><svg class="ic"><use href="#i-check"/></svg>Gửi xác nhận</button>
+      </form>
+    </section>
+    <% } %>
+
+    <!-- ===== Lời chúc ===== -->
+    <% if (show('wishes')) { %>
+    <section class="sec rv" id="loi-chuc">
+      <h2 class="sec-title">Gửi lời chúc</h2>
+      <p class="sec-sub">Wishes for the couple</p>
+      <form class="form" id="wish-form" novalidate>
+        <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
+        <div class="field"><label for="w-name">Tên của bạn</label><input class="input" id="w-name" name="name" required value="<%= guestName %>"></div>
+        <div class="field"><label for="w-msg">Lời chúc</label><textarea class="textarea" id="w-msg" name="message" required rows="3" placeholder="Chúc hai bạn trăm năm hạnh phúc..."></textarea></div>
+        <div class="form-msg" role="status" aria-live="polite"></div>
+        <button class="btn btn-block" type="submit"><svg class="ic"><use href="#i-heart"/></svg>Gửi lời chúc</button>
+      </form>
+      <div class="wishes" id="wishes">
+        <% wishes.forEach(function (w) { %><div class="wish"><strong><%= w.name %></strong><p><%= w.message %></p></div><% }) %>
+      </div>
+    </section>
+    <% } %>
+
+    <!-- ===== Mừng cưới ===== -->
+    <% if (show('gift') && gifts.length) { %>
+    <section class="sec rv" id="mung-cuoi">
+      <h2 class="sec-title">Hộp mừng cưới</h2>
+      <p class="sec-sub">Cảm ơn tấm lòng của bạn</p>
+      <div class="gift-cards">
+        <% gifts.forEach(function (gf) { %>
+        <div class="gift">
+          <h3><%= gf.label %></h3>
+          <img src="<%= gf.qr %>" alt="Mã QR chuyển khoản <%= gf.label %>" loading="lazy" width="220" height="220">
+          <small><%= gf.bankName %></small>
+          <div class="acc"><span><%= gf.accountNo %></span><button class="copy-btn" type="button" data-copy="<%= gf.accountNo %>" aria-label="Sao chép số tài khoản"><svg class="ic"><use href="#i-copy"/></svg></button></div>
+          <small><%= gf.accountName %></small>
+        </div>
+        <% }) %>
+      </div>
+    </section>
+    <% } %>
+
+    <footer class="thanks rv">
+      <svg class="orn" viewBox="0 0 160 30" aria-hidden="true"><%- orn() %></svg>
+      <div class="big">Thank you</div>
+      <p style="color:var(--muted);margin-top:10px">Rất hân hạnh được đón tiếp!</p>
+      <% if (watermark) { %><a class="made-by" href="/" target="_blank" rel="noopener">Thiệp được tạo bởi <b>SOBA</b></a><% } %>
+    </footer>
+  </main>
+
+  <% if (show('rsvp') || show('wishes') || (show('gift') && gifts.length)) { %>
+  <nav class="quick-nav" id="quick-nav" aria-label="Điều hướng nhanh">
+    <% if (show('events') && events.length) { %><a href="#su-kien" aria-label="Sự kiện"><svg class="ic"><use href="#i-map"/></svg></a><% } %>
+    <% if (show('rsvp')) { %><a href="#xac-nhan" aria-label="Xác nhận tham dự"><svg class="ic"><use href="#i-check"/></svg></a><% } %>
+    <% if (show('wishes')) { %><a href="#loi-chuc" aria-label="Gửi lời chúc"><svg class="ic"><use href="#i-chat"/></svg></a><% } %>
+    <% if (show('gift') && gifts.length) { %><a href="#mung-cuoi" aria-label="Mừng cưới"><svg class="ic"><use href="#i-gift"/></svg></a><% } %>
+  </nav>
+  <% } %>
+
+  <% if (d.music.url) { %>
+  <audio id="bgm" src="<%= d.music.url %>" loop preload="none" data-autoplay="<%= d.music.autoplay ? 1 : 0 %>"></audio>
+  <button class="music-btn" id="music-btn" type="button" aria-label="Bật/tắt nhạc nền" aria-pressed="false"><svg class="ic"><use href="#i-music"/></svg></button>
+  <% } %>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh">
+    <button class="lb-btn lb-close" type="button" aria-label="Đóng"><svg class="ic"><use href="#i-x"/></svg></button>
+    <button class="lb-btn lb-prev" type="button" aria-label="Ảnh trước"><svg class="ic"><use href="#i-left"/></svg></button>
+    <img alt="">
+    <button class="lb-btn lb-next" type="button" aria-label="Ảnh sau"><svg class="ic"><use href="#i-right"/></svg></button>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/js/invite.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '1' %>" defer></script>
+</body>
+</html>

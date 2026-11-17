@@ -1,0 +1,28 @@
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Trang chủ</a><span>/</span><span>Tính năng</span></nav>
+    <h1 class="h1" style="font-size:clamp(34px,5vw,56px)">Tính năng <span class="accent-italic">nổi bật</span></h1>
+    <p class="lead">Tất cả những gì bạn cần để mời cưới, quản lý khách và lưu giữ kỷ niệm.</p>
+  </div>
+</section>
+<section class="section" style="padding-top:24px">
+  <div class="container">
+    <div class="grid grid-2">
+      <% FEATURES.forEach(function (f) { %>
+      <div class="card card-hover reveal" style="display:flex;gap:20px;align-items:flex-start">
+        <div class="feature-ic" style="margin:0;flex:none"><svg class="ic"><use href="#i-<%= f.icon %>"/></svg></div>
+        <div><h3><%= f.title %></h3><p><%= f.text %></p></div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-head"><h2 class="h2">Bắt đầu chỉ với 3 bước</h2></div>
+    <div class="steps">
+      <% STEPS.forEach(function (s, i) { %><div class="step"><div class="step-num"><%= i + 1 %></div><h3><%= s.title %></h3><p><%= s.text %></p></div><% }) %>
+    </div>
+  </div>
+</section>
+<section class="section"><div class="container"><%- include('../partials/cta') %></div></section>

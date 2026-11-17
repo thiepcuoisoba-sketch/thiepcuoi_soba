@@ -1,0 +1,33 @@
+<section class="page-hero">
+  <div class="container container-sm">
+    <h1 class="h2"><%= kind === 'terms' ? 'Điều khoản sử dụng' : 'Chính sách bảo mật' %></h1>
+    <p class="muted small">Cập nhật lần cuối: <%= new Date().getFullYear() %>. Đây là bản mẫu – vui lòng rà soát cùng tư vấn pháp lý trước khi áp dụng chính thức.</p>
+  </div>
+</section>
+<div class="container container-sm prose" style="padding-bottom:80px">
+<% if (kind === 'terms') { %>
+  <h2>1. Phạm vi dịch vụ</h2>
+  <p>SOBA cung cấp công cụ tạo và chia sẻ thiệp cưới trực tuyến. Khi sử dụng dịch vụ, bạn đồng ý với các điều khoản dưới đây.</p>
+  <h2>2. Tài khoản</h2>
+  <p>Bạn chịu trách nhiệm bảo mật thông tin đăng nhập và mọi hoạt động diễn ra trên tài khoản của mình.</p>
+  <h2>3. Nội dung người dùng</h2>
+  <p>Bạn sở hữu nội dung (ảnh, văn bản, nhạc) tải lên và cam kết có quyền sử dụng hợp pháp. SOBA có quyền gỡ bỏ nội dung vi phạm pháp luật hoặc thuần phong mỹ tục.</p>
+  <h2>4. Thanh toán</h2>
+  <p>Các gói trả phí được thanh toán một lần qua chuyển khoản ngân hàng. Gói được kích hoạt sau khi hệ thống ghi nhận giao dịch. Không tự động gia hạn.</p>
+  <h2>5. Hộp mừng cưới</h2>
+  <p>Mã QR mừng cưới được tạo từ thông tin tài khoản bạn cung cấp. Tiền chuyển trực tiếp giữa khách mời và chủ tài khoản; SOBA không nắm giữ hay trung gian thanh toán khoản tiền này.</p>
+  <h2>6. Thời hạn lưu trữ</h2>
+  <p>Thiệp được lưu theo thời hạn của gói. Sau khi hết hạn, thiệp có thể ngừng hiển thị và dữ liệu có thể bị xoá.</p>
+<% } else { %>
+  <h2>1. Thông tin chúng tôi thu thập</h2>
+  <p>Email, họ tên khi bạn đăng ký; nội dung thiệp bạn tạo; tên, số điện thoại, lời chúc mà khách mời tự nguyện gửi qua thiệp.</p>
+  <h2>2. Mục đích sử dụng</h2>
+  <p>Cung cấp, vận hành dịch vụ; hỗ trợ khách hàng; xác nhận thanh toán. Chúng tôi không bán thông tin của bạn cho bên thứ ba.</p>
+  <h2>3. Lưu trữ &amp; bảo mật</h2>
+  <p>Mật khẩu được mã hoá một chiều. Dữ liệu được lưu trên máy chủ có kiểm soát truy cập.</p>
+  <h2>4. Quyền của bạn</h2>
+  <p>Bạn có thể xem, chỉnh sửa hoặc yêu cầu xoá dữ liệu bằng cách liên hệ <a href="/lien-he">SOBA</a>.</p>
+  <h2>5. Cookie</h2>
+  <p>SOBA chỉ dùng cookie cần thiết để duy trì phiên đăng nhập.</p>
+<% } %>
+</div>

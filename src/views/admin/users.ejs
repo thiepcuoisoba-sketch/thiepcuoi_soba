@@ -1,0 +1,35 @@
+<div class="page-title">
+  <div><h1>Người dùng</h1><p>Tìm kiếm, đổi gói hoặc cấp quyền quản trị.</p></div>
+  <form method="get" action="/quan-tri/nguoi-dung" style="display:flex;gap:8px">
+    <label class="sr-only" for="q">Tìm người dùng</label>
+    <input class="input" id="q" name="q" value="<%= q %>" placeholder="Email hoặc tên" style="min-width:220px">
+    <button class="btn btn-outline" type="submit">Tìm</button>
+  </form>
+</div>
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Người dùng</th><th>Gói hiện tại</th><th>Hết hạn</th><th>Ngày tạo</th><th>Cập nhật gói</th></tr></thead>
+    <tbody>
+      <% users.forEach(function (u) { %>
+      <tr>
+        <td><strong><%= u.name || '—' %></strong> <% if (u.role === 'admin') { %><span class="badge">admin</span><% } %><br><span class="small muted"><%= u.email %></span></td>
+        <td><span class="badge badge-<%= u.plan %>"><%= PLANS[u.plan] ? PLANS[u.plan].name : u.plan %></span></td>
+        <td class="small"><%= u.plan_expires_at ? formatDateTime(u.plan_expires_at) : '—' %></td>
+        <td class="small muted"><%= formatDateTime(u.created_at) %></td>
+        <td>
+          <form method="post" action="/quan-tri/nguoi-dung/<%= u.id %>" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <label class="sr-only" for="plan-<%= u.id %>">Gói</label>
+            <select class="select" id="plan-<%= u.id %>" name="plan" style="min-height:40px;padding:6px 10px;width:auto">
+              <% Object.keys(PLANS).forEach(function (k) { %><option value="<%= k %>" <%= u.plan === k ? 'selected' : '' %>><%= PLANS[k].name %></option><% }) %>
+            </select>
+            <label class="sr-only" for="months-<%= u.id %>">Số tháng</label>
+            <input class="input" id="months-<%= u.id %>" name="months" type="number" min="1" max="120" value="12" style="min-height:40px;padding:6px 10px;width:76px" title="Số tháng">
+            <button class="btn btn-soft btn-sm" type="submit">Lưu</button>
+          </form>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

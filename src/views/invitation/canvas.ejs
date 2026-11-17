@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title><%= meta.title %></title>
+  <meta name="description" content="<%= meta.description %>">
+  <meta name="robots" content="noindex">
+  <meta property="og:title" content="<%= meta.title %>">
+  <meta property="og:description" content="<%= meta.description %>">
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="<%= fontsUrl %>">
+  <link rel="stylesheet" href="/css/canvas.css?v=<%= assetVersion %>">
+</head>
+<body class="cv-page" style="background:<%= pageBg %>">
+  <div class="cv-viewport" id="cv-viewport"><div class="cv-stage" id="cv-stage"></div></div>
+  <noscript><p style="text-align:center;padding:20px">Vui lòng bật JavaScript để xem thiệp.</p></noscript>
+  <script type="application/json" id="cv-boot"><%- boot %></script>
+  <script src="/js/cv-render.js?v=<%= assetVersion %>" defer></script>
+  <script src="/js/soba-music.js?v=<%= assetVersion %>" defer></script>
+  <script src="/js/canvas-guest.js?v=<%= assetVersion %>" defer></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<% var used = (typeof usage !== 'undefined' && usage[tpl.key]) || 0;
+   var STYLE = { classic: 'Cổ điển', photo: 'Ảnh lớn', poster: 'Poster', newspaper: 'Báo cưới', arch: 'Khung vòm', hy: 'Chữ Hỷ' }; %>
+<article class="xc" data-key="<%= tpl.key %>" data-tier="<%= tpl.tier %>" data-cat="<%= tpl.category %>">
+  <div class="xc-thumb tpl-thumb">
+    <%- include('../partials/mini', { tpl: tpl }) %>
+    <span class="badge tpl-badge badge-<%= tpl.tier %>"><% if (tpl.tier === 'premium') { %><svg class="ic"><use href="#i-crown"/></svg><% } %><%= TIER_LABEL[tpl.tier] %></span>
+    <button class="xc-fav" type="button" data-fav="<%= tpl.key %>" aria-pressed="false" aria-label="Lưu mẫu <%= tpl.name %>"><svg class="ic"><use href="#i-heart"/></svg></button>
+    <a class="xc-hit" href="/mau-thiep/<%= tpl.key %>" data-preview="<%= tpl.key %>" aria-label="Xem trước mẫu <%= tpl.name %>">
+      <span class="xc-hover" aria-hidden="true"><span>Mở thiệp<svg class="ic"><use href="#i-arrow-right"/></svg></span></span>
+    </a>
+  </div>
+  <div class="xc-meta">
+    <div class="xc-title"><h3><%= tpl.name %></h3><span class="xc-kind"><%= tpl.tags[0] %> · <%= STYLE[tpl.thumb] %></span></div>
+    <p class="xc-desc"><%= tpl.description %></p>
+    <p class="xc-price <%= tpl.tier === 'free' ? 'free' : '' %>"><%= tpl.tier === 'free' ? 'Miễn phí' : 'Gói ' + TIER_LABEL[tpl.tier] %><%= used ? ' · ' + used.toLocaleString('vi-VN') + ' lượt dùng' : '' %></p>
+    <a href="<%= user ? '/thiep/tao?mau=' + tpl.key : '/dang-ky?mau=' + tpl.key %>" class="xc-use">Dùng mẫu này<svg class="ic"><use href="#i-arrow-right"/></svg></a>
+  </div>
+</article>

@@ -1,0 +1,42 @@
+  <% var navIs = function (p) { return path === p ? 'aria-current="page"' : ''; };
+     var links = [['/mau-thiep', 'Mẫu thiệp'], ['/#cach-tao', 'Cách tạo thiệp'], ['/#tien-ich', 'Tiện ích'], ['/bang-gia', 'Bảng giá'], ['/cam-nang', 'Cẩm nang']]; %>
+
+  <header class="hw-head" data-header>
+    <div class="hw-wrap hw-head-in">
+      <a class="logo" href="/" aria-label="SOBA – trang chủ"><%- include('../partials/logo') %></a>
+      <nav class="hw-nav" aria-label="Điều hướng chính">
+        <% links.forEach(function (l) { %><a href="<%= l[0] %>" <%- navIs(l[0]) %>><%= l[1] %></a><% }) %>
+      </nav>
+      <div class="hw-actions">
+        <a class="hw-icon" href="/mau-thiep#tim" aria-label="Tìm mẫu thiệp"><svg class="ic"><use href="#i-search"/></svg></a>
+        <a class="hw-icon" href="/mau-thiep?luu=1" aria-label="Mẫu đã lưu"><svg class="ic"><use href="#i-heart"/></svg><span class="hw-count" data-fav-count hidden>0</span></a>
+        <% if (user) { %>
+          <a class="hw-link hide-tablet" href="/tai-khoan">Thiệp của tôi</a>
+          <a class="hw-btn hide-tablet" href="/thiep/tao">Tạo thiệp<svg class="ic"><use href="#i-arrow-right"/></svg></a>
+        <% } else { %>
+          <a class="hw-link hide-tablet" href="/dang-nhap">Đăng nhập</a>
+          <a class="hw-btn hide-tablet" href="/dang-ky">Tạo thiệp miễn phí<svg class="ic"><use href="#i-arrow-right"/></svg></a>
+        <% } %>
+        <button class="hw-icon hw-menu" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="hw-drawer" data-drawer-toggle><svg class="ic"><use href="#i-menu"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="hw-drawer" id="hw-drawer" data-drawer hidden>
+    <nav aria-label="Menu di động">
+      <% links.forEach(function (l) { %><a href="<%= l[0] %>"><%= l[1] %><svg class="ic"><use href="#i-chevron-right"/></svg></a><% }) %>
+      <a href="/mau-thiep?luu=1">Mẫu đã lưu<svg class="ic"><use href="#i-chevron-right"/></svg></a>
+      <a href="/huong-dan">Hướng dẫn<svg class="ic"><use href="#i-chevron-right"/></svg></a>
+      <a href="/lien-he">Liên hệ<svg class="ic"><use href="#i-chevron-right"/></svg></a>
+    </nav>
+    <div class="hw-drawer-cta">
+      <% if (user) { %>
+        <a class="hw-btn hw-btn-block" href="/thiep/tao">Tạo thiệp mới<svg class="ic"><use href="#i-arrow-right"/></svg></a>
+        <a class="hw-btn-line hw-btn-block" href="/tai-khoan">Thiệp của tôi</a>
+      <% } else { %>
+        <a class="hw-btn hw-btn-block" href="/dang-ky">Tạo thiệp miễn phí<svg class="ic"><use href="#i-arrow-right"/></svg></a>
+        <a class="hw-btn-line hw-btn-block" href="/dang-nhap">Đăng nhập</a>
+      <% } %>
+    </div>
+  </div>
+

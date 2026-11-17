@@ -1,0 +1,21 @@
+<div class="auth-wrap">
+  <%- include('art') %>
+  <div class="auth-form">
+    <div class="auth-box">
+      <h1>Chào mừng trở lại</h1>
+      <p class="muted" style="margin-bottom:28px">Đăng nhập để tiếp tục chỉnh sửa thiệp của bạn.</p>
+      <%- include('social') %>
+      <% if (error) { %><div class="alert alert-error" role="alert" style="margin-bottom:16px"><svg class="ic"><use href="#i-x"/></svg><span><%= error %></span></div><% } %>
+      <form class="form" method="post" action="/dang-nhap">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="field"><label for="email">Email</label><input class="input" id="email" name="email" type="email" required autocomplete="email" value="<%= form.email || '' %>"></div>
+        <div class="field">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><label for="password">Mật khẩu</label><a class="small" href="/quen-mat-khau">Quên mật khẩu?</a></div>
+          <input class="input" id="password" name="password" type="password" required autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Đăng nhập</button>
+      </form>
+      <p class="center muted" style="margin-top:24px">Chưa có tài khoản? <a href="/dang-ky">Đăng ký miễn phí</a></p>
+    </div>
+  </div>
+</div>

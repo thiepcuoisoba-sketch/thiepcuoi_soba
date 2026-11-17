@@ -1,0 +1,63 @@
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Trang chủ</a><span>/</span><span>Bảng giá</span></nav>
+    <h1 class="h1" style="font-size:clamp(34px,5vw,56px)">Bảng giá <span class="accent-italic">gói dịch vụ</span></h1>
+    <p class="lead">Thanh toán một lần bằng mã QR, kích hoạt tự động trong khoảng 1 phút. Không tự động gia hạn.</p>
+  </div>
+</section>
+<section class="section" style="padding-top:32px">
+  <div class="container">
+    <div class="pricing">
+      <% Object.values(PLANS).forEach(function (p) { var isCurrent = planKey === p.key; %>
+      <div class="price-card <%= p.popular ? 'is-popular' : '' %>">
+        <% if (p.popular) { %><span class="badge ribbon" style="background:var(--primary);color:#fff">Phổ biến nhất</span><% } %>
+        <h3><% if (p.key === 'premium') { %><svg class="ic" style="display:inline;color:var(--gold);vertical-align:-3px"><use href="#i-crown"/></svg> <% } %><%= p.name %></h3>
+        <p class="tagline"><%= p.tagline %></p>
+        <div class="price"><strong><%= p.price ? vnd(p.price) : '0đ' %></strong><% if (p.originalPrice) { %><del><%= vnd(p.originalPrice) %></del><span class="badge badge-success">-<%= Math.round((1 - p.price / p.originalPrice) * 100) %>%</span><% } %></div>
+        <p class="price-note"><%= p.price ? 'Một lần · sử dụng ' + p.durationMonths + ' tháng' : 'Miễn phí mãi mãi' %></p>
+        <% if (!p.price) { %>
+          <a class="btn btn-outline btn-block" href="<%= user ? '/thiep/tao' : '/dang-ky' %>"><%= user ? (isCurrent ? 'Gói hiện tại' : 'Tạo thiệp') : 'Đăng ký miễn phí' %></a>
+        <% } else if (user && ['free','basic','premium'].indexOf(planKey) > ['free','basic','premium'].indexOf(p.key)) { %>
+          <span class="btn btn-outline btn-block" aria-disabled="true" style="opacity:.6;cursor:default">Bạn đang dùng gói cao hơn</span>
+        <% } else { %>
+          <a class="btn <%= p.popular ? 'btn-primary' : 'btn-outline' %> btn-block" href="<%= user ? '/nang-cap?goi=' + p.key : '/dang-ky' %>"><%= isCurrent ? 'Gia hạn gói' : 'Nâng cấp ' + p.name %></a>
+        <% } %>
+        <ul class="price-list">
+          <% COMPARE_ROWS.filter(function (r) { return !r.group; }).forEach(function (r) { var v = r.get(p); %>
+            <li class="<%= v === false ? 'off' : '' %>"><svg class="ic"><use href="#i-<%= v === false ? 'minus' : 'check' %>"/></svg><span><%= v === true || v === false ? r.label : r.label + ': ' + v %></span></li>
+          <% }) %>
+        </ul>
+      </div>
+      <% }) %>
+    </div>
+    <p class="center small muted" style="margin-top:28px">Giá đã bao gồm thuế, phí. Gói trả phí hết hạn sẽ trở về gói Miễn phí, thiệp đã xuất bản vẫn hoạt động đến hết thời hạn lưu trữ.</p>
+  </div>
+</section>
+<section class="section section-tint">
+  <div class="container">
+    <div class="section-head"><h2 class="h2">So sánh chi tiết</h2></div>
+    <div class="table-wrap">
+      <table class="table compare">
+        <thead><tr><th scope="col">Hạng mục</th><% Object.values(PLANS).forEach(function (p) { %><th scope="col"><%= p.name %></th><% }) %></tr></thead>
+        <tbody>
+          <% COMPARE_ROWS.forEach(function (r) { %>
+            <% if (r.group) { %><tr class="group-row"><td colspan="4"><%= r.group %></td></tr>
+            <% } else { %>
+            <tr><th scope="row" style="font-weight:500"><%= r.label %></th>
+              <% Object.values(PLANS).forEach(function (p) { var v = r.get(p); %>
+                <td><% if (v === true) { %><svg class="ic ic-yes" role="img" aria-label="Có"><use href="#i-check"/></svg><% } else if (v === false) { %><svg class="ic ic-no" role="img" aria-label="Không"><use href="#i-minus"/></svg><% } else { %><%= v %><% } %></td>
+              <% }) %>
+            </tr>
+            <% } %>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="section-head"><h2 class="h2">Câu hỏi về gói dịch vụ</h2></div>
+    <%- include('../partials/faq', { items: FAQ }) %>
+  </div>
+</section>
