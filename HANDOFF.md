@@ -56,7 +56,7 @@ Khách đăng ký → chọn mẫu → tự chỉnh thiệp (form + xem trước
 
 ## 3. Chức năng đang phát triển / còn dang dở
 
-- [ ] **Chưa từng commit git** – repo đã `git init` nhánh `master`, chưa có commit, chưa có remote GitHub.
+- [x] Commit đầu tiên 17/11/2026 (nhánh `master`). **Chưa có remote GitHub.**
 - [ ] **Chưa chạy thử với MySQL thật** (chỉ test SQLite). Cần kiểm tra lần deploy đầu trên Hostinger.
 - [x] Giá gói đã chốt 16/11: Basic 129k, Premium 249k (`src/services/plans.js`). Giá gạch (299k/599k) chưa chốt lại.
 - [ ] Thiệp dạng **form** (30 mẫu cũ) chưa có thanh tiện ích nổi; màn mở thiệp của form vẫn hiện với cả gói Free (chỉ QR đã tắt cho Free).
@@ -113,7 +113,7 @@ Khách đăng ký → chọn mẫu → tự chỉnh thiệp (form + xem trước
 
 1. Duyệt từng trang 13 mẫu ảnh mới còn lại trên điện thoại (`/demo-thiet-ke/<key>`), chỉnh vị trí ảnh nếu bị cắt mặt; quyết định xử lý chữ ký studio in trong ảnh.
 2. (Hỏi chủ dự án) thêm thanh tiện ích nổi + QR mẫu cho 30 mẫu thiệp dạng form; có tắt màn mở thiệp form với gói Free cho thống nhất không.
-3. Commit lần đầu → tạo repo GitHub → push (`README.md` mục 3). Hiện có ~320 tệp chưa commit.
+3. Tạo repo GitHub (riêng tư) → push (`README.md` mục 3). Đã commit lần đầu 17/11.
 4. Tạo DB MySQL + Node.js app trên Hostinger, khai báo biến môi trường, deploy & kiểm tra (`README.md` mục 4).
 5. Cấu hình SePay webhook, Google/Facebook OAuth, SMTP Hostinger.
 6. Chốt giá gạch (299k/599k), logo thật, thông tin liên hệ; viết điều khoản chính thức.
