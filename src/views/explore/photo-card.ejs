@@ -1,0 +1,17 @@
+<%# Thẻ mẫu thiết kế tự do có ảnh thật (canvas starter). Dùng ở trang chủ và kho mẫu. %>
+<article class="xc xc-photo" data-key="cv:<%= s.key %>" data-tier="<%= s.tier %>">
+  <div class="xc-thumb tpl-thumb">
+    <img src="<%= s.thumb %>" alt="Mẫu thiệp <%= s.name %>" loading="lazy">
+    <span class="badge tpl-badge badge-<%= s.tier %>"><% if (s.tier === 'premium') { %><svg class="ic"><use href="#i-crown"/></svg><% } %><%= TIER_LABEL[s.tier] %></span>
+    <button class="xc-fav" type="button" data-fav="cv:<%= s.key %>" aria-pressed="false" aria-label="Lưu mẫu <%= s.name %>"><svg class="ic"><use href="#i-heart"/></svg></button>
+    <span class="xc-photo-name"><%= s.name %></span>
+    <span class="xc-music" aria-label="Có nhạc nền"><svg class="ic"><use href="#i-music"/></svg></span>
+    <a class="xc-hit" href="/demo-thiet-ke/<%= s.key %>" data-preview="cv:<%= s.key %>" aria-label="Xem trước mẫu <%= s.name %>">
+      <span class="xc-hover" aria-hidden="true"><span>Mở thiệp<svg class="ic"><use href="#i-arrow-right"/></svg></span></span>
+    </a>
+  </div>
+  <div class="xc-meta">
+    <div class="xc-title"><h3><%= s.name %></h3><span class="xc-kind"><%= s.tags.join(' · ') %></span></div>
+    <p class="xc-price <%= s.tier === 'free' ? 'free' : '' %>"><%= s.tier === 'free' ? 'Miễn phí' : 'Gói ' + TIER_LABEL[s.tier] %></p>
+  </div>
+</article>

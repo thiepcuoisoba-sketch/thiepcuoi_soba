@@ -26,7 +26,7 @@
     <div>
       <% if (!favMode) { %>
       <div class="hw-filter-row">
-        <p class="hw-count"><b><%= list.length %></b> mẫu<%= q ? ' cho “' + q + '”' : '' %><% if (q) { %> · <a href="/mau-thiep">Xoá tìm kiếm</a><% } %></p>
+        <p class="hw-count"><b><%= list.length + photos.length %></b> mẫu<%= q ? ' cho “' + q + '”' : '' %><% if (q) { %> · <a href="/mau-thiep">Xoá tìm kiếm</a><% } %></p>
         <nav class="ex-tier" aria-label="Lọc theo gói">
           <% [['', 'Mọi gói'], ['free', 'Miễn phí'], ['basic', 'Basic'], ['premium', 'Premium']].forEach(function (t) { %>
             <a href="/mau-thiep?<%= dm ? 'dm=' + dm + '&' : '' %><%= q ? 'q=' + encodeURIComponent(q) + '&' : '' %><%= t[0] ? 'goi=' + t[0] : '' %>" aria-current="<%= goi === t[0] ? 'true' : 'false' %>"><%= t[1] %></a>
@@ -37,9 +37,11 @@
     </div>
 
     <div class="ex-grid" data-grid <%- favMode ? 'data-fav-mode' : '' %>>
+      <% photos.forEach(function (s) { %><%- include('photo-card', { s: s }) %><% }) %>
       <% list.forEach(function (tpl) { %><%- include('card', { tpl: tpl }) %><% }) %>
     </div>
-    <div class="empty" data-empty <%- list.length && !favMode ? 'hidden' : '' %>>
+    <script type="application/json" id="cv-data"><%- cvJson %></script>
+    <div class="empty" data-empty <%- (list.length || photos.length) && !favMode ? 'hidden' : '' %>>
       <svg class="ic"><use href="#i-heart"/></svg>
       <p><%= favMode ? 'Bạn chưa lưu mẫu nào. Bấm biểu tượng tim trên mẫu thiệp để lưu lại.' : 'Không tìm thấy mẫu phù hợp. Thử từ khoá khác nhé.' %></p>
       <a class="hw-btn" href="/mau-thiep">Xem tất cả mẫu</a>

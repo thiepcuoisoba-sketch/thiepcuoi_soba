@@ -75,7 +75,8 @@ router.post('/thiep/tao', requireAuth, async (req, res) => {
   const plan = planOf(req.user);
   const tpl = getTemplate(key);
   const u = await usage(req.user);
-  if (u.cards >= plan.limits.cards) {
+  // Quản trị viên (thử nghiệm) không bị giới hạn số thiệp
+  if (u.cards >= plan.limits.cards && req.user.role !== 'admin') {
     req.flash('error', `Gói ${plan.name} cho phép tối đa ${plan.limits.cards} thiệp. Nâng cấp để tạo thêm.`);
     return res.redirect('/bang-gia');
   }
@@ -91,7 +92,8 @@ router.post('/thiep/tao', requireAuth, async (req, res) => {
 router.post('/thiep/tao-thiet-ke', requireAuth, async (req, res) => {
   const plan = planOf(req.user);
   const u = await usage(req.user);
-  if (u.cards >= plan.limits.cards) {
+  // Quản trị viên (thử nghiệm) không bị giới hạn số thiệp
+  if (u.cards >= plan.limits.cards && req.user.role !== 'admin') {
     req.flash('error', `Gói ${plan.name} cho phép tối đa ${plan.limits.cards} thiệp. Nâng cấp để tạo thêm.`);
     return res.redirect('/bang-gia');
   }
@@ -233,7 +235,8 @@ router.post('/thiep/:id/xoa', requireAuth, loadCard, async (req, res) => {
 router.post('/thiep/:id/nhan-ban', requireAuth, loadCard, async (req, res) => {
   const plan = planOf(req.user);
   const u = await usage(req.user);
-  if (u.cards >= plan.limits.cards) {
+  // Quản trị viên (thử nghiệm) không bị giới hạn số thiệp
+  if (u.cards >= plan.limits.cards && req.user.role !== 'admin') {
     req.flash('error', `Gói ${plan.name} cho phép tối đa ${plan.limits.cards} thiệp.`);
     return res.redirect('/tai-khoan');
   }

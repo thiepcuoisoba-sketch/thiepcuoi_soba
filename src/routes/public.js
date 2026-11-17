@@ -12,7 +12,35 @@ const canvas = require('../services/canvas');
 
 /** Mẫu thiết kế tự do có ảnh thật – đưa ra trang chủ */
 // Mẫu "featured" (mẫu mới nổi bật) đứng đầu hàng "Mẫu thiết kế phổ biến"
-const photoStarters = canvas.STARTERS.filter((s) => s.thumb).sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
+// featured: 2 = được chủ dự án chọn đẩy lên đầu, 1 = mẫu mới nổi bật
+const photoStarters = canvas.STARTERS.filter((s) => s.thumb).sort((a, b) => Number(b.featured || 0) - Number(a.featured || 0));
+/** Danh mục của mẫu ảnh – suy ra từ nhãn (tags) */
+const TAG_CAT = {
+  'lang-man': ['Lãng mạn', 'Pastel', 'Hoa', 'Phong bì', 'Khung vòm', 'Thiên nhiên', 'Ngoài trời'],
+  'toi-gian': ['Tối giản', 'Studio', 'Thanh lịch'],
+  'truyen-thong': ['Truyền thống', 'Chữ Hỷ', 'Đỏ đô'],
+  'han-quoc': ['Hàn Quốc'],
+  'thinh-hanh': ['Poster', 'Tạp chí', 'Báo cưới', 'Trẻ trung', 'Du lịch', 'Cá tính', 'Tươi sáng'],
+  'dien-anh': ['Điện ảnh', 'Đen trắng', 'Đêm'],
+  vintage: ['Vintage', 'Cổ điển', 'Châu Âu', 'Báo cưới'],
+};
+photoStarters.forEach((s) => {
+  s.cats = Object.keys(TAG_CAT).filter((c) => s.tags.some((t) => TAG_CAT[c].includes(t)));
+});
+// Cổ phục / phong bì đỏ cũng hợp hàng truyền thống
+['hanbok-xuan-thi', 'phong-bi-do-nhung'].forEach((k) => {
+  const s = photoStarters.find((x) => x.key === k);
+  if (s && !s.cats.includes('truyen-thong')) s.cats.push('truyen-thong');
+});
+/** Lọc mẫu ảnh; `min` > 0 thì lặp lại cho đủ chỗ trên hàng cuộn ngang */
+function photosWhere(fn, min = 0) {
+  const list = photoStarters.filter(fn);
+  if (!list.length || list.length >= min) return list;
+  const out = [];
+  while (out.length < min) out.push(...list);
+  return out.slice(0, min);
+}
+const ROW_MIN = 10;
 /** Tiện ích có trong mẫu – hiện ở popup xem trước (kiểu "Có trong mẫu này") */
 const OPENER_NAME = Object.fromEntries(canvas.OPENERS.map((o) => [o.key, o.name]));
 function starterFeatures(s) {
@@ -31,6 +59,9 @@ function starterFeatures(s) {
     s.song ? 'Nhạc nền: ' + (canvas.SONGS.find((x) => x.key === s.song) || {}).name : 'Nhạc nền',
   ].filter(Boolean);
 }
+
+/** Dữ liệu popup xem trước mẫu ảnh (mã cv:<key>) */
+const CV_JSON = canvas.safeJson(photoStarters.map((s) => ({ key: s.key, name: s.name, tier: s.tier, tierLabel: TIER_LABEL[s.tier], tags: s.tags, desc: s.desc, features: starterFeatures(s) })));
 
 const router = express.Router();
 
@@ -66,15 +97,17 @@ router.get('/', async (req, res) => {
     templates: TEMPLATES,
     usage,
     rows: [
-      { key: 'tuyen-chon', title: 'SOBA tuyển chọn', sub: 'Mẫu đẹp, được yêu thích nhất', href: '/mau-thiep', items: FEATURED.map(getTemplate) },
-      { key: 'thinh-hanh', title: 'Đang thịnh hành', sub: 'Phong cách hot trên TikTok, Facebook', href: '/mau-thiep?dm=thinh-hanh', items: by((t) => t.category === 'thinh-hanh').concat(popular.filter((t) => t.category !== 'thinh-hanh').slice(0, 3)) },
-      { key: 'truyen-thong', title: 'Truyền thống Việt', sub: 'Lễ vu quy, tân hôn, chữ Hỷ', href: '/mau-thiep?dm=truyen-thong', items: by((t) => t.category === 'truyen-thong') },
-      { key: 'mien-phi', title: 'Miễn phí', sub: 'Dùng ngay, không tốn đồng nào', href: '/mau-thiep?goi=free', items: by((t) => t.tier === 'free') },
-      { key: 'sang-trong', title: 'Sang trọng & điện ảnh', sub: 'Mẫu Premium cao cấp', href: '/mau-thiep?goi=premium', items: by((t) => t.tier === 'premium') },
+      // Mỗi hàng hiện mẫu ảnh thật (lặp lại cho đủ chỗ), rồi tới mẫu vẽ cùng loại
+      { key: 'tuyen-chon', title: 'SOBA tuyển chọn', sub: 'Mẫu đẹp, được yêu thích nhất', href: '/mau-thiep', photos: photosWhere((s) => s.featured === 2).concat(photosWhere((s) => s.featured === 1)), items: FEATURED.map(getTemplate) },
+      { key: 'thinh-hanh', title: 'Đang thịnh hành', sub: 'Phong cách hot trên TikTok, Facebook', href: '/mau-thiep?dm=thinh-hanh', photos: photosWhere((s) => s.cats.includes('thinh-hanh') || s.cats.includes('dien-anh'), ROW_MIN), items: by((t) => t.category === 'thinh-hanh').concat(popular.filter((t) => t.category !== 'thinh-hanh').slice(0, 3)) },
+      { key: 'truyen-thong', title: 'Truyền thống Việt', sub: 'Lễ vu quy, tân hôn, chữ Hỷ', href: '/mau-thiep?dm=truyen-thong', photos: photosWhere((s) => s.cats.includes('truyen-thong'), ROW_MIN), items: by((t) => t.category === 'truyen-thong') },
+      { key: 'han-quoc', title: 'Phong cách Hàn Quốc', sub: 'Studio trắng, hanbok, nhẹ nhàng', href: '/mau-thiep?dm=han-quoc', photos: photosWhere((s) => s.cats.includes('han-quoc') || s.cats.includes('toi-gian'), ROW_MIN), items: by((t) => t.category === 'han-quoc') },
+      { key: 'mien-phi', title: 'Miễn phí', sub: 'Dùng ngay, không tốn đồng nào', href: '/mau-thiep?goi=free', photos: photosWhere((s) => s.tier === 'free', ROW_MIN), items: by((t) => t.tier === 'free') },
+      { key: 'sang-trong', title: 'Sang trọng & điện ảnh', sub: 'Mẫu Premium cao cấp', href: '/mau-thiep?goi=premium', photos: photosWhere((s) => s.tier === 'premium', ROW_MIN), items: by((t) => t.tier === 'premium') },
     ],
     showcase: await showcase(12),
     photoStarters,
-    cvJson: canvas.safeJson(photoStarters.map((s) => ({ key: s.key, name: s.name, tier: s.tier, tierLabel: TIER_LABEL[s.tier], tags: s.tags, desc: s.desc, features: starterFeatures(s) }))),
+    cvJson: CV_JSON,
   });
 });
 
@@ -113,6 +146,10 @@ router.get('/mau-thiep', async (req, res) => {
       list = list.filter((t) => removeDiacritics([t.name, t.description, t.title, t.tags.join(' '), TIER_LABEL[t.tier], KW[t.thumb] || ''].join(' ')).toLowerCase().includes(needle));
     }
   }
+  let photos = [];
+  if (!favMode) {
+    photos = photoStarters.filter((s) => (!dm || s.cats.includes(dm)) && (!goi || s.tier === goi) && (!needle || removeDiacritics([s.name, s.desc, s.tags.join(' '), TIER_LABEL[s.tier]].join(' ')).toLowerCase().includes(needle)));
+  } else photos = photoStarters;
   const cat = CATEGORIES.find((c) => c.key === dm);
   res.render('explore/templates', {
     layout: 'layouts/explore',
@@ -123,6 +160,8 @@ router.get('/mau-thiep', async (req, res) => {
     templates: TEMPLATES,
     CATEGORIES,
     list,
+    photos,
+    cvJson: CV_JSON,
     q,
     dm,
     goi,

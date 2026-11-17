@@ -58,6 +58,9 @@ Khách đăng ký → chọn mẫu → tự chỉnh thiệp (form + xem trước
   - **RSVP mới**: chọn tham dự bằng nút tròn, “Số lượng người tham dự” 1–10 (ẩn khi khách chọn không đến), khách của nhà trai/gái. Trang khách mời của chủ thiệp vẫn cộng tổng số người.
   - **Gợi ý lời chúc** ✨ trong sổ lời chúc (8 câu, dùng chung với bảng “Gửi lời chúc”).
   - **Đĩa nhạc xoay** có ảnh bìa thiệp ở góc màn hình (thay nút ♫).
+  - **Trang chủ & kho mẫu dùng mẫu ảnh thật**: mỗi hàng (SOBA tuyển chọn, Đang thịnh hành, Truyền thống Việt, Phong cách Hàn Quốc – hàng mới, Miễn phí, Sang trọng) hiện mẫu ảnh trước, **lặp lại cho đủ 10 thẻ**, rồi tới mẫu vẽ cũ. Danh mục của mẫu ảnh suy ra từ nhãn (`TAG_CAT` trong `src/routes/public.js`). `/mau-thiep` cũng hiện mẫu ảnh khớp bộ lọc danh mục / gói / tìm kiếm, có nút tim lưu mẫu (mã `cv:<key>`). Thẻ ảnh dùng chung partial `views/explore/photo-card.ejs`.
+  - **Mẫu phổ biến**: `featured: 2` (chủ dự án chọn) đứng đầu, rồi `featured: true` (=1). Đang ở mức 2: Đồng Cỏ Mùa Hạ, Hồng Pastel Ngọt Ngào, Hỷ Sự Vui Nhộn, Đỏ Son Song Hỷ, Phong Bì Đỏ Nhung, Phiêu Lưu Núi Tuyết, Báo Cưới, Đỏ Đô Chữ Vàng.
+  - **Tài khoản quản trị không giới hạn số thiệp** (`role = 'admin'` bỏ qua `limits.cards` khi tạo/nhân bản). Tài khoản thử localhost `tester@soba.local` đã được nâng **Premium (hết hạn 2036) + admin** trong DB dev – chỉ là dữ liệu SQLite trên máy, không ảnh hưởng production.
 - Hiển thị dùng chung `public/js/cv-render.js` + `css/canvas.css`; trang khách `views/invitation/canvas.ejs` + `js/canvas-guest.js` (co giãn theo màn hình, RSVP/lời chúc dùng API cũ, lightbox, nhạc, cánh hoa). Server làm sạch dữ liệu chặt trong `src/services/canvas.js` (`sanitizeDoc`).
 
 **Bảo mật**: bcrypt, CSRF token, Helmet + CSP, rate limit, honeypot, kiểm tra loại/kích thước upload, escape nội dung người dùng.
