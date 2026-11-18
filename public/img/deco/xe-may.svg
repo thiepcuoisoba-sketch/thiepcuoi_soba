@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="120" viewBox="0 0 180 120">
+  <!-- Xe tay ga cổ chở hộp quà (SOBA tự vẽ) -->
+  <g stroke="#2b2b2b" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="40" cy="92" r="16" fill="#3a3a3a"/>
+    <circle cx="40" cy="92" r="6" fill="#d8d2c4"/>
+    <circle cx="140" cy="92" r="16" fill="#3a3a3a"/>
+    <circle cx="140" cy="92" r="6" fill="#d8d2c4"/>
+    <path d="M22 84c2-22 18-34 40-34h40c8 0 12 6 14 14l6 22H56c-6 0-10-4-12-10" fill="#7fc0b0"/>
+    <path d="M116 64l10-34" fill="none"/>
+    <path d="M118 30h18" fill="none"/>
+    <path d="M124 64c14 0 28 10 30 26h-30" fill="#7fc0b0"/>
+    <path d="M58 50c4-8 14-10 26-10h18c6 0 8 4 6 10" fill="#5a3a2b"/>
+    <rect x="22" y="22" width="34" height="26" rx="2" fill="#e9b94a"/>
+    <path d="M39 22v26M22 34h34" fill="none" stroke="#c0573e"/>
+    <path d="M30 22c-2-8 6-10 9 0 3-10 11-8 9 0" fill="none" stroke="#c0573e"/>
+    <path d="M18 48h44" fill="none"/>
+  </g>
+  <circle cx="130" cy="38" r="3" fill="#f1d67a"/>
+</svg>

@@ -63,7 +63,7 @@ router.get('/thiep/tao', requireAuth, (req, res) => {
   res.render('dashboard/create', {
     layout: 'layouts/app',
     meta: { title: 'Chọn mẫu thiệp – SOBA' },
-    templates: TEMPLATES,
+    templates: [], // mẫu vẽ dạng form đã gỡ khỏi kho (18/11/2026)
     starters: canvas.STARTERS,
     planKey: effectivePlanKey(req.user),
     selected: req.query.mau || '',
@@ -132,6 +132,7 @@ router.get('/thiep/:id/thiet-ke', requireAuth, loadCard, async (req, res) => {
       banks: canvas.BANKS.map((b) => ({ bin: b.bin, name: b.name })),
       plan: { name: plan.name, customMusic: plan.features.customMusic, photos: plan.limits.photos, effects: plan.features.effects, gift: plan.features.gift },
       openers: canvas.OPENERS,
+      falls: canvas.FALLS,
       songs: canvas.SONGS.map((s) => ({ key: s.key, name: s.name, url: s.url })),
       starters: canvas.STARTERS.map((s) => ({ key: s.key, name: s.name })),
     }),

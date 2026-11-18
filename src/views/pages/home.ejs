@@ -55,6 +55,7 @@
   </div>
 </section>
 
+<% if (templates.length) { %>
 <section class="section" id="mau-thiep">
   <div class="container">
     <div class="section-head reveal">
@@ -73,6 +74,7 @@
   </div>
 </section>
 
+<% } %>
 <section class="section section-tint" id="tinh-nang">
   <div class="container">
     <div class="section-head reveal">
@@ -118,7 +120,7 @@
     <div class="band reveal">
       <div class="band-grid">
         <div class="band-stat"><strong>10 phút</strong><span>để hoàn thành một tấm thiệp</span></div>
-        <div class="band-stat"><strong><%= templates.length %> mẫu</strong><span>thiết kế độc quyền, cập nhật liên tục</span></div>
+        <div class="band-stat"><strong><%= typeof photoCount !== 'undefined' ? photoCount : templates.length %> mẫu</strong><span>thiết kế độc quyền, cập nhật liên tục</span></div>
         <div class="band-stat"><strong>0đ</strong><span>để bắt đầu, nâng cấp khi cần</span></div>
         <div class="band-stat"><strong><%= publishedCount > 0 ? publishedCount.toLocaleString('vi-VN') : '1 link' %></strong><span><%= publishedCount > 0 ? 'thiệp đã được gửi đi' : 'cho tất cả khách mời' %></span></div>
       </div>

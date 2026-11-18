@@ -3,7 +3,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const db = require('../db');
 const config = require('../config');
-const { FEATURED, TEMPLATES, CATEGORIES, TIER_LABEL, getTemplate, exists } = require('../services/templates');
+const { TEMPLATES, CATEGORIES, TIER_LABEL, getTemplate, exists } = require('../services/templates');
 const { PLANS, COMPARE_ROWS } = require('../services/plans');
 const { FEATURES, STEPS, PAINS, TESTIMONIALS, FAQ, ARTICLES } = require('../content');
 const { clean, vnd, removeDiacritics } = require('../services/util');
@@ -12,7 +12,7 @@ const canvas = require('../services/canvas');
 
 /** Mẫu thiết kế tự do có ảnh thật – đưa ra trang chủ */
 // Mẫu "featured" (mẫu mới nổi bật) đứng đầu hàng "Mẫu thiết kế phổ biến"
-// featured: 2 = được chủ dự án chọn đẩy lên đầu, 1 = mẫu mới nổi bật
+// featured: 3 = bộ mẫu mới nhất, 2 = được chủ dự án chọn đẩy lên đầu, 1 = mẫu mới nổi bật
 const photoStarters = canvas.STARTERS.filter((s) => s.thumb).sort((a, b) => Number(b.featured || 0) - Number(a.featured || 0));
 /** Danh mục của mẫu ảnh – suy ra từ nhãn (tags) */
 const TAG_CAT = {
@@ -81,24 +81,26 @@ async function usageMap() {
   return Object.fromEntries(rows.map((r) => [r.template, Number(r.n)]));
 }
 
-const by = (fn) => TEMPLATES.filter(fn);
+// 30 mẫu vẽ dạng form (không có ảnh) đã gỡ khỏi kho mẫu 18/11/2026 – thiệp cũ vẫn hiển thị bình thường
+const LISTED = [];
+const by = (fn) => LISTED.filter(fn);
 
 // ===== Trang Khám phá (trang chủ mới) =====
 router.get('/', async (req, res) => {
   const usage = await usageMap();
-  const popular = [...TEMPLATES].sort((a, b) => (usage[b.key] || 0) - (usage[a.key] || 0) || Number(b.featured) - Number(a.featured));
+  const popular = [...LISTED].sort((a, b) => (usage[b.key] || 0) - (usage[a.key] || 0) || Number(b.featured) - Number(a.featured));
   res.render('explore/home', {
     layout: 'layouts/explore',
     meta: {
       title: 'SOBA – Tạo thiệp cưới online đẹp, miễn phí',
-      description: 'Kho 30 mẫu thiệp cưới online: lãng mạn, truyền thống chữ Hỷ, Hàn Quốc, poster thịnh hành. Tên khách riêng, xác nhận tham dự, mừng cưới QR.',
+      description: 'Kho mẫu thiệp cưới online có ảnh thật: lãng mạn, truyền thống chữ Hỷ, Hàn Quốc, poster thịnh hành. Tên khách riêng, xác nhận tham dự, mừng cưới QR.',
     },
     CATEGORIES,
     templates: TEMPLATES,
     usage,
     rows: [
       // Mỗi hàng hiện mẫu ảnh thật (lặp lại cho đủ chỗ), rồi tới mẫu vẽ cùng loại
-      { key: 'tuyen-chon', title: 'SOBA tuyển chọn', sub: 'Mẫu đẹp, được yêu thích nhất', href: '/mau-thiep', photos: photosWhere((s) => s.featured === 2).concat(photosWhere((s) => s.featured === 1)), items: FEATURED.map(getTemplate) },
+      { key: 'tuyen-chon', title: 'SOBA tuyển chọn', sub: 'Mẫu đẹp, được yêu thích nhất', href: '/mau-thiep', photos: photosWhere((s) => s.featured === 3).concat(photosWhere((s) => s.featured === 2), photosWhere((s) => s.featured === 1)), items: [] },
       { key: 'thinh-hanh', title: 'Đang thịnh hành', sub: 'Phong cách hot trên TikTok, Facebook', href: '/mau-thiep?dm=thinh-hanh', photos: photosWhere((s) => s.cats.includes('thinh-hanh') || s.cats.includes('dien-anh'), ROW_MIN), items: by((t) => t.category === 'thinh-hanh').concat(popular.filter((t) => t.category !== 'thinh-hanh').slice(0, 3)) },
       { key: 'truyen-thong', title: 'Truyền thống Việt', sub: 'Lễ vu quy, tân hôn, chữ Hỷ', href: '/mau-thiep?dm=truyen-thong', photos: photosWhere((s) => s.cats.includes('truyen-thong'), ROW_MIN), items: by((t) => t.category === 'truyen-thong') },
       { key: 'han-quoc', title: 'Phong cách Hàn Quốc', sub: 'Studio trắng, hanbok, nhẹ nhàng', href: '/mau-thiep?dm=han-quoc', photos: photosWhere((s) => s.cats.includes('han-quoc') || s.cats.includes('toi-gian'), ROW_MIN), items: by((t) => t.category === 'han-quoc') },
@@ -118,7 +120,8 @@ router.get('/gioi-thieu', async (req, res) => {
       title: 'SOBA – Tạo thiệp cưới online đẹp, tinh tế trong 10 phút',
       description: 'Tạo thiệp cưới online miễn phí với SOBA: mẫu thiệp lãng mạn, tên khách mời riêng, xác nhận tham dự, hộp mừng cưới QR và bản đồ chỉ đường.',
     },
-    templates: TEMPLATES.filter((t) => t.featured),
+    templates: [],
+    photoCount: photoStarters.length,
     showcase: await showcase(8),
     publishedCount: Number(stats ? stats.n : 0),
     FEATURES,
@@ -137,7 +140,7 @@ router.get('/mau-thiep', async (req, res) => {
   const goi = ['free', 'basic', 'premium'].includes(req.query.goi) ? req.query.goi : '';
   const favMode = req.query.luu === '1';
   const needle = removeDiacritics(q).toLowerCase();
-  let list = TEMPLATES;
+  let list = LISTED;
   if (!favMode) {
     if (dm) list = list.filter((t) => t.category === dm);
     if (goi) list = list.filter((t) => t.tier === goi);
@@ -172,6 +175,7 @@ router.get('/mau-thiep', async (req, res) => {
 
 router.get('/mau-thiep/:key', (req, res, next) => {
   if (!exists(req.params.key)) return next();
+  if (!LISTED.some((t) => t.key === req.params.key)) return res.redirect(301, '/mau-thiep');
   const tpl = getTemplate(req.params.key);
   res.render('pages/template-detail', {
     meta: { title: `Mẫu thiệp cưới ${tpl.name} – SOBA`, description: tpl.description },
@@ -252,7 +256,6 @@ router.get('/robots.txt', (req, res) => {
 
 router.get('/sitemap.xml', (req, res) => {
   const urls = ['/', '/gioi-thieu', '/mau-thiep', '/bang-gia', '/tinh-nang', '/thiep-khach-hang', '/huong-dan', '/cam-nang', '/cau-hoi-thuong-gap', '/lien-he']
-    .concat(TEMPLATES.map((t) => `/mau-thiep/${t.key}`))
     .concat(ARTICLES.map((a) => `/cam-nang/${a.slug}`));
   res
     .type('application/xml')

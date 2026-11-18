@@ -42,6 +42,12 @@ const SONGS = [
   { key: 'vay-cuoi', name: 'Váy Cưới (cover)', file: 'vay-cuoi.mp3' },
   { key: 'bai-nay-khong-de-di-dien', name: 'Bài Này Không Để Đi Diễn – Anh Tú', file: 'bai-nay-khong-de-di-dien.m4a' },
   { key: 'nhac-cuoi-nhe-nhang', name: 'Nhạc cưới nhẹ nhàng', file: 'nhac-cuoi-nhe-nhang.mp3' },
+  // Thêm 18/11/2026 (chủ dự án xác nhận có giấy phép)
+  { key: 'ben-do-hanh-phuc', name: 'Bến Đỗ Hạnh Phúc – Xanh', file: 'ben-do-hanh-phuc.mp3' },
+  { key: 'love-like-a-dream', name: 'Love Like a Dream – Salotune', file: 'love-like-a-dream.mp3' },
+  { key: 'the-gioi-cua-anh', name: 'Thế Giới Của Anh (piano)', file: 'the-gioi-cua-anh.mp3' },
+  { key: 'thanh-than', name: 'Thành Thân – Vương Bình', file: 'thanh-than.mp3' },
+  { key: 'canon-in-love', name: 'Canon In Love', file: 'canon-in-love.mp3' },
 ].map((s) => ({ ...s, url: '/music/' + s.file }));
 const songUrl = (key) => (SONGS.find((s) => s.key === key) || {}).url || '';
 const musicUrl = (u) => {
@@ -60,12 +66,19 @@ const OPENERS = [
   { key: 'book', name: 'Lật bìa thiệp' },
   { key: 'curtain', name: 'Rèm lụa & bướm bay' },
   { key: 'stars', name: 'Bầu trời sao rơi' },
+  { key: 'stamp', name: 'Cửa giấy – ấn đỏ có ảnh' },
+  { key: 'letter', name: 'Phong thư – ảnh trượt lên' },
+  { key: 'ribbon', name: 'Tháo nơ lụa' },
+  { key: 'news', name: 'Tờ báo tin vui' },
+  { key: 'oval', name: 'Khung ảnh oval' },
 ];
 const OPENER_KEYS = OPENERS.map((o) => o.key);
 // spin: xoay liên tục (đĩa nhạc) – chạy khi nhạc đang phát
 const ANIMS = ['none', 'fade', 'up', 'down', 'left', 'right', 'zoom', 'rise', 'spin'];
 // blur: ảnh nền làm mờ cho thẻ kính mờ
 const FILTERS = ['none', 'warm', 'bw', 'film', 'soft', 'blur'];
+/** Hiệu ứng rơi trên trang khách (gói Basic+) */
+const FALLS = ['petals', 'leaves', 'hearts', 'sparkle', 'snow'];
 const LIMITS = { sections: 20, elements: 80, album: 30, text: 2000 };
 
 // ===== Hàm làm sạch =====
@@ -205,12 +218,21 @@ function sanitizeDoc(input = {}) {
     time: timeStr(src.time) || '11:00',
     pageBg: color(src.pageBg, '#f3eeee'),
     music: { url: musicUrl(src.music && src.music.url), autoplay: !(src.music && src.music.autoplay === false) },
-    effects: { petals: Boolean(src.effects && src.effects.petals), toolbar: !(src.effects && src.effects.toolbar === false) },
+    effects: {
+      petals: Boolean(src.effects && src.effects.petals),
+      toolbar: !(src.effects && src.effects.toolbar === false),
+      fall: pick(src.effects && src.effects.fall, FALLS, 'petals'),
+      // Nút tự cuộn thiệp; autostart = tự cuộn ngay khi khách mở thiệp
+      autoscroll: !(src.effects && src.effects.autoscroll === false),
+      autostart: Boolean(src.effects && src.effects.autostart),
+    },
     opener: {
       style: pick(src.opener && src.opener.style, OPENER_KEYS, 'none'),
       color: color(src.opener && src.opener.color, '#b3262d'),
       paper: color(src.opener && src.opener.paper, '#fbf6ef'),
       font: pick(src.opener && src.opener.font, FONTS, 'Great Vibes'),
+      // Ảnh trên màn mở thiệp (trống = ảnh lớn nhất ở trang đầu)
+      photo: url(src.opener && src.opener.photo),
     },
     sections,
   };
@@ -381,7 +403,8 @@ function buildStarter(p) {
   });
 }
 
-const STARTERS = [
+// 3 mẫu ảnh giữ chỗ (SVG) – đã gỡ khỏi kho mẫu 18/11/2026, chỉ giữ để link /demo-thiet-ke cũ không lỗi
+const LEGACY_STARTERS = [
   {
     key: 'do-ruou-vang',
     name: 'Đỏ Rượu Vang',
@@ -404,12 +427,13 @@ const STARTERS = [
     p: { page: '#f6dfe5', bg: '#fff5f7', bg2: '#ffe9ee', ink: '#4a2533', soft: '#8a6573', accent: '#d6456c', line: '#e7a3b6', script: 'Great Vibes', serif: 'Cormorant Garamond', sans: 'Montserrat' },
   },
 ];
-STARTERS.forEach((s) => {
+LEGACY_STARTERS.forEach((s) => {
   s.doc = buildStarter(s.p);
   s.thumb = '';
   s.tags = ['Ảnh giữ chỗ'];
 });
-// 17 mẫu có ảnh thật (src/services/canvas-starters.js) – xếp trước 3 mẫu ảnh giữ chỗ
+// Mẫu có ảnh thật (canvas-starters.js + canvas-starters-b.js)
+const STARTERS = [];
 require('./canvas-starters')
   .buildAll()
   .reverse()
@@ -418,7 +442,7 @@ require('./canvas-starters')
     STARTERS.unshift({ key: s.key, name: s.name, desc: s.desc, tier: s.tier, tags: s.tags, thumb: s.thumb, song: s.song, opener: s.opener, featured: s.featured, doc: sanitizeDoc(s.raw) });
   });
 
-const starterOf = (key) => STARTERS.find((s) => s.key === key) || null;
+const starterOf = (key) => STARTERS.find((s) => s.key === key) || LEGACY_STARTERS.find((s) => s.key === key) || null;
 
 /** Thiệp trắng: 1 trang + vài chữ gợi ý */
 function blankDoc() {
@@ -450,6 +474,9 @@ function pageLocals(card, { owner, guestName = '', preview = false, wishes = [],
       demo,
       watermark: plan.features.watermark,
       petals: plan.features.effects && d.effects.petals,
+      fall: d.effects.fall,
+      // Tự cuộn: mọi gói
+      autoscroll: d.effects.autoscroll ? { start: d.effects.autostart } : null,
       // Màn mở thiệp + thanh tiện ích nổi: gói Basic trở lên
       opener: plan.features.effects && d.opener.style !== 'none' ? d.opener : null,
       toolbar: plan.features.effects && d.effects.toolbar,
@@ -461,4 +488,4 @@ function pageLocals(card, { owner, guestName = '', preview = false, wishes = [],
   };
 }
 
-module.exports = { pageLocals, W, FONTS, WIDGETS, LIMITS, BANKS, OPENERS, SONGS, songUrl, STARTERS, starterOf, blankDoc, sanitizeDoc, parseDoc, viewDoc, docFontsUrl, safeJson };
+module.exports = { pageLocals, W, FONTS, WIDGETS, LIMITS, BANKS, OPENERS, FALLS, SONGS, songUrl, STARTERS, starterOf, blankDoc, sanitizeDoc, parseDoc, viewDoc, docFontsUrl, safeJson };

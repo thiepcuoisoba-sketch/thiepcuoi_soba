@@ -1315,7 +1315,15 @@
         h('p', { class: 'dz-hint', text: 'Dùng cho đồng hồ đếm ngược, lịch và chữ {ngay}, {gio}.' }),
         h('div', { class: 'dz-grid2' }, [field('Ngày', dateInput(doc, 'date', 'date', all)), field('Giờ', dateInput(doc, 'time', 'time', all))]),
       ]));
-      body.appendChild(group('Hiệu ứng', [checkbox('Cánh hoa rơi (gói Basic trở lên)', doc.effects, 'petals', function () {})]));
+      var FALL_NAMES = { petals: 'Cánh hoa', leaves: 'Lá bay', hearts: 'Trái tim', sparkle: 'Lấp lánh', snow: 'Tuyết' };
+      body.appendChild(group('Hiệu ứng', [
+        checkbox('Hiệu ứng rơi (gói Basic trở lên)', doc.effects, 'petals', function () {}),
+        field('Kiểu rơi', selectInput(doc.effects, 'fall', (boot.falls || ['petals']).map(function (k) {
+          return [k, FALL_NAMES[k] || k];
+        }), function () {})),
+        checkbox('Nút tự cuộn thiệp (khách bấm để thiệp tự chạy xuống)', doc.effects, 'autoscroll', function () {}),
+        checkbox('Tự cuộn ngay khi khách mở thiệp', doc.effects, 'autostart', function () {}),
+      ]));
       // Màn mở thiệp + thanh tiện ích nổi (gói Basic trở lên)
       var paid = boot.plan.effects;
       var op = doc.opener;
@@ -1325,6 +1333,7 @@
           return [o.key, o.name];
         }), function () {})),
         h('div', { class: 'dz-grid2' }, [field('Màu chính', colorInput(op, 'color', false, function () {})), field('Màu nền', colorInput(op, 'paper', false, function () {}))]),
+        field('Ảnh màn mở thiệp (để trống = ảnh bìa)', textInput(op, 'photo', { max: 500, placeholder: '/img/mau/... hoặc link ảnh' }, function () {})),
         field('Phông tên', selectInput(op, 'font', boot.fonts.map(function (f) {
           return [f, f, 'font-family:' + CV.font(f)];
         }), function () {})),

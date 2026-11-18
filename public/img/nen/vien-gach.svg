@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="28" viewBox="0 0 420 28" preserveAspectRatio="none">
+  <!-- Dải viền gạch bông (SOBA tự vẽ) -->
+  <defs>
+    <pattern id="b" width="28" height="28" patternUnits="userSpaceOnUse">
+      <rect width="28" height="28" fill="#f3ead8"/>
+      <path d="M14 3 L25 14 L14 25 L3 14Z" fill="none" stroke="#3f6a8c" stroke-width="2.2"/>
+      <circle cx="14" cy="14" r="4" fill="#c0573e"/>
+      <path d="M0 0 L5 5 M28 0 L23 5 M0 28 L5 23 M28 28 L23 23" stroke="#b8963f" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="420" height="28" fill="url(#b)"/>
+  <path d="M0 1h420M0 27h420" stroke="#2b2b2b" stroke-width="1.2"/>
+</svg>

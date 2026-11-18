@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150">
+  <!-- Nơ lụa nâu (SOBA tự vẽ) -->
+  <defs>
+    <linearGradient id="r" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#7a3b33"/>
+      <stop offset=".5" stop-color="#5a2621"/>
+      <stop offset="1" stop-color="#3c1714"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#r)" stroke="#2e110f" stroke-width="1">
+    <path d="M100 62C76 26 26 10 18 36c-8 26 40 46 82 26z"/>
+    <path d="M100 62c24-36 74-52 82-26 8 26-40 46-82 26z"/>
+    <path d="M92 70c-18 22-34 52-58 76l18-2 8 10c22-24 34-54 38-82z"/>
+    <path d="M108 70c18 22 34 52 58 76l-18-2-8 10c-22-24-34-54-38-82z"/>
+    <rect x="88" y="52" width="24" height="22" rx="8"/>
+  </g>
+  <g fill="none" stroke="#c98f84" stroke-opacity=".5" stroke-width="1.2">
+    <path d="M40 34c18-4 36 6 52 22"/>
+    <path d="M160 34c-18-4-36 6-52 22"/>
+  </g>
+</svg>

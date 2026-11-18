@@ -870,7 +870,7 @@ const F = {
 
 const DEFS = [
   {
-    key: 'tap-chi-tinh-yeu', opener: 'book', name: 'Tạp Chí Tình Yêu', folder: 'a1', tier: 'basic', song: 'marry-you', tags: ['Tạp chí', 'Hàn Quốc'],
+    key: 'tap-chi-tinh-yeu', opener: 'news', name: 'Tạp Chí Tình Yêu', folder: 'a1', tier: 'basic', song: 'marry-you', tags: ['Tạp chí', 'Hàn Quốc'],
     desc: 'Bìa tạp chí ảnh tràn viền, tiêu đề nghiêng vàng nhạt, phong cách retro Hàn.',
     p: { page: '#1f1b18', bg: '#f6f1ea', bg2: '#efe6da', ink: '#2c2420', soft: '#7c6d62', accent: '#9c6b3c', line: '#cdb89c', gold: '#f1d39a', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.magazine(p, [ph[0]]), secInvite(p), COUPLE.tall(p, [ph[1]]), EVENT.bigdate(p), GALLERY.collage(p, [ph[2], ph[3], ph[4], ph[5]]), secQuote(p, ph[3]), secForms(p), THANKS.full(p, ph[2])],
@@ -955,13 +955,6 @@ const DEFS = [
     photos: [4, 2, 1, 5, 6, 7, 8, 9, 10, 11, 12],
   },
   {
-    key: 'do-son-song-hy', featured: 2, opener: 'doors', name: 'Đỏ Son Song Hỷ', folder: 'a12', tier: 'basic', song: 'mai-mai-ben-nhau', tags: ['Truyền thống', 'Sang trọng'],
-    desc: 'Ảnh tràn viền nền đỏ son, chữ viết tay vàng, khung vòm đôi.',
-    p: { page: '#4a0910', bg: '#fff5ef', bg2: '#fbe9e1', ink: '#5b1219', soft: '#8b5d58', accent: '#b81f2d', line: '#e2b2a6', script: F.vibes, serif: F.playfair, sans: F.be },
-    build: (p, ph) => [COVERS.full(p, [ph[0]], { title: 'Song Hỷ Lâm Môn', shade: '#3d050999' }), secInvite(p), COUPLE.arches(p, [ph[1], ph[2]]), EVENT.calendar(p), GALLERY.collage(p, [ph[3], ph[4], ph[5], ph[6]]), secForms(p), THANKS.arch(p, ph[7])],
-    photos: [1, 3, 2, 4, 6, 7, 9, 8],
-  },
-  {
     key: 'phong-bi-do-nhung', featured: 2, noEnvelope: true, opener: 'envelope', name: 'Phong Bì Đỏ Nhung', folder: 'a13', tier: 'premium', song: 'beautiful-in-white', tags: ['Phong bì', 'Sang trọng'],
     desc: 'Phong bì đỏ nhung dấu sáp vàng trên nền kem, hoà quyện cổ phục và váy cưới.',
     p: { page: '#e9ddd0', bg: '#fbf5ee', bg2: '#f4e9dd', ink: '#4e1218', soft: '#866159', accent: '#9f1c28', line: '#d9b38f', env: '#9f1c28', env2: '#861522', seal: '#d8aa5a', script: F.vibes, serif: F.playfair, sans: F.mont },
@@ -969,25 +962,11 @@ const DEFS = [
     photos: [1, 10, 9, 2, 3, 4, 6, 7, 8, 11, 12, 5],
   },
   {
-    key: 'phieu-luu-nui-tuyet', featured: 2, opener: 'book', name: 'Phiêu Lưu Núi Tuyết', folder: 'a14', tier: 'premium', song: 'vay-cuoi', tags: ['Poster', 'Du lịch'],
+    key: 'phieu-luu-nui-tuyet', featured: 2, opener: 'letter', name: 'Phiêu Lưu Núi Tuyết', folder: 'a14', tier: 'premium', song: 'vay-cuoi', tags: ['Poster', 'Du lịch'],
     desc: 'Poster chữ lớn “WE GOT MARRIED” trên nền núi tuyết, hồ xanh.',
     p: { page: '#cfd8df', bg: '#f3f6f8', bg2: '#e6edf1', ink: '#1f2d38', soft: '#62717d', accent: '#2f5d7c', line: '#b3c3cf', gold: '#ffd27a', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.poster(p, [ph[0]]), secInvite(p), COUPLE.tall(p, [ph[1]]), EVENT.calendar(p), GALLERY.collage(p, [ph[2], ph[3], ph[4], ph[5]], { title: 'Những chuyến đi' }), secQuote(p, ph[5], '“Đi cùng nhau, đâu cũng là nhà.”'), secForms(p), THANKS.full(p, ph[6])],
     photos: [5, 6, 1, 4, 7, 8, 2],
-  },
-  {
-    key: 'bao-cuoi', featured: 2, opener: 'book', name: 'Báo Cưới', folder: 'a15', tier: 'basic', song: 'bai-nay-khong-de-di-dien', tags: ['Báo cưới', 'Vintage'],
-    desc: 'Tờ báo cổ điển đưa “tin nóng” đám cưới, cột chữ và ảnh tư liệu.',
-    p: { page: '#d9d2c3', bg: '#f4efe4', bg2: '#ece5d6', ink: '#221e19', soft: '#6e665b', accent: '#9c2a3b', line: '#bfb39c', script: F.dancing, serif: F.lora, sans: F.be },
-    build: (p, ph) => [COVERS.newspaper(p, [ph[0]]), secInvite(p), COUPLE.polaroid(p, [ph[1], ph[2]]), EVENT.bigdate(p), GALLERY.grid(p, ph.slice(3, 9), { cols: 2, radius: 0, title: 'Phóng sự ảnh' }), secForms(p), THANKS.arch(p, ph[1])],
-    photos: [1, 4, 12, 2, 5, 13, 6, 3, 11],
-  },
-  {
-    key: 'do-do-chu-vang', featured: 2, opener: 'doors', name: 'Đỏ Đô Chữ Vàng', folder: 'a16', tier: 'basic', song: 'le-duong', tags: ['Đỏ đô', 'Chữ viết tay'],
-    desc: 'Nền đỏ đô sâu, chữ viết tay vàng kim, khung vòm và thước phim.',
-    p: { page: '#3a070c', bg: '#6d1119', bg2: '#5b0d15', ink: '#fbe8c8', soft: '#e7c9a4', accent: '#d9a74a', line: '#d9a74a', filmText: '#fbe8c8', script: F.vibes, serif: F.corm, sans: F.mont },
-    build: (p, ph) => [COVERS.arch(p, [ph[0]]), secInvite(p), COUPLE.arches(p, [ph[1], ph[2]]), EVENT.calendar(p), GALLERY.film(p, [ph[3], ph[4], ph[5]]), secForms(p, { dark: true }), THANKS.arch(p, ph[6])],
-    photos: [3, 6, 9, 7, 2, 4, 8],
   },
   {
     key: 'pho-co-chau-au', opener: 'fingerprint', name: 'Phố Cổ Châu Âu', folder: 'a17', tier: 'premium', song: 'canon-in-d', tags: ['Thanh lịch', 'Châu Âu'],
@@ -999,7 +978,7 @@ const DEFS = [
 
   // ===== 14 mẫu mới 16/11/2026 (ảnh a18–a31). Ảnh đủ cô dâu chú rể luôn đứng đầu làm ảnh bìa. =====
   {
-    key: 'hanok-tinh-khoi', name: 'Hanok Tinh Khôi', folder: 'a18', tier: 'basic', opener: 'book', featured: true, song: 'beautiful-in-white', tags: ['Hàn Quốc', 'Studio'],
+    key: 'hanok-tinh-khoi', name: 'Hanok Tinh Khôi', folder: 'a18', tier: 'basic', opener: 'oval', featured: true, song: 'beautiful-in-white', tags: ['Hàn Quốc', 'Studio'],
     desc: 'Trắng – đỏ son tinh tế, thẻ “Save the Date” bo tròn, chuyện tình 4 chương và lịch trình lễ cưới.',
     p: { page: '#ece9e4', bg: '#ffffff', bg2: '#f7f5f1', ink: '#1d1c1a', soft: '#6d6a64', accent: '#b3262d', line: '#e2ddd5', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.hero(p, [ph[0], ph[1]]), secInvite(p), COUPLE.arches(p, [ph[2], ph[3]]), secStory(p, [ph[4], ph[5], ph[6], ph[7]]), secSchedule(p), GALLERY.grid(p, [ph[8], ph[9], ph[10], ph[12]], { cols: 2 }), secLetter(p, ph[11]), secForms(p), THANKS.arch(p, ph[1])],
@@ -1042,7 +1021,7 @@ const DEFS = [
     photos: [1, 10, 3, 9, 11, 14, 6, 5, 7, 13, 16],
   },
   {
-    key: 'hoa-trang-tinh-khoi', name: 'Hoa Trắng Tinh Khôi', folder: 'a24', tier: 'premium', opener: 'book', featured: true, song: 'a-thousand-years', tags: ['Sang trọng', 'Hoa'],
+    key: 'hoa-trang-tinh-khoi', name: 'Hoa Trắng Tinh Khôi', folder: 'a24', tier: 'premium', opener: 'letter', featured: true, song: 'a-thousand-years', tags: ['Sang trọng', 'Hoa'],
     desc: 'Vườn hoa trắng sang trọng, lật bìa mở thiệp, chuyện tình, lịch trình và lời ngỏ.',
     p: { page: '#e6e9e1', bg: '#fdfdfb', bg2: '#f4f5f0', ink: '#26302a', soft: '#6b7468', accent: '#4f6b4a', line: '#cdd5c6', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.hero(p, [ph[0], ph[1]]), secInvite(p), GALLERY.stagger(p, [ph[2], ph[3]]), secStory(p, [ph[4], ph[5], ph[6], ph[7]]), secSchedule(p), GALLERY.grid(p, [ph[8], ph[9], ph[10], ph[13]], { cols: 2 }), secLetter(p, ph[14]), GALLERY.stack(p, [ph[11], ph[12], ph[15]]), secForms(p), THANKS.full(p, ph[2])],
@@ -1093,7 +1072,7 @@ const DEFS = [
     photos: [3, 6, 9, 1, 2, 4, 5, 7, 8, 10],
   },
   {
-    key: 'lau-dai-anh-nen', name: 'Lâu Đài Ánh Nến', folder: 'a31', tier: 'basic', opener: 'book', featured: true, song: 'mai-mai-ben-nhau', tags: ['Cổ điển', 'Sang trọng'],
+    key: 'lau-dai-anh-nen', name: 'Lâu Đài Ánh Nến', folder: 'a31', tier: 'basic', opener: 'curtain', featured: true, song: 'mai-mai-ben-nhau', tags: ['Cổ điển', 'Sang trọng'],
     desc: 'Lâu đài cổ điển ánh nến vàng, bìa tạp chí, chuyện tình và album 3 cột.',
     p: { page: '#2a2118', bg: '#fbf6ec', bg2: '#f3e9d6', ink: '#3a2a17', soft: '#7d6a52', accent: '#a8833a', line: '#dcc69a', gold: '#f1d39a', script: F.vibes, serif: F.playfair, sans: F.mont },
     build: (p, ph) => [COVERS.magazine(p, [ph[0]], { mast: 'LOVE NOTES', title: 'Golden\nHour' }), secInvite(p), COUPLE.arches(p, [ph[2], ph[3]]), secStory(p, [ph[4], ph[5], ph[6], ph[13]]), EVENT.bigdate(p), GALLERY.grid(p, ph.slice(7, 13), { cols: 3 }), secQuote(p, ph[1]), secForms(p), THANKS.full(p, ph[14])],
@@ -1225,6 +1204,9 @@ const DEFS = [
   },
 ];
 
+// Bộ mẫu thứ hai (a40, a42–a46): thư viện bố cục riêng trong canvas-starters-b.js
+DEFS.push(...require('./canvas-starters-b')({ T, I, S, G, sec, W, glassBuild }));
+
 function futureDate() {
   const d = new Date();
   d.setMonth(d.getMonth() + 3);
@@ -1233,18 +1215,82 @@ function futureDate() {
 }
 
 /** Danh sách mẫu (dữ liệu thô chưa sanitize) */
+/** Đếm vị trí ảnh cưới trong mẫu (bỏ qua hoạ tiết SVG trang trí, tính cả ảnh trong album) */
+function countPhotos(sections) {
+  let n = 0;
+  for (const s of sections)
+    for (const e of s.els) {
+      if (e.type === 'image' && e.src && !/^\/img\/(deco|nen)\//.test(e.src)) n++;
+      if (e.type === 'widget' && e.widget === 'album') n += (e.images || []).length;
+    }
+  return n;
+}
+const tierByPhotos = (n) => (n <= 10 ? 'free' : n <= 30 ? 'basic' : 'premium');
+
+/**
+ * Mẫu nâng lên Premium (chủ dự án yêu cầu 18/11/2026): thêm trang "Khoảnh khắc" (6 ảnh)
+ * và album 12 ảnh. Ảnh lấy vòng lại trong bộ ảnh của mẫu (cho phép lặp ảnh).
+ * Giá trị = số trang thêm (mẫu đã gần đủ 20 trang chỉ thêm album).
+ */
+const PREMIUM_MORE = {
+  'lau-dai-anh-nen': 2,
+  'hoa-trang-tinh-khoi': 2,
+  'le-cuoi-tren-doi': 2,
+  'dong-hoa-mua-ha': 2,
+  'thu-xanh-hoa-co': 2,
+  'vom-trang-song-hy': 2,
+  'o-liu-thanh-lich': 2,
+  'truc-xanh-an-do': 1,
+};
+function secMoments(p, ph) {
+  const line = p.line || p.cardLine || p.accent;
+  return sec(1080, p.bg2 || p.bg, [
+    T(30, 40, 360, 22, 'OUR MOMENTS', txt(p, 'label', { size: 12, anim: 'fade' })),
+    T(30, 64, 360, 58, 'Khoảnh khắc của chúng mình', txt(p, 'script', { size: 36, anim: 'fade' })),
+    S(24, 136, 372, 2, 'rect', { fill: line, o: 0.6 }),
+    I(24, 154, 372, 430, ph[0], { radius: 6, anim: 'zoom' }),
+    I(24, 596, 116, 150, ph[1], { radius: 6, anim: 'up' }),
+    I(152, 596, 116, 150, ph[2], { radius: 6, anim: 'up', delay: 0.1 }),
+    I(280, 596, 116, 150, ph[3], { radius: 6, anim: 'up', delay: 0.2 }),
+    I(24, 758, 182, 240, ph[4], { radius: 6, anim: 'left' }),
+    I(214, 758, 182, 240, ph[5], { radius: 6, anim: 'right' }),
+    T(40, 1016, 340, 48, '“Yêu là cùng nhau nhìn về một hướng.”', txt(p, 'serif', { size: 16, italic: true, anim: 'fade' })),
+  ]);
+}
+function addPremiumPages(d, sections, ph) {
+  const n = PREMIUM_MORE[d.key];
+  if (!n) return sections;
+  // Lấy ảnh vòng lại, bắt đầu từ ảnh thứ 2 để không lặp ngay ảnh bìa
+  const at = (i) => ph[(i + 1) % ph.length];
+  const extra = [];
+  if (n >= 2) extra.push(secMoments(d.p, [0, 1, 2, 3, 4, 5].map(at)));
+  extra.push(GALLERY.grid(d.p, Array.from({ length: 12 }, (_, i) => at(i + 6)), { cols: 3, title: 'Khung hình yêu thương', radius: 4 }));
+  // Chèn ngay trước trang xác nhận tham dự (không có thì trước 2 trang cuối)
+  const rsvp = sections.findIndex((x) => x.els.some((e) => e.type === 'widget' && e.widget === 'rsvp'));
+  const pos = rsvp > 0 ? rsvp : Math.max(1, sections.length - 2);
+  return [...sections.slice(0, pos), ...extra, ...sections.slice(pos)];
+}
+
 function buildAll() {
   return DEFS.map((d) => {
-    seq = 0;
-    CUR_TIER = d.tier;
     const ph = img(d.folder, d.photos);
-    const sections = d.build(d.p, ph);
-    // Trang "Hai gia đình" ngay sau lời mời; phong bì ảnh sau trang cô dâu chú rể
-    // (mẫu có bìa phong bì đặt noEnvelope để không lặp)
-    if (!d.noAuto) sections.splice(2, 0, secFamily(d.p));
-    if (!d.noAuto && !d.noEnvelope) sections.splice(4, 0, secEnvelope(d.p, d.envPhotos ? img(d.folder, d.envPhotos) : [ph[ph.length - 1], ph[ph.length - 2]]));
+    const make = (tier) => {
+      seq = 0;
+      CUR_TIER = tier;
+      const sections = d.build(d.p, ph);
+      // Trang "Hai gia đình" ngay sau lời mời; phong bì ảnh sau trang cô dâu chú rể
+      // (mẫu có bìa phong bì đặt noEnvelope để không lặp)
+      if (!d.noAuto) sections.splice(2, 0, secFamily(d.p));
+      if (!d.noAuto && !d.noEnvelope) sections.splice(4, 0, secEnvelope(d.p, d.envPhotos ? img(d.folder, d.envPhotos) : [ph[ph.length - 1], ph[ph.length - 2]]));
+      return addPremiumPages(d, sections, ph);
+    };
+    // Gói của mẫu tính theo số ảnh (chủ dự án chốt 18/11/2026): ≤10 Free · ≤30 Basic · còn lại Premium
+    let sections = make(d.tier);
+    const tier = tierByPhotos(countPhotos(sections));
+    if (tier !== d.tier) sections = make(tier);
+    d = { ...d, tier };
     // Mẫu trả phí: có màn mở thiệp (mặc định theo bảng màu của mẫu)
-    const op = d.tier === 'free' ? { style: 'none' } : { style: d.opener || 'envelope', color: d.op?.color || d.p.accent, paper: d.op?.paper || d.p.bg, font: d.p.script2 || d.p.script };
+    const op = d.tier === 'free' ? { style: 'none' } : { style: d.opener || 'envelope', color: d.op?.color || d.p.accent, paper: d.op?.paper || d.p.bg, font: d.p.script2 || d.p.script, photo: d.op?.photoIdx != null ? ph[d.op.photoIdx] : '' };
     return {
       key: d.key,
       name: d.name,
@@ -1254,7 +1300,7 @@ function buildAll() {
       thumb: ph[0],
       song: d.song,
       opener: op.style,
-      // 2 = chủ dự án chọn đẩy lên đầu hàng phổ biến (17/11/2026), 1 = mẫu mới nổi bật
+      // 3 = bộ mẫu mới nhất (18/11/2026), 2 = chủ dự án chọn đẩy lên đầu hàng phổ biến (17/11/2026), 1 = mẫu mới nổi bật
       featured: Number(d.featured || 0),
       raw: {
         groom: { name: 'Minh Anh' },
@@ -1264,7 +1310,8 @@ function buildAll() {
         pageBg: d.p.page,
         // URL bài hát gắn ở canvas.js (songUrl) – tránh require vòng
         music: { url: '', autoplay: true },
-        effects: { petals: true, toolbar: true },
+        // Nút tự cuộn có ở mọi mẫu; mẫu mới tự cuộn ngay khi khách mở thiệp
+        effects: { petals: true, toolbar: true, fall: d.fall || 'petals', autoscroll: true, autostart: Boolean(d.autostart) },
         opener: op,
         sections,
       },

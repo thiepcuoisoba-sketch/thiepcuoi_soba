@@ -170,20 +170,24 @@ body.cvo-lock { overflow: hidden; }
 .cvo-fingerprint .cvo-hint { margin-top: 16px; }
 
 /* Cửa hai cánh */
-.cvo-doors { background: color-mix(in srgb, var(--cvo-c) 25%, #000); perspective: 1200px; }
-.cvo-door { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 1; background: linear-gradient(90deg, color-mix(in srgb, var(--cvo-c) 88%, #000), var(--cvo-c)); transition: transform 1.3s cubic-bezier(.6,0,.3,1); box-shadow: inset 0 0 0 10px color-mix(in srgb, var(--cvo-c) 70%, #000), inset 0 0 0 12px #d9b26a; }
-.cvo-door.l { left: 0; transform-origin: left center; }
-.cvo-door.r { right: 0; transform-origin: right center; background: linear-gradient(270deg, color-mix(in srgb, var(--cvo-c) 88%, #000), var(--cvo-c)); }
-.cvo-knob { position: absolute; top: 50%; width: 12px; height: 46px; border-radius: 6px; background: linear-gradient(#f3d58f, #b8862e); }
-.cvo-door.l .cvo-knob { right: 18px; }
-.cvo-door.r .cvo-knob { left: 18px; }
-.cvo-doors .cvo-card { color: #fff3dc; background: color-mix(in srgb, var(--cvo-c) 70%, #000); padding: 26px 28px; border: 1px solid #d9b26a; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,.4); margin: 0 18px; }
+/* doors – hai cánh cửa hoạ tiết lưới, viền vàng, khung thiệp viền đôi ở giữa; chạm thì cửa TRƯỢT sang hai bên (18/11/2026) */
+.cvo-doors { background: color-mix(in srgb, var(--cvo-c) 30%, #000); }
+.cvo-door { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 1; background-color: var(--cvo-c); background-image: linear-gradient(45deg, rgba(0,0,0,.07) 25%, transparent 25%, transparent 75%, rgba(0,0,0,.07) 75%), linear-gradient(45deg, rgba(0,0,0,.07) 25%, transparent 25%, transparent 75%, rgba(0,0,0,.07) 75%), linear-gradient(90deg, rgba(0,0,0,.18), transparent 30%); background-size: 22px 22px, 22px 22px, 100% 100%; background-position: 0 0, 11px 11px, 0 0; transition: transform 1.5s cubic-bezier(.65,0,.25,1); }
+.cvo-door.l { left: 0; box-shadow: inset -1px 0 0 #d9b26a, inset -10px 0 24px -12px rgba(0,0,0,.6); }
+.cvo-door.r { right: 0; box-shadow: inset 1px 0 0 #d9b26a, inset 10px 0 24px -12px rgba(0,0,0,.6); background-image: linear-gradient(45deg, rgba(0,0,0,.07) 25%, transparent 25%, transparent 75%, rgba(0,0,0,.07) 75%), linear-gradient(45deg, rgba(0,0,0,.07) 25%, transparent 25%, transparent 75%, rgba(0,0,0,.07) 75%), linear-gradient(270deg, rgba(0,0,0,.18), transparent 30%); }
+.cvo-door::before { content: ''; position: absolute; top: 16px; bottom: 16px; border: 1px solid rgba(217,178,106,.7); }
+.cvo-door.l::before { left: 16px; right: 8px; }
+.cvo-door.r::before { right: 16px; left: 8px; }
+.cvo-door::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 18px; margin-top: -9px; background: linear-gradient(180deg, #f3d58f, #c79b45 60%, #a87a2c); box-shadow: 0 3px 8px rgba(0,0,0,.3); }
+.cvo-knob { display: none; }
+.cvo-doors .cvo-card { color: #fff3dc; background: color-mix(in srgb, var(--cvo-c) 82%, #000); padding: 28px 26px 24px; margin: 0 22px; max-width: 330px; border: 1px solid #d9b26a; outline: 1px solid #d9b26a; outline-offset: 6px; box-shadow: 0 18px 50px rgba(0,0,0,.45); transition: opacity .6s, transform .8s; }
+.cvo-doors .cvo-names { color: #fff6e4; }
 .cvo-doors .cvo-guest b { color: #f1c66b; }
 .cvo-doors .cvo-hint { color: #fff3dc; }
-.cvo-hy { font-family: 'Noto Serif', serif; font-size: 54px; line-height: 1; color: #f1c66b; margin-bottom: 8px; }
-.cvo-doors.opening .cvo-card { opacity: 0; transform: scale(.9); }
-.cvo-doors.opening .cvo-door.l { transform: rotateY(105deg); }
-.cvo-doors.opening .cvo-door.r { transform: rotateY(-105deg); }
+.cvo-hy { font-family: 'Noto Serif', serif; font-size: 50px; line-height: 1; color: #f1c66b; margin-bottom: 8px; }
+.cvo-doors.opening .cvo-card { opacity: 0; transform: scale(1.08); }
+.cvo-doors.opening .cvo-door.l { transform: translateX(-102%); transition-delay: .3s; }
+.cvo-doors.opening .cvo-door.r { transform: translateX(102%); transition-delay: .3s; }
 .cvo-doors.open { transition-delay: .9s; }
 
 /* Lật bìa thiệp */
@@ -325,3 +329,125 @@ body.cv-playing .cv-anim-spin > * { animation-play-state: running; }
 .cvo-stars.opening .cvo-sky { transform: scale(2.2); opacity: 0; }
 .cvo-stars.opening .cvo-card { opacity: 0; transform: scale(1.12); }
 .cvo-stars.open { transition-delay: .6s; }
+
+/* ===== Màn mở thiệp mới (18/11/2026): seal, letter, ribbon, news, oval ===== */
+.cvo-sub { font-size: 13px; font-style: italic; opacity: .82; font-family: 'Cormorant Garamond', serif; letter-spacing: .02em; }
+.cvo-to { font-family: var(--cvo-font); }
+
+/* seal – hai cánh cửa giấy, dải lụa đỏ, ấn tròn có ảnh */
+.cvo-stamp { background: var(--cvo-paper); color: #f6ecd2; justify-content: space-between; padding: 9vh 0 7vh; perspective: 1200px; }
+.cvo-stamp .cvo-door { background: var(--cvo-paper) url('/img/nen/giay-hat.svg') center / cover; box-shadow: inset 0 0 0 1px rgba(233,206,140,.35), inset -14px 0 30px -18px rgba(0,0,0,.45); transition: transform 1.4s cubic-bezier(.6,0,.3,1); }
+.cvo-stamp .cvo-door.r { box-shadow: inset 0 0 0 1px rgba(233,206,140,.35), inset 14px 0 30px -18px rgba(0,0,0,.45); }
+.cvo-stamp .cvo-door::before { content: ''; position: absolute; inset: 14px; border: 1px solid rgba(233,206,140,.45); }
+.cvo-stamp .cvo-door.l::before { right: 0; border-right: 0; }
+.cvo-stamp .cvo-door.r::before { left: 0; border-left: 0; }
+.cvo-band { position: absolute; left: 0; right: 0; top: 50%; height: 26px; margin-top: -13px; z-index: 2; background: linear-gradient(180deg, color-mix(in srgb, var(--cvo-c) 80%, #fff) 0 2px, var(--cvo-c) 2px calc(100% - 2px), color-mix(in srgb, var(--cvo-c) 70%, #000) calc(100% - 2px)); box-shadow: 0 4px 10px rgba(0,0,0,.25); transition: clip-path 1s ease, opacity .6s .4s; clip-path: inset(0 0 0 0); }
+.cvo-medal { position: absolute; left: 50%; top: 50%; z-index: 3; width: min(150px, 38vw); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; padding: 12px; background: radial-gradient(circle, var(--cvo-c) 58%, color-mix(in srgb, var(--cvo-c) 70%, #000) 100%); box-shadow: 0 0 0 4px #e3c27a, 0 0 0 6px color-mix(in srgb, var(--cvo-c) 60%, #000), 0 14px 30px rgba(0,0,0,.45); animation: cvoBeat 2.6s ease-in-out infinite; transition: transform .8s cubic-bezier(.5,-.4,.5,1), opacity .6s; }
+.cvo-medal img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid #e3c27a; display: block; }
+.cvo-stamp .cvo-card { color: #f6ecd2; }
+.cvo-stamp .cvo-names { color: #f3dca4; font-size: 38px; text-shadow: 0 2px 10px rgba(0,0,0,.25); }
+.cvo-stamp .cvo-pre { color: #f3dca4; }
+.cvo-stamp .cvo-to { font-family: 'Playfair Display', serif; font-weight: 600; font-size: 26px; color: #fff7e0; margin: 2px 0 6px; }
+.cvo-stamp .cvo-btn { background: linear-gradient(180deg, #f6e2a8, #d8b25e); color: #4a3a1a; box-shadow: 0 8px 20px -8px rgba(0,0,0,.5); }
+.cvo-stamp.opening .cvo-medal { transform: translate(-50%, -50%) scale(0); opacity: 0; animation: none; }
+.cvo-stamp.opening .cvo-band { clip-path: inset(0 50% 0 50%); opacity: 0; }
+.cvo-stamp.opening .cvo-card { opacity: 0; }
+.cvo-stamp.opening .cvo-door.l { transform: translateX(-100%); transition-delay: .35s; }
+.cvo-stamp.opening .cvo-door.r { transform: translateX(100%); transition-delay: .35s; }
+.cvo-stamp.open { transition-delay: 1.1s; }
+
+/* letter – phong thư kraft, ảnh trượt lên */
+.cvo-letter { justify-content: center; gap: 10px; }
+.cvo-letter::before { content: ''; position: absolute; inset: 0; background: url('/img/deco/hoa-net.svg') -40px -30px / 220px no-repeat, url('/img/deco/hoa-net.svg') calc(100% + 50px) calc(100% + 40px) / 240px no-repeat; transform: none; opacity: .9; }
+.cvo-letter.cvo-light::before { background-image: url('/img/deco/hoa-net-dam.svg'), url('/img/deco/hoa-net-dam.svg'); }
+.cvo-lt-head .cvo-names { color: #fff; font-size: 40px; margin: 0; }
+.cvo-letter:not(.cvo-dark) .cvo-lt-head .cvo-names { color: var(--cvo-c); }
+.cvo-lt-head .cvo-date { opacity: .9; }
+.cvo-lt { position: relative; z-index: 2; width: min(320px, 82vw); aspect-ratio: .82; animation: cvoIn 1s .2s both; }
+.cvo-lt-back, .cvo-lt-front { position: absolute; left: 0; right: 0; bottom: 0; height: 52%; background: #e6cfae; border-radius: 6px; }
+.cvo-lt-back { box-shadow: 0 20px 40px -20px rgba(0,0,0,.5); }
+.cvo-lt-front { z-index: 3; background: linear-gradient(160deg, #ecd8ba, #dcc19b); clip-path: polygon(0 0, 50% 46%, 100% 0, 100% 100%, 0 100%); box-shadow: inset 0 -8px 20px -10px rgba(0,0,0,.2); }
+.cvo-lt-card { position: absolute; z-index: 2; left: 8%; right: 8%; bottom: 24%; height: 80%; background: #fff; padding: 8px 8px 10px; border-radius: 3px; box-shadow: 0 8px 24px -8px rgba(0,0,0,.4); color: #2b2622; text-align: center; transition: transform 1.1s cubic-bezier(.3,.7,.2,1), opacity .6s .7s; }
+.cvo-lt-pic { width: 100%; height: 64%; overflow: hidden; }
+.cvo-lt-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cvo-lt-card .cvo-sub { margin-top: 6px; font-style: normal; font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; }
+.cvo-lt-card .cvo-to { font-family: 'Be Vietnam Pro', sans-serif; color: var(--cvo-c); font-size: 15px; }
+.cvo-lt .cvo-btn { position: absolute; z-index: 4; left: 50%; bottom: 13%; transform: translateX(-50%); white-space: nowrap; text-transform: none; letter-spacing: .04em; font-size: 13px; }
+.cvo-lt-from { position: relative; z-index: 2; font-size: 13px; opacity: .85; }
+.cvo-letter.opening .cvo-lt-card { transform: translateY(-46%) scale(1.06); }
+.cvo-letter.opening .cvo-lt-front, .cvo-letter.opening .cvo-lt-back, .cvo-letter.opening .cvo-btn { transition: transform 1s .5s ease-in, opacity .6s .5s; transform: translateY(80%); opacity: 0; }
+.cvo-letter.opening .cvo-lt .cvo-btn { transform: translate(-50%, 200%); }
+.cvo-letter.opening .cvo-lt-head, .cvo-letter.opening .cvo-lt-from { opacity: 0; }
+.cvo-letter.open { transition-delay: .3s; }
+
+/* ribbon – thiệp buộc nơ lụa */
+.cvo-ribbon { background: var(--cvo-paper) url('/img/nen/vai-lanh.svg') center / cover; }
+.cvo-rb { width: min(330px, 86vw); padding: 26px 18px 30px; background: color-mix(in srgb, var(--cvo-paper) 60%, #fff); border-radius: 18px; box-shadow: 0 30px 60px -30px rgba(0,0,0,.4); }
+.cvo-rb .cvo-names { color: var(--cvo-c); }
+.cvo-rb-pic { width: 68%; aspect-ratio: 1; margin: 12px auto 14px; border-radius: 50%; overflow: hidden; border: 4px solid #fff; box-shadow: 0 0 0 1px color-mix(in srgb, var(--cvo-c) 40%, transparent), 0 10px 24px -10px rgba(0,0,0,.4); }
+.cvo-rb-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cvo-rb .cvo-to { font-size: 28px; color: var(--cvo-c); }
+.cvo-rb-v, .cvo-rb-h { position: absolute; z-index: 3; background: linear-gradient(90deg, color-mix(in srgb, var(--cvo-c) 85%, #000), color-mix(in srgb, var(--cvo-c) 85%, #fff) 50%, color-mix(in srgb, var(--cvo-c) 85%, #000)); box-shadow: 0 2px 6px rgba(0,0,0,.25); transition: transform 1s cubic-bezier(.6,0,.3,1) .25s, opacity .5s .6s; }
+.cvo-rb-v { top: 0; bottom: 0; left: calc(50% - min(165px, 43vw) + 40px); width: 22px; margin-left: -11px; }
+.cvo-rb-h { left: 0; right: 0; top: calc(50% - 200px); height: 22px; background: linear-gradient(180deg, color-mix(in srgb, var(--cvo-c) 85%, #000), color-mix(in srgb, var(--cvo-c) 85%, #fff) 50%, color-mix(in srgb, var(--cvo-c) 85%, #000)); }
+.cvo-bow { position: absolute; z-index: 4; left: calc(50% - min(165px, 43vw) + 40px); top: calc(50% - 200px); width: 120px; height: 90px; margin: -34px 0 0 -60px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.3)); animation: cvoBeat 2.4s ease-in-out infinite; transition: transform .9s cubic-bezier(.5,-.3,.6,1), opacity .6s .3s; }
+.cvo-ribbon .cvo-hint { position: absolute; bottom: 6vh; left: 0; right: 0; }
+.cvo-ribbon.opening .cvo-bow { animation: none; transform: scale(1.4) rotate(-25deg); opacity: 0; }
+.cvo-ribbon.opening .cvo-rb-v { transform: translateY(-110%); opacity: 0; }
+.cvo-ribbon.opening .cvo-rb-h { transform: translateX(110%); opacity: 0; }
+.cvo-ribbon.opening .cvo-card { transition-delay: .7s; opacity: 0; transform: translateY(-20px) scale(.96); }
+.cvo-ribbon.opening .cvo-hint { opacity: 0; animation: none; }
+.cvo-ribbon.open { transition-delay: .9s; }
+
+/* news – tờ báo tin vui trên nền gạch bông */
+.cvo-news { background: #e9dfcc url('/img/nen/gach-bong.svg') center / cover; color: #2b2622; }
+.cvo-np { position: relative; z-index: 2; width: min(330px, 86vw); padding: 14px 16px 18px; background: #f6efdf url('/img/nen/giay-hat.svg') center / cover; box-shadow: 0 24px 50px -20px rgba(0,0,0,.55); text-align: center; transform-origin: 50% 0; animation: cvoIn 1s both; transition: transform 1s cubic-bezier(.5,0,.3,1), opacity .6s .5s; font-family: 'Lora', serif; }
+.cvo-np-top { display: flex; justify-content: space-between; font: 700 9.5px/1 'Be Vietnam Pro', sans-serif; letter-spacing: .12em; text-transform: uppercase; border-bottom: 1px solid #2b2622; padding-bottom: 6px; }
+.cvo-np-mast { font: 900 25px/1.15 'Playfair Display', serif; letter-spacing: .02em; margin: 6px 0 4px; }
+.cvo-np-line { font-style: italic; font-size: 12px; border-top: 3px double #2b2622; border-bottom: 1px solid #2b2622; padding: 4px 0; margin-bottom: 12px; }
+.cvo-np-tag { display: inline-block; background: #b23b2e; color: #fff; font: 700 11px/1 'Be Vietnam Pro', sans-serif; letter-spacing: .2em; text-transform: uppercase; padding: 6px 12px; }
+.cvo-news .cvo-names { font-family: var(--cvo-font); color: #1f3d63; font-size: 38px; margin: 8px 0 2px; }
+.cvo-news .cvo-names i { color: #b23b2e; font-size: 26px; }
+.cvo-np-head { font: 800 15px/1.2 'Be Vietnam Pro', sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+.cvo-np-note { position: absolute; right: -10px; bottom: -22px; background: #fffaf0; padding: 8px 14px; transform: rotate(-4deg); box-shadow: 0 6px 14px -6px rgba(0,0,0,.4); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; }
+.cvo-np-note::before { content: ''; position: absolute; left: 50%; top: -8px; width: 44px; height: 14px; margin-left: -22px; background: rgba(233,200,120,.75); transform: rotate(3deg); }
+.cvo-np-note b { display: block; font: 400 22px/1.1 var(--cvo-font); text-transform: none; letter-spacing: 0; color: #1f3d63; }
+.cvo-news .cvo-btn { position: relative; z-index: 2; margin-top: 36px; background: #1f3d63; border-radius: 6px; }
+.cvo-news .cvo-hint { position: relative; z-index: 2; background: rgba(40,40,40,.65); color: #fff; padding: 6px 14px; border-radius: 99px; opacity: 1; }
+.cvo-news.opening .cvo-np { transform: perspective(900px) rotateX(-80deg) translateY(-20px); opacity: 0; }
+.cvo-news.opening .cvo-btn, .cvo-news.opening .cvo-hint { opacity: 0; transition: opacity .4s; animation: none; }
+.cvo-news.open { transition-delay: .6s; }
+
+/* oval – khung ảnh oval, hoa lá nét mảnh */
+.cvo-oval { background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--cvo-paper) 85%, #fff), var(--cvo-paper)); }
+.cvo-leaf { position: absolute; z-index: 1; width: 200px; opacity: .9; pointer-events: none; }
+.cvo-leaf.tl { left: -40px; top: -30px; }
+.cvo-leaf.br { right: -40px; bottom: -20px; transform: rotate(180deg); }
+.cvo-ov { padding: 0; }
+.cvo-ov-frame { position: relative; width: min(250px, 66vw); aspect-ratio: .62; margin: 0 auto; border-radius: 999px; overflow: hidden; border: 3px solid rgba(255,255,255,.85); box-shadow: 0 0 0 8px rgba(255,255,255,.18), 0 24px 50px -20px rgba(0,0,0,.5); transition: transform 1.1s cubic-bezier(.5,0,.2,1), opacity .7s .4s; }
+.cvo-ov-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cvo-ov-txt { position: absolute; left: 0; right: 0; bottom: 0; padding: 50px 10px 26px; background: linear-gradient(transparent, rgba(0,0,0,.55)); color: #fff; }
+.cvo-ov-txt .cvo-to { font-size: 26px; }
+.cvo-ov .cvo-btn { background: color-mix(in srgb, var(--cvo-paper) 70%, #000); text-transform: none; letter-spacing: .04em; font-size: 13px; margin-top: 18px; }
+.cvo-ov-names { margin-top: 16px; font: 400 34px/1.1 'Cormorant Garamond', serif; letter-spacing: .06em; text-transform: uppercase; color: #fff; }
+.cvo-oval:not(.cvo-dark) .cvo-ov-names { color: color-mix(in srgb, var(--cvo-paper) 40%, #000); }
+.cvo-oval.opening .cvo-ov-frame { transform: scale(2.6); opacity: 0; }
+.cvo-oval.opening .cvo-btn, .cvo-oval.opening .cvo-ov-names, .cvo-oval.opening .cvo-leaf { opacity: 0; transition: opacity .4s; animation: none; }
+.cvo-oval.open { transition-delay: .4s; }
+
+/* ===== Nút tự cuộn ===== */
+.cv-auto { position: fixed; right: max(14px, calc(50% - 226px)); bottom: 70px; z-index: 30; width: 42px; height: 42px; border-radius: 50%; border: 0; background: rgba(255,255,255,.92); color: #333; box-shadow: 0 6px 20px -6px rgba(0,0,0,.4); font-size: 19px; line-height: 1; cursor: pointer; display: grid; place-items: center; }
+.cv-auto.cv-auto-top { top: 64px; bottom: auto; }
+.cv-auto::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid transparent; }
+.cv-auto.on::after { border-top-color: #d6456c; border-right-color: #d6456c; animation: cvspin 1.2s linear infinite; }
+.cv-auto.on .cv-auto-ic { animation: cvAutoBob 1.2s ease-in-out infinite; }
+@keyframes cvAutoBob { 50% { transform: translateY(3px); } }
+
+/* ===== Kiểu rơi ===== */
+.cv-petal { width: var(--sz, 12px); height: var(--sz, 12px); }
+.cv-fall-leaves { background: #9cb86f; border-radius: 0 12px; }
+.cv-fall-leaves:nth-child(3n) { background: #d6b25a; }
+.cv-fall-leaves:nth-child(3n + 1) { background: #7fa35d; }
+.cv-fall-hearts, .cv-fall-sparkle { background: none; border-radius: 0; width: auto; height: auto; font-size: var(--sz, 14px); line-height: 1; color: #e2738f; }
+.cv-fall-sparkle { color: #f1d27c; text-shadow: 0 0 6px rgba(255,230,160,.9); }
+.cv-fall-snow { background: #fff; border-radius: 50%; box-shadow: 0 0 4px rgba(255,255,255,.9); opacity: .9; }

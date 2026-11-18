@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+  <!-- Hoa đào năm cánh (SOBA tự vẽ) -->
+  <g transform="translate(30 30)">
+    <g fill="#f4b6c4" stroke="#e48ea3" stroke-width="1">
+      <path d="M0-4C-8-14-6-24 0-26 6-24 8-14 0-4z"/>
+      <path d="M0-4C-8-14-6-24 0-26 6-24 8-14 0-4z" transform="rotate(72)"/>
+      <path d="M0-4C-8-14-6-24 0-26 6-24 8-14 0-4z" transform="rotate(144)"/>
+      <path d="M0-4C-8-14-6-24 0-26 6-24 8-14 0-4z" transform="rotate(216)"/>
+      <path d="M0-4C-8-14-6-24 0-26 6-24 8-14 0-4z" transform="rotate(288)"/>
+    </g>
+    <circle r="5" fill="#f7dc8e"/>
+    <circle r="2" fill="#d98b3a"/>
+  </g>
+</svg>

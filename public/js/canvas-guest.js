@@ -277,6 +277,38 @@
     });
     return s;
   }
+  function openerPhoto() {
+    return (boot.opener && boot.opener.photo) || firstPhoto();
+  }
+  var gName = function () {
+    return (doc.groom && doc.groom.name) || 'Chú rể';
+  };
+  var bName = function () {
+    return (doc.bride && doc.bride.name) || 'Cô dâu';
+  };
+  /** Nơ lụa vẽ bằng SVG (màu theo màu chính) */
+  function bowSvg() {
+    var ns = 'http://www.w3.org/2000/svg';
+    var s = document.createElementNS(ns, 'svg');
+    s.setAttribute('viewBox', '0 0 120 90');
+    s.setAttribute('class', 'cvo-bow');
+    [
+      ['M60 40C44 18 14 8 10 24s22 30 50 16', 1],
+      ['M60 40C76 18 106 8 110 24s-22 30-50 16', 1],
+      ['M56 44C46 58 36 76 26 86l14-4 6 8C52 76 58 60 60 46', 0.85],
+      ['M64 44C74 58 84 76 94 86l-14-4-6 8C68 76 62 60 60 46', 0.85],
+      ['M52 34h16v14H52z', 1],
+    ].forEach(function (d) {
+      var p = document.createElementNS(ns, 'path');
+      p.setAttribute('d', d[0]);
+      p.setAttribute('fill', 'var(--cvo-c)');
+      p.setAttribute('fill-opacity', d[1]);
+      p.setAttribute('stroke', 'rgba(0,0,0,.18)');
+      p.setAttribute('stroke-width', '1');
+      s.appendChild(p);
+    });
+    return s;
+  }
   function openerContent(o) {
     var guest = boot.guestName ? h('div', { class: 'cvo-guest' }, ['Trân trọng kính mời', h('b', { text: boot.guestName })]) : null;
     var names = h('div', { class: 'cvo-names', text: coupleName });
@@ -306,7 +338,7 @@
     }
     if (o.style === 'curtain') {
       // Rèm lụa hai bên + khung vòm: ảnh trái tim, "Kính gửi" tên khách, nút mở thiệp
-      var pic = firstPhoto();
+      var pic = openerPhoto();
       return [
         h('div', { class: 'cvo-cur l' }),
         h('div', { class: 'cvo-cur r' }),
@@ -337,8 +369,81 @@
         ]),
       ];
     }
+    var to = boot.guestName || 'Quý Khách';
+    var photo = openerPhoto();
+    var img = function (cls) {
+      return photo ? h('div', { class: cls }, [h('img', { src: photo, alt: '' })]) : h('div', { class: cls });
+    };
+    if (o.style === 'stamp') {
+      // Hai cánh cửa giấy + dải lụa ngang + ấn tròn có ảnh ở giữa
+      return [
+        h('div', { class: 'cvo-door l' }),
+        h('div', { class: 'cvo-door r' }),
+        h('div', { class: 'cvo-band' }),
+        h('div', { class: 'cvo-card cvo-seal-top' }, [h('div', { class: 'cvo-pre', text: 'Thiệp mời cưới' }), h('div', { class: 'cvo-names', text: coupleName }), h('div', { class: 'cvo-sub', text: 'Chạm vào ấn để mở cánh cửa' })]),
+        img('cvo-medal'),
+        h('div', { class: 'cvo-card cvo-seal-bot' }, [h('div', { class: 'cvo-sub', text: 'Trân trọng kính mời' }), h('div', { class: 'cvo-to', text: to }), h('span', { class: 'cvo-btn', text: 'Mở thiệp' })]),
+      ];
+    }
+    if (o.style === 'letter') {
+      // Phong thư: tấm ảnh nằm trong phong bì, chạm thì trượt lên
+      return [
+        h('div', { class: 'cvo-card cvo-lt-head' }, [h('div', { class: 'cvo-names', text: 'Wedding Invitation' }), h('div', { class: 'cvo-date', text: dateDots })]),
+        h('div', { class: 'cvo-lt' }, [
+          h('div', { class: 'cvo-lt-back' }),
+          h('div', { class: 'cvo-lt-card' }, [img('cvo-lt-pic'), h('div', { class: 'cvo-sub', text: 'Thân gửi' }), h('div', { class: 'cvo-to', text: to })]),
+          h('div', { class: 'cvo-lt-front' }),
+          h('span', { class: 'cvo-btn', text: 'Ấn vào để xem' }),
+        ]),
+        h('div', { class: 'cvo-lt-from', text: 'From: ' + gName() + ' – ' + bName() }),
+      ];
+    }
+    if (o.style === 'ribbon') {
+      // Thiệp buộc nơ lụa: chạm để tháo nơ
+      return [
+        h('div', { class: 'cvo-card cvo-rb' }, [
+          h('div', { class: 'cvo-pre', text: 'Thiệp mời cưới' }),
+          h('div', { class: 'cvo-names cvo-names-stack' }, [h('span', { text: gName() }), h('i', { text: '&' }), h('span', { text: bName() })]),
+          img('cvo-rb-pic'),
+          h('div', { class: 'cvo-sub', text: 'Kính gửi' }),
+          h('div', { class: 'cvo-to', text: to }),
+        ]),
+        h('div', { class: 'cvo-rb-v' }),
+        h('div', { class: 'cvo-rb-h' }),
+        bowSvg(),
+        h('div', { class: 'cvo-hint', text: 'Chạm để tháo nơ mở thiệp' }),
+      ];
+    }
+    if (o.style === 'news') {
+      // Tờ báo tin vui, chạm để mở
+      return [
+        h('div', { class: 'cvo-np' }, [
+          h('div', { class: 'cvo-np-top' }, [h('span', { text: 'Số đặc biệt' }), h('span', { text: 'Giá: một lời chúc' })]),
+          h('div', { class: 'cvo-np-mast', text: 'BẢN TIN HẠNH PHÚC' }),
+          h('div', { class: 'cvo-np-line', text: dateDots }),
+          h('span', { class: 'cvo-np-tag', text: 'Tin vui' }),
+          h('div', { class: 'cvo-names cvo-names-stack' }, [h('span', { text: gName() }), h('i', { text: '&' }), h('span', { text: bName() })]),
+          h('div', { class: 'cvo-np-head', text: 'Sắp về chung một nhà' }),
+          h('div', { class: 'cvo-np-note' }, [h('small', { text: 'Kính gửi' }), h('b', { text: to })]),
+        ]),
+        h('span', { class: 'cvo-btn', text: 'Đọc tin vui' }),
+        h('div', { class: 'cvo-hint', text: 'Chạm để mở tờ báo' }),
+      ];
+    }
+    if (o.style === 'oval') {
+      // Khung ảnh oval, hoa lá nét mảnh ở góc
+      return [
+        h('img', { class: 'cvo-leaf tl', src: '/img/deco/hoa-net.svg', alt: '' }),
+        h('img', { class: 'cvo-leaf br', src: '/img/deco/hoa-net.svg', alt: '' }),
+        h('div', { class: 'cvo-card cvo-ov' }, [
+          h('div', { class: 'cvo-ov-frame' }, [photo ? h('img', { src: photo, alt: '' }) : null, h('div', { class: 'cvo-ov-txt' }, [h('div', { class: 'cvo-sub', text: 'Thân gửi' }), h('div', { class: 'cvo-to', text: to })])]),
+          h('span', { class: 'cvo-btn', text: 'Ấn vào để xem' }),
+          h('div', { class: 'cvo-ov-names', text: gName() + ' & ' + bName() }),
+        ]),
+      ];
+    }
     // book: bìa thiệp có ảnh, lật sang trái
-    var src = firstPhoto();
+    var src = openerPhoto();
     return [
       h('div', { class: 'cvo-bk' }, [
         h('div', { class: 'cvo-page' }, [h('div', { class: 'cvo-pre', text: 'Save the date' }), names, date, guest]),
@@ -386,7 +491,7 @@
       return parseInt(o.paper.substr(i, 2), 16) / 255;
     });
     var dark = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2] < 0.45;
-    var root = h('div', { class: 'cvo cvo-' + o.style + (dark ? ' cvo-dark' : ''), role: 'button', tabindex: '0', 'aria-label': 'Mở thiệp cưới', style: '--cvo-c:' + o.color + ';--cvo-paper:' + o.paper + ';--cvo-font:' + CV.font(o.font) }, openerContent(o));
+    var root = h('div', { class: 'cvo cvo-' + o.style + (dark ? ' cvo-dark' : ' cvo-light'), role: 'button', tabindex: '0', 'aria-label': 'Mở thiệp cưới', style: '--cvo-c:' + o.color + ';--cvo-paper:' + o.paper + ';--cvo-font:' + CV.font(o.font) }, openerContent(o));
     document.body.appendChild(root);
     document.body.classList.add('cvo-lock');
     var opened = false;
@@ -396,7 +501,8 @@
       if (doc.music && doc.music.autoplay) playMusic(); // trình duyệt cho phát vì đây là thao tác của khách
       root.classList.add('opening');
       if (o.style === 'curtain' && !reduced) butterflies();
-      var wait = reduced ? 50 : o.style === 'fingerprint' ? 1100 : o.style === 'curtain' || o.style === 'stars' ? 700 : 250;
+      var WAIT = { fingerprint: 1100, doors: 1100, curtain: 700, stars: 700, stamp: 900, letter: 1100, ribbon: 1000, news: 1000, oval: 800 };
+      var wait = reduced ? 50 : WAIT[o.style] || 250;
       setTimeout(function () {
         root.classList.add('open');
         document.body.classList.remove('cvo-lock');
@@ -762,14 +868,78 @@
     if (boot.opener) afterOpen.push(buildToolbar);
     else buildToolbar();
   }
+  // ===== Tự cuộn thiệp: nút nổi, khách vuốt / lăn chuột thì tạm dừng =====
+  function autoScroll() {
+    var cfg = boot.autoscroll;
+    var btn = h('button', { class: 'cv-auto' + (boot.toolbar ? ' cv-auto-top' : ''), type: 'button', 'aria-label': 'Tự cuộn thiệp', title: 'Tự cuộn thiệp' }, [h('span', { class: 'cv-auto-ic', 'aria-hidden': 'true', text: '⇣' })]);
+    document.body.appendChild(btn);
+    var on = false;
+    var last = 0;
+    var acc = 0;
+    var SPEED = 46; // px mỗi giây
+    var atEnd = function () {
+      return window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+    };
+    function step(t) {
+      if (!on) return;
+      if (last) {
+        acc += ((t - last) / 1000) * SPEED;
+        if (acc >= 1) {
+          var d = Math.floor(acc);
+          acc -= d;
+          window.scrollBy(0, d);
+        }
+      }
+      last = t;
+      if (atEnd()) return stop();
+      requestAnimationFrame(step);
+    }
+    function start() {
+      if (on) return;
+      on = true;
+      last = 0;
+      btn.classList.add('on');
+      requestAnimationFrame(step);
+    }
+    function stop() {
+      on = false;
+      btn.classList.remove('on');
+    }
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (on) stop();
+      else {
+        if (atEnd()) window.scrollTo(0, 0);
+        start();
+      }
+    });
+    ['wheel', 'touchstart'].forEach(function (ev) {
+      window.addEventListener(
+        ev,
+        function (e) {
+          if (on && !btn.contains(e.target) && !(e.target.closest && e.target.closest('.cvt-bar'))) stop();
+        },
+        { passive: true }
+      );
+    });
+    if (cfg.start && !reduced) setTimeout(start, boot.opener ? 1200 : 2500);
+  }
+  if (boot.autoscroll) {
+    if (boot.opener) afterOpen.push(autoScroll);
+    else autoScroll();
+  }
+
   if (boot.opener) showOpener();
 
-  // Cánh hoa rơi
+  // Hiệu ứng rơi: cánh hoa / lá / tim / lấp lánh / tuyết
   if (boot.petals && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     var n = 0;
+    var kind = boot.fall || 'petals';
+    var GLYPH = { hearts: '♥', sparkle: '✦' };
     var timer = setInterval(function () {
       if (++n > 40) return clearInterval(timer);
-      var p = CV.h('span', { class: 'cv-petal', style: 'left:' + Math.random() * 100 + 'vw;animation-duration:' + (6 + Math.random() * 5) + 's;--dx:' + (Math.random() * 120 - 60) + 'px' });
+      var size = kind === 'snow' ? 4 + Math.random() * 5 : kind === 'sparkle' ? 8 + Math.random() * 10 : 10 + Math.random() * 6;
+      var p = CV.h('span', { class: 'cv-petal cv-fall-' + kind, text: GLYPH[kind] || '', style: 'left:' + Math.random() * 100 + 'vw;animation-duration:' + (6 + Math.random() * 5) + 's;--dx:' + (Math.random() * 120 - 60) + 'px;--sz:' + size.toFixed(1) + 'px' });
       document.body.appendChild(p);
       setTimeout(function () {
         p.remove();

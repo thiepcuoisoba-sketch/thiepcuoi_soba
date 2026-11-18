@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="900" viewBox="0 0 420 900" preserveAspectRatio="none">
+  <!-- Nền giấy hạt mịn (SOBA tự vẽ) – phủ lên màu nền của trang -->
+  <filter id="n" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" stitchTiles="stitch"/>
+    <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .16 0"/>
+  </filter>
+  <filter id="m" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="3" seed="7"/>
+    <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .22 -.04"/>
+  </filter>
+  <rect width="420" height="900" filter="url(#m)"/>
+  <rect width="420" height="900" filter="url(#n)"/>
+</svg>
