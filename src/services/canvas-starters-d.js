@@ -52,8 +52,15 @@ module.exports = function make(kit) {
       song: 'Love Story · Piano',
       foot: '{nam}.{thang}.{ngay_so}',
       gift: {},
+      // Lễ vu quy (nhà gái): ceremony 'vu quy', brideFirst → cô dâu đứng trước
+      ceremony: 'thành hôn',
+      ceremonyTitle: 'Lễ Thành Hôn',
+      brideFirst: false,
       ...t,
     };
+    const n1 = tx.brideFirst ? tx.brideFull : tx.groomFull;
+    const n2 = tx.brideFirst ? tx.groomFull : tx.brideFull;
+    const short = tx.brideFirst ? '{co_dau} & {chu_re}' : '{chu_re} & {co_dau}';
 
     // 1. Bìa: tiêu đề, ảnh lớn, khung viên thuốc "Save the Date", tên đầy đủ, lời mời, tên khách
     const s1 = sec(1230, C.bg, [
@@ -64,26 +71,29 @@ module.exports = function make(kit) {
       im(37, 515, 110, 140, 'pill', { mask: 'arch', anim: 'zoom', delay: 0.2 }),
       T(28, 664, 128, 36, 'Save the Date', { font: SC, size: 25, color: C.ink, anim: 'zoom', delay: 0.2 }),
       T(28, 704, 128, 40, '囍', { font: 'Noto Serif', size: 30, color: C.red, anim: 'zoom', delay: 0.2 }),
-      T(170, 646, 228, 58, tx.groomFull + '\n& ' + tx.brideFull, { font: PF, size: 18, bold: true, lh: 1.45, align: 'right', color: C.ink, anim: 'right' }),
+      T(170, 646, 228, 58, n1 + '\n& ' + n2, { font: PF, size: 18, bold: true, lh: 1.45, align: 'right', color: C.ink, anim: 'right' }),
       T(170, 708, 228, 22, '{nam} · {thang} · {ngay_so}', { font: PF, size: 14, ls: 2, align: 'right', color: C.ink, anim: 'right', delay: 0.1 }),
       T(170, 732, 228, 40, tx.place, { font: LO, size: 12, lh: 1.5, align: 'right', color: C.soft, anim: 'right', delay: 0.2 }),
       T(36, 820, 348, 206, tx.verse, body({ lh: 2.05, anim: 'up' })),
       S(187, 1046, 46, 1, 'line', { fill: C.ink }),
       T(30, 1078, 360, 20, 'Trân trọng kính mời', small({ color: C.red, anim: 'up' })),
       T(20, 1102, 380, 56, '{ten_khach}', { font: SC, size: 38, color: C.ink, anim: 'up', delay: 0.1 }),
-      T(40, 1162, 340, 40, 'tới dự lễ thành hôn của chúng mình', { font: LO, size: 13, italic: true, color: C.soft, anim: 'up', delay: 0.2 }),
+      T(40, 1162, 340, 40, 'tới dự lễ ' + tx.ceremony + ' của chúng mình', { font: LO, size: 13, italic: true, color: C.soft, anim: 'up', delay: 0.2 }),
     ]);
 
-    // 2. Cô dâu chú rể + hai ô ảnh so le
+    // 2. Cô dâu chú rể + hai ô ảnh so le (người đứng trước ở bên trái, cao hơn)
+    function person(x, y, anim, who) {
+      const g = who === 'groom';
+      return [
+        im(x, y, 186, 250, who, { anim }),
+        T(x, y + 262, 186, 18, g ? 'Chú rể' : 'Cô dâu', small({ size: 10.5 })),
+        T(x, y + 280, 186, 44, g ? '{chu_re}' : '{co_dau}', { font: SC, size: 32, color: C.ink }),
+        T(x, y + 324, 186, 22, g ? tx.groomFull : tx.brideFull, { font: LO, size: 12.5, color: C.soft }),
+      ];
+    }
     const s2 = sec(880, C.bg, [
-      im(18, 30, 186, 250, 'groom', { anim: 'left' }),
-      T(18, 292, 186, 18, 'Chú rể', small({ size: 10.5 })),
-      T(18, 310, 186, 44, '{chu_re}', { font: SC, size: 32, color: C.ink }),
-      T(18, 354, 186, 22, tx.groomFull, { font: LO, size: 12.5, color: C.soft }),
-      im(216, 74, 186, 250, 'bride', { anim: 'right' }),
-      T(216, 336, 186, 18, 'Cô dâu', small({ size: 10.5 })),
-      T(216, 354, 186, 44, '{co_dau}', { font: SC, size: 32, color: C.ink }),
-      T(216, 398, 186, 22, tx.brideFull, { font: LO, size: 12.5, color: C.soft }),
+      ...person(18, 30, 'left', tx.brideFirst ? 'bride' : 'groom'),
+      ...person(216, 74, 'right', tx.brideFirst ? 'groom' : 'bride'),
       im(22, 470, 184, 184, 'meet', { anim: 'left' }),
       T(220, 498, 178, 26, 'Gặp gỡ', { font: PF, size: 17, align: 'left', color: C.ink, anim: 'right' }),
       T(220, 528, 178, 110, 'Có những người chỉ cần gặp một lần là biết sẽ muốn ở bên rất lâu.', body({ size: 13.5, lh: 1.95, align: 'left', anim: 'right' })),
@@ -152,7 +162,7 @@ module.exports = function make(kit) {
       im(14, 590, 392, 580, 'letter', { anim: 'zoom' }),
       S(14, 790, 392, 380, 'rect', { fill: '#000000', grad: 'up', o: 0.7 }),
       T(30, 980, 360, 60, 'Lời ngỏ', { font: SC, size: 46, color: '#ffffff', shadow: true }),
-      T(40, 1044, 340, 110, 'Cùng với gia đình hai bên, chúng mình trân trọng kính mời quý vị đến dự lễ thành hôn để chứng kiến và chia sẻ khoảnh khắc hạnh phúc này.', body({ size: 13.5, lh: 1.95, color: '#ffffff', shadow: true })),
+      T(40, 1044, 340, 110, 'Cùng với gia đình hai bên, chúng mình trân trọng kính mời quý vị đến dự lễ ' + tx.ceremony + ' để chứng kiến và chia sẻ khoảnh khắc hạnh phúc này.', body({ size: 13.5, lh: 1.95, color: '#ffffff', shadow: true })),
     ]);
 
     // 7. Lễ thành hôn: ngày lớn, âm lịch, lịch trình, nút thêm vào lịch
@@ -167,7 +177,7 @@ module.exports = function make(kit) {
       );
     });
     const s7 = sec(670, C.bg, [
-      T(20, 36, 380, 20, 'Lễ Thành Hôn', small({ anim: 'up' })),
+      T(20, 36, 380, 20, tx.ceremonyTitle, small({ anim: 'up' })),
       S(187, 66, 46, 1, 'line', { fill: C.ink }),
       S(64, 100, 96, 1, 'line', { fill: C.ink }),
       T(64, 106, 96, 22, '{thu}', small({ size: 11.5, ls: 2, color: C.ink })),
@@ -178,7 +188,7 @@ module.exports = function make(kit) {
       S(260, 134, 96, 1, 'line', { fill: C.ink }),
       T(20, 166, 380, 22, '(Tức ngày {am_lich})', { font: LO, size: 12.5, color: C.soft, anim: 'up' }),
       ...tl,
-      G(120, 600, 180, 40, 'addcal', { ...wid, time: '{gio}', title: 'Đám cưới {chu_re} & {co_dau}', address: tx.address }),
+      G(120, 600, 180, 40, 'addcal', { ...wid, time: '{gio}', title: (tx.brideFirst ? 'Lễ vu quy ' : 'Đám cưới ') + short, address: tx.address }),
     ]);
 
     // 8. Âm nhạc: 2 ảnh so le + thẻ đĩa nhạc (chạm đĩa để phát/tạm dừng)
@@ -250,7 +260,7 @@ module.exports = function make(kit) {
       T(20, 468, 380, 76, 'Thank you', { font: SC, size: 58, color: '#ffffff', shadow: true, anim: 'up' }),
       T(20, 544, 380, 22, 'Rất hân hạnh được đón tiếp!', { font: LO, size: 13, color: '#ffffff', shadow: true, anim: 'up' }),
       im(125, 634, 170, 88, 'mini', { anim: 'up' }),
-      T(20, 738, 380, 24, tx.groomFull + ' · ' + tx.brideFull, { font: PF, size: 15, color: C.ink, anim: 'up' }),
+      T(20, 738, 380, 24, n1 + ' · ' + n2, { font: PF, size: 15, color: C.ink, anim: 'up' }),
       T(20, 766, 380, 40, '囍', { font: 'Noto Serif', size: 26, color: C.red, anim: 'up' }),
       T(20, 812, 380, 20, tx.foot, small({ anim: 'up' })),
     ]);

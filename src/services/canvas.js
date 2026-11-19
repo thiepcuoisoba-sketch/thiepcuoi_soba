@@ -126,6 +126,9 @@ const mapLink = (u) => {
   return /^https:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|(www\.)?google\.[a-z.]+\/maps|maps\.google\.[a-z.]+)\//i.test(s) ? s : '';
 };
 
+/** Tên cặp đôi theo thứ tự hiển thị (brideFirst: cô dâu trước) */
+const coupleNames = (d) => (d.brideFirst ? `${d.bride.name} & ${d.groom.name}` : `${d.groom.name} & ${d.bride.name}`);
+
 function sanitizeElement(e = {}) {
   const type = pick(e.type, ['text', 'image', 'shape', 'widget'], null);
   if (!type) return null;
@@ -239,6 +242,8 @@ function sanitizeDoc(input = {}) {
     W,
     groom: { name: clean(src.groom && src.groom.name, 60) },
     bride: { name: clean(src.bride && src.bride.name, 60) },
+    // Lễ vu quy (nhà gái): tên cô dâu đứng trước ở bìa, tiêu đề, mục thiệp khách hàng
+    brideFirst: bool(src.brideFirst),
     date: dateStr(src.date),
     time: timeStr(src.time) || '11:00',
     pageBg: color(src.pageBg, '#f3eeee'),
@@ -518,7 +523,7 @@ function pageLocals(card, { owner, guestName = '', preview = false, wishes = [],
   const plan = owner ? planOf(owner) : PLANS.premium;
   const d0 = doc || parseDoc(card);
   const d = plan.features.wishes ? d0 : stripWishes(d0);
-  const title = `Thiệp cưới ${d.groom.name} & ${d.bride.name}`;
+  const title = `Thiệp cưới ${coupleNames(d)}`;
   return {
     layout: false,
     card,
@@ -549,4 +554,5 @@ function pageLocals(card, { owner, guestName = '', preview = false, wishes = [],
   };
 }
 
-module.exports = { stripWishes, pageLocals, W, FONTS, WIDGETS, LIMITS, BANKS, OPENERS, FALLS, SONGS, songUrl, STARTERS, starterOf, blankDoc, sanitizeDoc, parseDoc, viewDoc, docFontsUrl, safeJson };
+module.exports = {
+  coupleNames, stripWishes, pageLocals, W, FONTS, WIDGETS, LIMITS, BANKS, OPENERS, FALLS, SONGS, songUrl, STARTERS, starterOf, blankDoc, sanitizeDoc, parseDoc, viewDoc, docFontsUrl, safeJson };

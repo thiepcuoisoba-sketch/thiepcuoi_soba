@@ -94,7 +94,7 @@ async function showcase(limit = 8) {
       const imgs = (doc.sections[0] ? doc.sections[0].els : []).filter((e) => e.type === 'image' && e.src && !/^\/img\/(deco|nen)\//.test(e.src)).sort((a, b) => b.w * b.h - a.w * a.h);
       const thumb = doc.opener.photo || (imgs[0] && imgs[0].src) || '';
       const date = util.formatDateVi(util.parseDate(doc.date, doc.time));
-      return { ...c, cv: { thumb, names: doc.groom.name + ' & ' + doc.bride.name, date: date ? date.split(', ').pop() : '' } };
+      return { ...c, cv: { thumb, names: canvas.coupleNames(doc), date: date ? date.split(', ').pop() : '' } };
     }
     const d = parseData(c);
     return { ...c, d, tpl: getTemplate(c.template) };

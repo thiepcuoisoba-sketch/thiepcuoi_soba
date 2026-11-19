@@ -276,7 +276,8 @@
 
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var h = CV.h;
-  var coupleName = ((doc.groom && doc.groom.name) || 'Chú rể') + ' & ' + ((doc.bride && doc.bride.name) || 'Cô dâu');
+  // Lễ vu quy (nhà gái): tên cô dâu đứng trước
+  var coupleName = doc.brideFirst ? ((doc.bride && doc.bride.name) || 'Cô dâu') + ' & ' + ((doc.groom && doc.groom.name) || 'Chú rể') : ((doc.groom && doc.groom.name) || 'Chú rể') + ' & ' + ((doc.bride && doc.bride.name) || 'Cô dâu');
   var md = CV.mainDate(doc);
   var dateDots = md ? CV.pad(md.getDate()) + ' · ' + CV.pad(md.getMonth() + 1) + ' · ' + md.getFullYear() : '';
 
@@ -309,10 +310,10 @@
     return (boot.opener && boot.opener.photo) || firstPhoto();
   }
   var gName = function () {
-    return (doc.groom && doc.groom.name) || 'Chú rể';
+    return doc.brideFirst ? (doc.bride && doc.bride.name) || 'Cô dâu' : (doc.groom && doc.groom.name) || 'Chú rể';
   };
   var bName = function () {
-    return (doc.bride && doc.bride.name) || 'Cô dâu';
+    return doc.brideFirst ? (doc.groom && doc.groom.name) || 'Chú rể' : (doc.bride && doc.bride.name) || 'Cô dâu';
   };
   /** Nơ lụa vẽ bằng SVG (màu theo màu chính) */
   function bowSvg() {
@@ -374,7 +375,7 @@
           h('div', { class: 'cvo-pre', text: 'Kính gửi' }),
           h('div', { class: 'cvo-to', text: boot.guestName || 'Quý Khách' }),
           pic ? h('div', { class: 'cvo-heart' }, [h('img', { src: pic, alt: '' })]) : null,
-          h('div', { class: 'cvo-names cvo-names-stack' }, [h('span', { text: (doc.groom && doc.groom.name) || 'Chú rể' }), h('i', { text: '&' }), h('span', { text: (doc.bride && doc.bride.name) || 'Cô dâu' })]),
+          h('div', { class: 'cvo-names cvo-names-stack' }, [h('span', { text: gName() }), h('i', { text: '&' }), h('span', { text: bName() })]),
           h('span', { class: 'cvo-btn', text: 'Ấn mở thiệp' }),
         ]),
       ];
