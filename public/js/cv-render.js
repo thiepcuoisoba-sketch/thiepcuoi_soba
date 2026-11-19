@@ -252,15 +252,17 @@
     },
     map: function (e, ctx) {
       var q = encodeURIComponent(e.address || '');
+      // Link Google Maps chủ thiệp dán vào (nếu có) được ưu tiên cho nút chỉ đường
+      var go = e.link || 'https://www.google.com/maps/search/?api=1&query=' + q;
       // Kiểu "chỉ nút": dùng cho lễ tại tư gia nhà trai / nhà gái
-      if (e.style === 'button') return h('a', { class: 'cv-btn cv-map-btn', href: 'https://www.google.com/maps/search/?api=1&query=' + q, target: '_blank', rel: 'noopener', style: 'background:' + e.color, text: '📍 ' + (e.label || 'Xem chỉ đường') });
+      if (e.style === 'button') return h('a', { class: 'cv-btn cv-map-btn', href: go, target: '_blank', rel: 'noopener', style: 'background:' + e.color, text: '📍 ' + (e.label || 'Xem chỉ đường') });
       var top =
         ctx.mode === 'edit' || !e.address
           ? h('div', { class: 'cv-map-ph' }, [h('span', { text: e.address ? '📍 ' + e.address : '📍 Nhập địa chỉ ở bảng bên phải' })])
           : h('iframe', { class: 'cv-map-frame', src: 'https://maps.google.com/maps?q=' + q + '&output=embed&hl=vi', loading: 'lazy', title: 'Bản đồ', referrerpolicy: 'no-referrer-when-downgrade' });
       return h('div', { class: 'cv-map' }, [
         top,
-        h('a', { class: 'cv-btn', href: 'https://www.google.com/maps/search/?api=1&query=' + q, target: '_blank', rel: 'noopener', style: 'background:' + e.color, text: e.label || 'Chỉ đường' }),
+        h('a', { class: 'cv-btn', href: go, target: '_blank', rel: 'noopener', style: 'background:' + e.color, text: e.label || 'Chỉ đường' }),
       ]);
     },
     rsvp: function (e) {
@@ -307,13 +309,13 @@
         // Trình thiết kế: dựng tạm từ dữ liệu nhập
         accs = ['groom', 'bride']
           .filter(function (s) {
-            return e[s] && e[s].bin && e[s].accountNo;
+            return e[s] && e[s].bin && (e[s].accountNo || e[s].qrImg);
           })
           .map(function (s) {
             var b = (ctx.banks || []).find(function (x) {
               return x.bin === e[s].bin;
             });
-            return { label: s === 'groom' ? 'Mừng cưới chú rể' : 'Mừng cưới cô dâu', bankName: b ? b.name : '', accountNo: e[s].accountNo, accountName: e[s].accountName, qr: 'https://img.vietqr.io/image/' + e[s].bin + '-' + e[s].accountNo + '-compact.png' };
+            return { label: s === 'groom' ? 'Mừng cưới chú rể' : 'Mừng cưới cô dâu', bankName: b ? b.name : '', accountNo: e[s].accountNo, accountName: e[s].accountName, branch: e[s].branch || '', qr: e[s].qrImg || 'https://img.vietqr.io/image/' + e[s].bin + '-' + e[s].accountNo + '-compact.png' };
           });
       }
       // Gói miễn phí không có hộp mừng cưới QR
@@ -330,8 +332,8 @@
           return h('div', { class: 'cv-card cv-gift-item' }, [
             h('div', { class: 'cv-w-title', text: a.label, style: 'color:' + e.color }),
             h('img', { src: a.qr, alt: 'Mã QR ' + a.label, loading: 'lazy' }),
-            h('div', { class: 'cv-gift-info' }, [h('b', { text: a.bankName }), h('span', { text: a.accountNo }), h('small', { text: a.accountName })]),
-            h('button', { class: 'cv-btn cv-btn-sm', type: 'button', 'data-copy': a.accountNo, style: 'background:' + e.color, text: 'Sao chép số TK' }),
+            h('div', { class: 'cv-gift-info' }, [h('b', { text: a.bankName }), a.accountNo ? h('span', { text: a.accountNo }) : null, h('small', { text: a.accountName }), a.branch ? h('small', { text: a.branch }) : null]),
+            a.accountNo ? h('button', { class: 'cv-btn cv-btn-sm', type: 'button', 'data-copy': a.accountNo, style: 'background:' + e.color, text: 'Sao chép số TK' }) : null,
           ]);
         })
       );

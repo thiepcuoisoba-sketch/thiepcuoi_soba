@@ -856,13 +856,14 @@
     var accs = giftAccounts();
     if (accs.length) {
       var items = accs.map(function (a) {
-        var cp = h('button', { class: 'cvt-copy', type: 'button', 'data-copy': a.accountNo.replace(/\s/g, ''), text: 'Sao chép số tài khoản' });
+        var cp = a.accountNo ? h('button', { class: 'cvt-copy', type: 'button', 'data-copy': a.accountNo.replace(/\s/g, ''), text: 'Sao chép số tài khoản' }) : null;
         return h('div', { class: 'cvt-qr' }, [
           h('div', { class: 'cvt-qr-l', text: a.label }),
           h('img', { src: a.qr, alt: 'Mã QR ' + a.label, loading: 'lazy' }),
           h('div', { class: 'cvt-qr-bank', text: a.bankName }),
           h('div', { class: 'cvt-qr-name', text: a.accountName }),
-          h('div', { class: 'cvt-qr-no', text: a.accountNo }),
+          a.accountNo ? h('div', { class: 'cvt-qr-no', text: a.accountNo }) : null,
+          a.branch ? h('div', { class: 'cvt-qr-bank', text: a.branch }) : null,
           cp,
           a.demo ? h('small', { class: 'cvt-demo', text: 'QR minh hoạ – thiệp thật hiện QR ngân hàng của bạn' }) : null,
         ]);

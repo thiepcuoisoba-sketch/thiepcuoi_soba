@@ -47,8 +47,12 @@ const TEXT = {
   ],
   song: 'Love Story · Piano',
   foot: '2026.12.12 · Hưng Yên',
-  // QR mừng cưới tạo tự động theo số tài khoản (VietQR) – thay ảnh qr.png của bản HTML
-  gift: { groom: { bin: '970436', accountNo: '9326409003', accountName: 'VU HUY HOANG' } },
+  // Bản đồ: ghim đúng địa điểm theo link Google Maps của chủ thiệp
+  mapQuery: '20.6037682,106.2807419',
+  mapLink: 'https://maps.app.goo.gl/wZ2aidNqb37N1Svk6',
+  // Mừng cưới: dùng đúng ảnh qr.png của bản HTML, hiện sẵn (không cần chạm mở hộp)
+  giftStyle: 'cards',
+  gift: { groom: { bin: '970436', accountNo: '9326409003', accountName: 'VU HUY HOANG', branch: 'PGD Văn Quán', qrImg: DIR + 'qr.png' } },
 };
 
 (async () => {

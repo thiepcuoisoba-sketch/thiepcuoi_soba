@@ -116,7 +116,15 @@ const bank = (b = {}) => ({
   bin: bankByBin(clean(b.bin, 10)) ? clean(b.bin, 10) : '',
   accountNo: clean(b.accountNo, 30).replace(/[^0-9A-Za-z]/g, ''),
   accountName: clean(b.accountName, 60).toUpperCase(),
+  // Ảnh QR riêng của chủ thiệp (ảnh đã tải lên) – thay cho QR VietQR tự tạo; chi nhánh / phòng giao dịch
+  qrImg: /^\/(uploads|img)\//.test(clean(b.qrImg, 300)) ? url(b.qrImg) : '',
+  branch: clean(b.branch, 60),
 });
+// Link Google Maps chủ thiệp dán vào (maps.app.goo.gl, google.com/maps…)
+const mapLink = (u) => {
+  const s = url(u);
+  return /^https:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|(www\.)?google\.[a-z.]+\/maps|maps\.google\.[a-z.]+)\//i.test(s) ? s : '';
+};
 
 function sanitizeElement(e = {}) {
   const type = pick(e.type, ['text', 'image', 'shape', 'widget'], null);
@@ -190,7 +198,7 @@ function sanitizeElement(e = {}) {
     bg: color(e.bg),
     font: pick(e.font, FONTS, 'Be Vietnam Pro'),
   };
-  if (widget === 'map') Object.assign(out, { address: clean(e.address, 200), label: clean(e.label, 40) || 'Chỉ đường', style: pick(e.style, ['full', 'button'], 'full') });
+  if (widget === 'map') Object.assign(out, { address: clean(e.address, 200), link: mapLink(e.link), label: clean(e.label, 40) || 'Chỉ đường', style: pick(e.style, ['full', 'button'], 'full') });
   if (widget === 'rsvp') out.title = clean(e.title, 80);
   if (widget === 'wishes') Object.assign(out, { title: clean(e.title, 80), privacy: bool(e.privacy) });
   if (widget === 'gift') Object.assign(out, { groom: bank(e.groom), bride: bank(e.bride), style: pick(e.style, ['cards', 'box'], 'cards') });
@@ -284,14 +292,15 @@ function viewDoc(doc) {
           .map((side) => {
             const g = e[side];
             const b = bankByBin(g.bin);
-            if (!b || !g.accountNo) return null;
+            if (!b || !(g.accountNo || g.qrImg)) return null;
             const who = side === 'groom' ? doc.groom.name : doc.bride.name;
             return {
               label: side === 'groom' ? 'Mừng cưới chú rể' : 'Mừng cưới cô dâu',
               bankName: b.name,
               accountNo: g.accountNo,
               accountName: g.accountName,
-              qr: vietQrUrl({ bank: g.bin, accountNo: g.accountNo, accountName: g.accountName, note: 'Mung cuoi ' + (who || ''), template: 'compact' }),
+              branch: g.branch || '',
+              qr: g.qrImg || vietQrUrl({ bank: g.bin, accountNo: g.accountNo, accountName: g.accountName, note: 'Mung cuoi ' + (who || ''), template: 'compact' }),
             };
           })
           .filter(Boolean);

@@ -1700,7 +1700,7 @@
     var fonts = boot.fonts.map(function (n) {
       return [n, n];
     });
-    if (el.widget === 'map') body.appendChild(group('Địa điểm', [field('Địa chỉ', textInput(el, 'address', { max: 200, placeholder: 'Số nhà, đường, quận, thành phố' }, re)), field('Chữ trên nút', textInput(el, 'label', { max: 40 }, re)), field('Kiểu', selectInput(el, 'style', [['full', 'Bản đồ + nút'], ['button', 'Chỉ nút chỉ đường']], re))]));
+    if (el.widget === 'map') body.appendChild(group('Địa điểm', [field('Địa chỉ', textInput(el, 'address', { max: 200, placeholder: 'Số nhà, đường, quận, thành phố' }, re)), field('Link Google Maps (tuỳ chọn)', textInput(el, 'link', { max: 500, placeholder: 'https://maps.app.goo.gl/…' }, re)), field('Chữ trên nút', textInput(el, 'label', { max: 40 }, re)), field('Kiểu', selectInput(el, 'style', [['full', 'Bản đồ + nút'], ['button', 'Chỉ nút chỉ đường']], re))]));
     if (el.widget === 'rsvp' || el.widget === 'wishes') body.appendChild(group('Nội dung', [field('Tiêu đề trong khung (không bắt buộc)', textInput(el, 'title', { max: 80 }, re))]));
     if (el.widget === 'wishes') body.appendChild(group('', [checkbox('Cho khách chọn “Chỉ cô dâu, chú rể xem”', el, 'privacy', re)]));
     if (el.widget === 'signature') body.appendChild(group('Ký tên lưu bút', [h('p', { class: 'dz-hint', text: 'Đặt khung này đè lên một ảnh. Chữ ký của khách hiện nổi trên ảnh, nút ký ở phía dưới khung.' }), field('Chữ trên nút', textInput(el, 'label', { max: 40 }, re))]));
@@ -1736,6 +1736,8 @@
             field('Ngân hàng', selectInput(acc, 'bin', banks, re)),
             field('Số tài khoản', textInput(acc, 'accountNo', { max: 30 }, re)),
             field('Tên chủ tài khoản', textInput(acc, 'accountName', { max: 60, placeholder: 'NGUYEN VAN A' }, re)),
+            field('Chi nhánh (tuỳ chọn)', textInput(acc, 'branch', { max: 60, placeholder: 'PGD …' }, re)),
+            field('Ảnh QR riêng (tuỳ chọn)', textInput(acc, 'qrImg', { max: 300, placeholder: '/uploads/… – để trống = QR tự tạo' }, re)),
           ])
         );
       });

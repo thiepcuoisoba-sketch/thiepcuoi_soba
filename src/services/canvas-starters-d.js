@@ -209,7 +209,7 @@ module.exports = function make(kit) {
       im(14, 30, 392, 250, 'venue', { anim: 'up' }),
       T(20, 306, 380, 20, 'Địa điểm tổ chức', small({ anim: 'up' })),
       T(20, 332, 380, 60, tx.addressLines, { font: PF, size: 18, lh: 1.55, color: C.ink, anim: 'up' }),
-      G(30, 410, 360, 280, 'map', { ...wid, address: tx.address, label: 'Xem chỉ đường Google Maps', anim: 'up' }),
+      G(30, 410, 360, 280, 'map', { ...wid, address: tx.mapQuery || tx.address, link: tx.mapLink || '', label: 'Xem chỉ đường Google Maps', anim: 'up' }),
     ]);
 
     // 11. Xác nhận tham dự (lưu về trang Khách mời của cô dâu chú rể)
@@ -240,7 +240,7 @@ module.exports = function make(kit) {
       T(183, 56, 54, 30, '🎁', { font: LO, size: 22, anim: 'up' }),
       T(20, 110, 380, 36, 'Hộp Mừng Cưới Online', { font: PF, size: 24, color: C.ink, anim: 'up' }),
       T(40, 148, 340, 24, 'Gửi gắm món quà mừng chúc phúc tới Cô dâu & Chú rể', { font: LO, size: 13.5, color: C.soft, anim: 'up' }),
-      G(40, 190, 340, 340, 'gift', { ...wid, style: 'box', ...tx.gift }),
+      G(40, 190, 340, 340, 'gift', { ...wid, style: tx.giftStyle || 'box', ...tx.gift }),
     ]);
 
     // 15. Lời cảm ơn + chân thiệp
