@@ -14,6 +14,12 @@
   doc.sections.forEach(function (s) {
     stage.appendChild(CV.renderSection(s, ctx));
   });
+  // Bản xem mẫu: watermark chữ chéo rất mờ, không chặn thao tác
+  if (boot.demo) {
+    var mark = CV.h('div', { class: 'cv-demo-mark', 'aria-hidden': 'true' });
+    for (var mi = 0; mi < 9; mi++) mark.appendChild(CV.h('span', { style: 'top:' + (mi * 12 - 4) + '%', text: Array(7).join('SOBA · MẪU THIỆP      ') }));
+    document.body.appendChild(mark);
+  }
   if (boot.watermark) viewport.appendChild(CV.h('a', { class: 'cv-watermark', href: '/', target: '_blank', rel: 'noopener', text: 'Thiệp được tạo miễn phí tại SOBA ♥' }));
 
   // Co giãn khung thiết kế 420px theo màn hình
@@ -212,11 +218,33 @@
     var disc = firstPhoto();
     var mbtn = CV.h('button', { class: 'cv-music' + (boot.toolbar ? ' cv-music-top' : '') + (disc ? ' cv-disc' : ''), type: 'button', 'aria-label': 'Bật/tắt nhạc nền' }, [disc ? CV.h('img', { src: disc, alt: '' }) : null, CV.h('span', { class: 'cv-music-ic', 'aria-hidden': 'true', text: '♫' })]);
     document.body.appendChild(mbtn);
+    // Thẻ "Bài hát đã được phát cho bạn nghe" – hiện một lần khi nhạc bắt đầu (lấy từ thiệp 91)
+    var songShown = false;
+    var songToast = function () {
+      if (songShown || !boot.songName) return;
+      songShown = true;
+      var card = CV.h('div', { class: 'cv-song', role: 'status' }, [
+        disc ? CV.h('img', { class: 'cv-song-th', src: disc, alt: '' }) : null,
+        CV.h('div', { class: 'cv-song-tx' }, [CV.h('b', { text: boot.songName }), CV.h('span', { text: 'Bài hát đã được phát cho bạn nghe ♪' })]),
+        CV.h('div', { class: 'cv-song-eq', 'aria-hidden': 'true' }, [CV.h('i'), CV.h('i'), CV.h('i'), CV.h('i')]),
+      ]);
+      document.body.appendChild(card);
+      setTimeout(function () {
+        card.classList.add('show');
+      }, 600);
+      setTimeout(function () {
+        card.classList.remove('show');
+        setTimeout(function () {
+          card.remove();
+        }, 800);
+      }, 5200);
+    };
     playMusic = function () {
       return audio.play().then(
         function () {
           mbtn.classList.add('on');
           document.body.classList.add('cv-playing');
+          songToast();
         },
         function () {}
       );
@@ -442,6 +470,112 @@
         ]),
       ];
     }
+    var stack = function () {
+      return h('div', { class: 'cvo-names cvo-names-stack' }, [h('span', { text: gName() }), h('i', { text: '&' }), h('span', { text: bName() })]);
+    };
+    if (o.style === 'savedate') {
+      // Tấm thiệp "Save the Date": ảnh khung vòm, hoa lá nét mảnh; mở thì tấm thiệp lật lên như bóc trang
+      return [
+        h('div', { class: 'cvo-sd' }, [
+          h('img', { class: 'cvo-leaf tl', src: '/img/deco/hoa-net.svg', alt: '' }),
+          h('img', { class: 'cvo-leaf br', src: '/img/deco/hoa-net.svg', alt: '' }),
+          h('div', { class: 'cvo-card' }, [
+            h('div', { class: 'cvo-sd-title', text: 'Save The Date' }),
+            img('cvo-sd-pic'),
+            stack(),
+            h('div', { class: 'cvo-date', text: dateDots }),
+            h('div', { class: 'cvo-sub', text: 'Kính mời' }),
+            h('div', { class: 'cvo-to', text: to }),
+            h('span', { class: 'cvo-btn', text: 'Mở thiệp' }),
+          ]),
+          h('span', { class: 'cvo-sd-curl', 'aria-hidden': 'true' }),
+        ]),
+      ];
+    }
+    if (o.style === 'scroll') {
+      // Cuộn thư: hai trục gỗ trên dưới, giấy dó ở giữa; mở thì cuộn thư cuộn lại về giữa
+      return [
+        h('div', { class: 'cvo-sc' }, [
+          h('div', { class: 'cvo-sc-rod t' }),
+          h('div', { class: 'cvo-sc-paper' }, [
+            h('img', { class: 'cvo-leaf tl', src: '/img/deco/la-net.svg', alt: '' }),
+            h('img', { class: 'cvo-leaf br', src: '/img/deco/hoa-net.svg', alt: '' }),
+            h('div', { class: 'cvo-card' }, [h('div', { class: 'cvo-sub', text: 'Thân gửi' }), h('div', { class: 'cvo-to', text: to }), img('cvo-sc-pic'), stack(), h('div', { class: 'cvo-date', text: dateDots }), h('span', { class: 'cvo-btn', text: 'Mở thiệp' }), h('div', { class: 'cvo-hint', text: 'Chạm để mở cuộn thư' })]),
+          ]),
+          h('div', { class: 'cvo-sc-rod b' }),
+        ]),
+      ];
+    }
+    if (o.style === 'cinema') {
+      // Rạp chiếu phim: dải phim hai bên, đèn chiếu, khung phim có ảnh, vé mời
+      return [
+        h('div', { class: 'cvo-cn-film l' }),
+        h('div', { class: 'cvo-cn-film r' }),
+        h('div', { class: 'cvo-cn-beam' }),
+        h('div', { class: 'cvo-card cvo-cn' }, [
+          h('div', { class: 'cvo-pre', text: 'Buổi công chiếu đặc biệt' }),
+          img('cvo-cn-pic'),
+          stack(),
+          h('div', { class: 'cvo-date', text: dateDots }),
+          h('div', { class: 'cvo-cn-ticket' }, [h('div', {}, [h('small', { text: 'Vé mời dành cho' }), h('b', { text: to })]), h('div', { class: 'cvo-cn-seat' }, [h('small', { text: 'Hàng' }), h('b', { text: 'A' }), h('small', { text: 'Ghế' }), h('b', { text: '01' })])]),
+          h('span', { class: 'cvo-btn', text: '▶  Mở thiệp' }),
+          h('div', { class: 'cvo-hint', text: 'Chạm để bắt đầu trình chiếu' }),
+        ]),
+      ];
+    }
+    if (o.style === 'lantern') {
+      // Đèn lồng, mây vàng, mặt trời mọc; mở thì mây tách đôi, mặt trời lên
+      var lanterns = h('div', { class: 'cvo-ln-row', 'aria-hidden': 'true' }, [1, 2, 3, 4].map(function (i) {
+        return h('span', { class: 'cvo-ln l' + i }, [h('i')]);
+      }));
+      return [
+        lanterns,
+        h('div', { class: 'cvo-ln-sun' }),
+        h('img', { class: 'cvo-ln-cloud l', src: '/img/deco/may-vang.svg', alt: '' }),
+        h('img', { class: 'cvo-ln-cloud r', src: '/img/deco/may-vang.svg', alt: '' }),
+        h('div', { class: 'cvo-card cvo-ln-card' }, [
+          h('div', { class: 'cvo-pre', text: 'Thiệp mời lễ thành hôn' }),
+          img('cvo-ln-pic'),
+          stack(),
+          h('div', { class: 'cvo-date', text: dateDots }),
+          h('div', { class: 'cvo-sub', text: 'Kính gửi' }),
+          h('div', { class: 'cvo-to', text: to }),
+          h('span', { class: 'cvo-btn', text: 'Mở thiệp' }),
+          h('div', { class: 'cvo-hint', text: 'Chạm để đón nắng hừng đông' }),
+        ]),
+      ];
+    }
+    if (o.style === 'pill') {
+      // Ba khung viên thuốc lồng nhau, ảnh viền mềm; thiệp màu đậm có chữ Hỷ
+      return [
+        h('div', { class: 'cvo-pl-rings', 'aria-hidden': 'true' }, [h('span'), h('span'), h('span')]),
+        h('div', { class: 'cvo-card cvo-pl' }, [
+          h('div', { class: 'cvo-pl-mark', text: '囍' }),
+          h('div', { class: 'cvo-pl-to' }, [h('b', { text: 'Kính gửi' }), h('span', { text: to })]),
+          img('cvo-pl-pic'),
+          stack(),
+          h('span', { class: 'cvo-btn', text: 'Ấn mở thiệp' }),
+        ]),
+      ];
+    }
+    if (o.style === 'orbit') {
+      // Quỹ đạo ngân hà: ảnh tròn giữa các vòng sáng xoay, sao lấp lánh
+      var sky2 = h('div', { class: 'cvo-sky', 'aria-hidden': 'true' });
+      for (var j = 0; j < 50; j++) sky2.appendChild(h('span', { class: 'cvo-star', style: 'left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;animation-delay:' + (Math.random() * 3).toFixed(2) + 's;--s:' + (1 + Math.random() * 2).toFixed(1) + 'px' }));
+      return [
+        sky2,
+        h('div', { class: 'cvo-card cvo-ob' }, [
+          h('div', { class: 'cvo-pre', text: 'Thiệp mời cưới' }),
+          h('div', { class: 'cvo-ob-sys' }, [h('span', { class: 'cvo-ob-ring a' }), h('span', { class: 'cvo-ob-ring b' }), img('cvo-ob-pic')]),
+          stack(),
+          h('div', { class: 'cvo-date', text: dateDots }),
+          h('div', { class: 'cvo-sub', text: 'Kính mời' }),
+          h('div', { class: 'cvo-to', text: to }),
+          h('span', { class: 'cvo-btn', text: 'Mở thiệp' }),
+          h('div', { class: 'cvo-hint', text: 'Chạm để mở thiệp mời' }),
+        ]),
+      ];
+    }
     // book: bìa thiệp có ảnh, lật sang trái
     var src = openerPhoto();
     return [
@@ -501,7 +635,7 @@
       if (doc.music && doc.music.autoplay) playMusic(); // trình duyệt cho phát vì đây là thao tác của khách
       root.classList.add('opening');
       if (o.style === 'curtain' && !reduced) butterflies();
-      var WAIT = { fingerprint: 1100, doors: 1100, curtain: 700, stars: 700, stamp: 900, letter: 1100, ribbon: 1000, news: 1000, oval: 800 };
+      var WAIT = { fingerprint: 1100, doors: 1100, curtain: 700, stars: 700, stamp: 900, letter: 1100, ribbon: 1000, news: 1000, oval: 800, savedate: 900, scroll: 1000, cinema: 900, lantern: 1100, pill: 800, orbit: 900 };
       var wait = reduced ? 50 : WAIT[o.style] || 250;
       setTimeout(function () {
         root.classList.add('open');

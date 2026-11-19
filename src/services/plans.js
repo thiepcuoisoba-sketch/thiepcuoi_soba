@@ -16,7 +16,7 @@ const PLANS = {
     // Số ảnh theo gói (chủ dự án chốt 18/11/2026): Free 10 · Basic 30 · Premium 60 – mẫu ảnh cũng xếp gói theo số ảnh
     limits: { cards: 1, photos: 10, views: 300, storageMonths: 6, guests: 50 },
     // Gói miễn phí: không có màn mở thiệp, không có hộp mừng cưới QR (chủ dự án chốt 16/11/2026)
-    features: { watermark: true, customMusic: false, guestNames: true, gift: false, rsvp: true, wishes: true, effects: false },
+    features: { watermark: true, customMusic: false, guestNames: true, gift: false, rsvp: true, wishes: false, effects: false },
   },
   basic: {
     key: 'basic',
@@ -26,7 +26,7 @@ const PLANS = {
     originalPrice: 299000,
     durationMonths: 12,
     popular: true,
-    limits: { cards: 3, photos: 30, views: 10000, storageMonths: 24, guests: 500 },
+    limits: { cards: 3, photos: 50, views: 10000, storageMonths: 24, guests: 500 },
     features: { watermark: false, customMusic: true, guestNames: true, gift: true, rsvp: true, wishes: true, effects: true },
   },
   premium: {
@@ -36,7 +36,7 @@ const PLANS = {
     price: 249000,
     originalPrice: 599000,
     durationMonths: 12,
-    limits: { cards: 10, photos: 60, views: 50000, storageMonths: 60, guests: 2000 },
+    limits: { cards: 10, photos: 100, views: 50000, storageMonths: 60, guests: 2000 },
     features: { watermark: false, customMusic: true, guestNames: true, gift: true, rsvp: true, wishes: true, effects: true },
   },
 };

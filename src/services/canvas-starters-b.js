@@ -1168,7 +1168,7 @@ module.exports = function make(kit) {
 
   // ===================== KHAI BÁO 8 MẪU =====================
   const F = { vibes: 'Great Vibes', alex: 'Alex Brush', playfair: 'Playfair Display', corm: 'Cormorant Garamond', lora: 'Lora', prata: 'Prata', mont: 'Montserrat', be: 'Be Vietnam Pro', charm: 'Charm' };
-  return [
+  const defs = [
     // Ba mẫu làm lại 18/11/2026 (giữ nguyên khoá để link cũ không đổi)
     {
       key: 'do-son-song-hy', name: 'Đỏ Son Song Hỷ', folder: 'a12', tier: 'basic', opener: 'doors', featured: 2, noAuto: true, song: 'mai-mai-ben-nhau', fall: 'petals', autostart: true,
@@ -1309,4 +1309,7 @@ module.exports = function make(kit) {
       photos: [7, 17, 12, 21, 5, 6, 1, 13, 14, 15, 2, 20, 19, 7, 12, 22, 16, 9, 10, 3],
     },
   ];
+  // Thư viện trang dùng chung cho bộ mẫu thứ ba (canvas-starters-c.js)
+  defs.lib = { B, K, hd, S2, F, PAPER, LINEN, FLW, FLW_D, LEAF, DAO, CLOUD, LATTICE };
+  return defs;
 };

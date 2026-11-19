@@ -169,8 +169,8 @@
     <div class="ex-track" data-track>
       <% showcase.forEach(function (c) { %>
       <article class="xc">
-        <a class="xc-thumb tpl-thumb" href="/t/<%= c.slug %>" target="_blank" rel="noopener"><%- include('../partials/mini', { tpl: c.tpl, names: { g: c.d.groom.name, b: c.d.bride.name }, date: util.formatDateVi(c.d.date).split(', ')[1] }) %></a>
-        <div class="xc-meta"><div class="xc-title"><h3><%= c.title %></h3></div><span class="xc-kind"><%= c.tpl.name %></span></div>
+        <a class="xc-thumb tpl-thumb" href="/t/<%= c.slug %>" target="_blank" rel="noopener"><%- include('../partials/show-thumb', { c }) %></a>
+        <div class="xc-meta"><div class="xc-title"><h3><%= c.title %></h3></div><span class="xc-kind"><%= c.cv ? 'Thiệp thiết kế · có nhạc' : c.tpl.name %></span></div>
       </article>
       <% }) %>
     </div>

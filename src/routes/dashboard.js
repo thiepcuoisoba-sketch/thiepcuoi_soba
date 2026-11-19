@@ -130,7 +130,7 @@ router.get('/thiep/:id/thiet-ke', requireAuth, loadCard, async (req, res) => {
       doc,
       fonts: canvas.FONTS,
       banks: canvas.BANKS.map((b) => ({ bin: b.bin, name: b.name })),
-      plan: { name: plan.name, customMusic: plan.features.customMusic, photos: plan.limits.photos, effects: plan.features.effects, gift: plan.features.gift },
+      plan: { name: plan.name, customMusic: plan.features.customMusic, photos: plan.limits.photos, effects: plan.features.effects, gift: plan.features.gift, wishes: plan.features.wishes },
       openers: canvas.OPENERS,
       falls: canvas.FALLS,
       songs: canvas.SONGS.map((s) => ({ key: s.key, name: s.name, url: s.url })),

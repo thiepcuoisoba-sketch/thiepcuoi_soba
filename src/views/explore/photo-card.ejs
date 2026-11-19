@@ -1,6 +1,6 @@
 <%# Thẻ mẫu thiết kế tự do có ảnh thật (canvas starter). Dùng ở trang chủ và kho mẫu. %>
 <article class="xc xc-photo" data-key="cv:<%= s.key %>" data-tier="<%= s.tier %>">
-  <div class="xc-thumb tpl-thumb">
+  <div class="xc-thumb tpl-thumb" data-cv-thumb="<%= s.key %>">
     <img src="<%= s.thumb %>" alt="Mẫu thiệp <%= s.name %>" loading="lazy">
     <span class="badge tpl-badge badge-<%= s.tier %>"><% if (s.tier === 'premium') { %><svg class="ic"><use href="#i-crown"/></svg><% } %><%= TIER_LABEL[s.tier] %></span>
     <button class="xc-fav" type="button" data-fav="cv:<%= s.key %>" aria-pressed="false" aria-label="Lưu mẫu <%= s.name %>"><svg class="ic"><use href="#i-heart"/></svg></button>

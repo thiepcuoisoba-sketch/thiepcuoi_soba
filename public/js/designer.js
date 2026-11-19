@@ -950,13 +950,78 @@
       return commit();
     }
     if (f && f.el.type === 'widget' && f.el.widget === 'album') {
-      if (f.el.images.length >= 30) return toast('Album tối đa 30 ảnh.');
+      if (f.el.images.length >= ALBUM_MAX) return toast('Album tối đa ' + ALBUM_MAX + ' ảnh.');
       f.el.images.push(src);
+      if (f.el.collection) {
+        growCollection(f);
+        refreshSec(f.sec);
+      }
       refreshEl(f.el);
       renderProps();
       return commit();
     }
     addEl(imageDefaults(src));
+  }
+  /**
+   * Album "Bộ sưu tập" gần cuối thiệp: ảnh khách tải thêm (không chọn ảnh/album nào) được đưa vào đây.
+   * Chưa có thì tạo trang mới ngay trước trang xác nhận tham dự. Album tự cao thêm theo số ảnh.
+   */
+  var ALBUM_MAX = 100;
+  var COLL_ROW = 128;
+  var rowH = function (cols) {
+    return cols >= 4 ? 100 : COLL_ROW;
+  };
+  function collectionAlbum() {
+    var hit = null;
+    doc.sections.forEach(function (s) {
+      s.els.forEach(function (e) {
+        if (!hit && e.type === 'widget' && e.widget === 'album' && e.collection && e.images.length < ALBUM_MAX) hit = { sec: s, el: e };
+      });
+    });
+    if (hit) return hit;
+    if (doc.sections.length >= 20) return null;
+    var at = doc.sections.findIndex(function (s) {
+      return s.els.some(function (e) {
+        return e.type === 'widget' && e.widget === 'rsvp';
+      });
+    });
+    if (at < 1) at = Math.max(1, doc.sections.length - 1);
+    var prev = doc.sections[at - 1];
+    var ink = '#333333';
+    var title = Object.assign(textDefaults({ text: 'Bộ sưu tập', font: 'Great Vibes', size: 42, color: ink, w: 360, h: 60 }), { id: uid(), x: 30, y: 50, r: 0, o: 1, anim: 'fade', delay: 0 });
+    var album = { id: uid(), type: 'widget', widget: 'album', x: 24, y: 130, w: 372, h: COLL_ROW, r: 0, o: 1, anim: 'up', delay: 0, color: '#d6456c', textColor: ink, bg: '', font: 'Be Vietnam Pro', images: [], cols: 3, gap: 6, radius: 6, collection: true };
+    var sec = { id: uid(), h: 130 + COLL_ROW + 50, bg: prev ? prev.bg : '#ffffff', bgImage: '', els: [title, album] };
+    doc.sections.splice(at, 0, sec);
+    renderAll();
+    return { sec: sec, el: album };
+  }
+  /** Album bộ sưu tập: tăng chiều cao album (và trang) cho đủ hàng ảnh */
+  function growCollection(f) {
+    if (f.el.images.length > 36 && f.el.cols < 4) f.el.cols = 4;
+    var rows = Math.max(1, Math.ceil(f.el.images.length / (f.el.cols || 3)));
+    var nh = rows * rowH(f.el.cols);
+    if (nh > f.el.h) {
+      var d = nh - f.el.h;
+      f.el.h = nh;
+      f.sec.els.forEach(function (e) {
+        if (e !== f.el && e.y >= f.el.y + f.el.h - d) e.y += d;
+      });
+      f.sec.h = Math.min(4000, f.sec.h + d);
+    }
+  }
+  function addToCollection(urls) {
+    var added = 0;
+    urls.forEach(function (u) {
+      var f = collectionAlbum();
+      if (!f) return;
+      f.el.images.push(u);
+      growCollection(f);
+      added++;
+    });
+    if (!added) return toast('Thiệp đã đủ 20 trang – hãy chọn một album để thêm ảnh.');
+    renderAll();
+    commit();
+    toast('Đã thêm ' + added + ' ảnh vào “Bộ sưu tập” gần cuối thiệp.');
   }
   function imageDefaults(src) {
     return { type: 'image', w: 260, h: 340, src: src, zoom: 1, ox: 50, oy: 50, radius: 0, mask: 'rect', border: 0, borderColor: '#ffffff', shadow: false, filter: 'none' };
@@ -1087,10 +1152,11 @@
             return urls.forEach(function (u) {
               useImage(u);
             });
-          if (urls.length === 1) useImage(urls[0]);
+          // Không chọn gì: ảnh vào album "Bộ sưu tập" gần cuối thiệp
+          addToCollection(urls);
         });
       });
-      body.appendChild(group('', [up, h('p', { class: 'dz-hint', style: 'margin-top:8px', text: 'Gói ' + boot.plan.name + ': tối đa ' + boot.plan.photos + ' ảnh. Ảnh lớn được tự động nén cho thiệp tải nhanh. Đang chọn một ảnh trên thiệp thì bấm ảnh bên dưới để thay; đang chọn album thì ảnh được thêm vào album.' })]));
+      body.appendChild(group('', [up, h('p', { class: 'dz-hint', style: 'margin-top:8px', text: 'Gói ' + boot.plan.name + ': tối đa ' + boot.plan.photos + ' ảnh. Ảnh lớn được tự động nén cho thiệp tải nhanh. Đang chọn một ảnh trên thiệp thì bấm ảnh bên dưới để thay; đang chọn album thì ảnh được thêm vào album; không chọn gì thì ảnh tải lên được đưa vào mục “Bộ sưu tập” gần cuối thiệp.' })]));
       var lib = h('div', { class: 'dz-lib' }, [h('p', { class: 'dz-hint', text: 'Đang tải…' })]);
       body.appendChild(group('Ảnh đã tải lên', [lib]));
       var samples = h('div', { class: 'dz-lib' });
@@ -1136,8 +1202,11 @@
             'div',
             { class: 'dz-addlist' },
             WIDGET_LIST.map(function (w) {
-              var b = h('button', { type: 'button', class: 'dz-add' }, [h('strong', { text: w[1] }), h('small', { text: w[2] })]);
+              // Gói Miễn phí không có sổ lời chúc
+              var locked = w[0] === 'wishes' && !boot.plan.wishes;
+              var b = h('button', { type: 'button', class: 'dz-add' }, [h('strong', { text: w[1] + (locked ? ' 🔒' : '') }), h('small', { text: locked ? 'Có từ gói Basic – nâng cấp để khách gửi lời chúc' : w[2] })]);
               b.addEventListener('click', function () {
+                if (locked) return toast('Sổ lời chúc có từ gói Basic trở lên.');
                 addEl(Object.assign({ type: 'widget', widget: w[0], color: '#d6456c', textColor: '#333333', bg: '', font: 'Be Vietnam Pro' }, clone(w[3])));
               });
               return b;
@@ -1695,15 +1764,20 @@
       add.addEventListener('click', function () {
         pickImages(true, function (urls) {
           urls.forEach(function (u) {
-            if (el.images.length < 30) el.images.push(u);
+            if (el.images.length < ALBUM_MAX) el.images.push(u);
           });
+          var fc = el.collection && find(el.id);
+          if (fc) {
+            growCollection(fc);
+            refreshSec(fc.sec);
+          }
           re();
           renderProps();
           commit();
         });
       });
       body.appendChild(
-        group('Ảnh trong album (' + el.images.length + '/30)', [
+        group('Ảnh trong album (' + el.images.length + '/' + ALBUM_MAX + ')', [
           list,
           add,
           h('div', { class: 'dz-grid2', style: 'margin-top:10px' }, [field('Số cột', numInput(el, 'cols', 1, 4, 1, re)), field('Khoảng cách', numInput(el, 'gap', 0, 24, 1, re))]),

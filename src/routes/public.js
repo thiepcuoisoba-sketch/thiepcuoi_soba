@@ -6,14 +6,31 @@ const config = require('../config');
 const { TEMPLATES, CATEGORIES, TIER_LABEL, getTemplate, exists } = require('../services/templates');
 const { PLANS, COMPARE_ROWS } = require('../services/plans');
 const { FEATURES, STEPS, PAINS, TESTIMONIALS, FAQ, ARTICLES } = require('../content');
-const { clean, vnd, removeDiacritics } = require('../services/util');
+const util = require('../services/util');
+const { clean, vnd, removeDiacritics } = util;
 const { parseData } = require('../services/cards');
 const canvas = require('../services/canvas');
 
 /** Mẫu thiết kế tự do có ảnh thật – đưa ra trang chủ */
 // Mẫu "featured" (mẫu mới nổi bật) đứng đầu hàng "Mẫu thiết kế phổ biến"
 // featured: 3 = bộ mẫu mới nhất, 2 = được chủ dự án chọn đẩy lên đầu, 1 = mẫu mới nổi bật
-const photoStarters = canvas.STARTERS.filter((s) => s.thumb).sort((a, b) => Number(b.featured || 0) - Number(a.featured || 0));
+// featured: 4 = bộ mẫu a47–a50 (19/11/2026)
+const sortedStarters = canvas.STARTERS.filter((s) => s.thumb).sort((a, b) => Number(b.featured || 0) - Number(a.featured || 0));
+/** Mẫu tông đỏ – chủ dự án muốn xen kẽ lên đầu cho khách dễ chọn (19/11/2026) */
+const RED_KEYS = ['do-son-song-hy', 'hoa-hong-do', 'do-do-chu-vang', 'phong-bi-do-nhung', 'hy-su-vui-nhon', 'bao-cuoi'];
+function interleaveRed(list) {
+  const reds = RED_KEYS.map((k) => list.find((s) => s.key === k)).filter(Boolean);
+  const rest = list.filter((s) => !RED_KEYS.includes(s.key));
+  const out = [];
+  // 1 mẫu thường, 1 mẫu đỏ, rồi cứ 2 mẫu thường lại 1 mẫu đỏ
+  out.push(...rest.splice(0, 1));
+  while (reds.length) {
+    out.push(reds.shift());
+    out.push(...rest.splice(0, 2));
+  }
+  return out.concat(rest);
+}
+const photoStarters = interleaveRed(sortedStarters);
 /** Danh mục của mẫu ảnh – suy ra từ nhãn (tags) */
 const TAG_CAT = {
   'lang-man': ['Lãng mạn', 'Pastel', 'Hoa', 'Phong bì', 'Khung vòm', 'Thiên nhiên', 'Ngoài trời', 'Hoàng hôn'],
@@ -67,10 +84,18 @@ const router = express.Router();
 
 async function showcase(limit = 8) {
   const rows = await db.all(
-    "SELECT id, slug, template, title, data, views FROM cards WHERE is_showcase = 1 AND status = 'published' ORDER BY published_at DESC LIMIT ?",
+    "SELECT id, slug, template, title, data, views, kind FROM cards WHERE is_showcase = 1 AND status = 'published' ORDER BY published_at DESC LIMIT ?",
     [limit]
   );
   return rows.map((c) => {
+    // Thiệp kéo thả (canvas): thẻ hiện ảnh bìa (ảnh màn mở thiệp, không có thì ảnh lớn nhất trang đầu)
+    if (c.kind === 'canvas') {
+      const doc = canvas.parseDoc(c);
+      const imgs = (doc.sections[0] ? doc.sections[0].els : []).filter((e) => e.type === 'image' && e.src && !/^\/img\/(deco|nen)\//.test(e.src)).sort((a, b) => b.w * b.h - a.w * a.h);
+      const thumb = doc.opener.photo || (imgs[0] && imgs[0].src) || '';
+      const date = util.formatDateVi(util.parseDate(doc.date, doc.time));
+      return { ...c, cv: { thumb, names: doc.groom.name + ' & ' + doc.bride.name, date: date ? date.split(', ').pop() : '' } };
+    }
     const d = parseData(c);
     return { ...c, d, tpl: getTemplate(c.template) };
   });
@@ -100,7 +125,7 @@ router.get('/', async (req, res) => {
     usage,
     rows: [
       // Mỗi hàng hiện mẫu ảnh thật (lặp lại cho đủ chỗ), rồi tới mẫu vẽ cùng loại
-      { key: 'tuyen-chon', title: 'SOBA tuyển chọn', sub: 'Mẫu đẹp, được yêu thích nhất', href: '/mau-thiep', photos: photosWhere((s) => s.featured === 3).concat(photosWhere((s) => s.featured === 2), photosWhere((s) => s.featured === 1)), items: [] },
+      { key: 'tuyen-chon', title: 'SOBA tuyển chọn', sub: 'Mẫu đẹp, được yêu thích nhất', href: '/mau-thiep', photos: photosWhere((s) => s.featured >= 3 || RED_KEYS.includes(s.key)).concat(photosWhere((s) => s.featured && s.featured < 3 && !RED_KEYS.includes(s.key))), items: [] },
       { key: 'thinh-hanh', title: 'Đang thịnh hành', sub: 'Phong cách hot trên TikTok, Facebook', href: '/mau-thiep?dm=thinh-hanh', photos: photosWhere((s) => s.cats.includes('thinh-hanh') || s.cats.includes('dien-anh'), ROW_MIN), items: by((t) => t.category === 'thinh-hanh').concat(popular.filter((t) => t.category !== 'thinh-hanh').slice(0, 3)) },
       { key: 'truyen-thong', title: 'Truyền thống Việt', sub: 'Lễ vu quy, tân hôn, chữ Hỷ', href: '/mau-thiep?dm=truyen-thong', photos: photosWhere((s) => s.cats.includes('truyen-thong'), ROW_MIN), items: by((t) => t.category === 'truyen-thong') },
       { key: 'han-quoc', title: 'Phong cách Hàn Quốc', sub: 'Studio trắng, hanbok, nhẹ nhàng', href: '/mau-thiep?dm=han-quoc', photos: photosWhere((s) => s.cats.includes('han-quoc') || s.cats.includes('toi-gian'), ROW_MIN), items: by((t) => t.category === 'han-quoc') },

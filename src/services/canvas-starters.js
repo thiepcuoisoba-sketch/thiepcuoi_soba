@@ -1205,7 +1205,14 @@ const DEFS = [
 ];
 
 // Bộ mẫu thứ hai (a40, a42–a46): thư viện bố cục riêng trong canvas-starters-b.js
-DEFS.push(...require('./canvas-starters-b')({ T, I, S, G, sec, W, glassBuild }));
+const DEFS_B = require('./canvas-starters-b')({ T, I, S, G, sec, W, glassBuild });
+DEFS.push(...DEFS_B);
+// Bộ mẫu thứ ba (a47–a50) + 6 bìa mới; RESTYLE làm mới bìa & kiểu mở của 8 mẫu cũ
+const SET_C = require('./canvas-starters-c')({ T, I, S, G, sec, W, ...DEFS_B.lib });
+DEFS.push(...SET_C.defs);
+// Bố cục "Thiệp 91" (thiệp HTML chủ dự án tự làm) – mẫu a51 + dựng thiệp cưới thật của chủ dự án (scripts/tao-thiep-91.js)
+const SET_D = require('./canvas-starters-d')({ T, I, S, G, sec, W });
+DEFS.push(...SET_D.defs);
 
 function futureDate() {
   const d = new Date();
@@ -1225,7 +1232,35 @@ function countPhotos(sections) {
     }
   return n;
 }
-const tierByPhotos = (n) => (n <= 10 ? 'free' : n <= 30 ? 'basic' : 'premium');
+// Chủ dự án chốt 19/11/2026: Free 10 · Basic 50 · Premium 100 ảnh (khớp limits.photos)
+const tierByPhotos = (n) => (n <= 10 ? 'free' : n <= 50 ? 'basic' : 'premium');
+// Cách tính cũ (≤30 Basic) – chỉ dùng để biết mẫu nào vốn là Premium, rồi thêm ảnh cho đủ >50
+const oldTier = (n) => (n <= 10 ? 'free' : n <= 30 ? 'basic' : 'premium');
+
+/**
+ * Trang "Bộ sưu tập" gần cuối thiệp: album 3 cột đánh dấu collection – ảnh khách tải thêm
+ * trong trình thiết kế được tự đưa vào đây. Chiều cao co theo số ảnh.
+ */
+function secCollection(p, imgs) {
+  // Nhiều ảnh thì 4 cột cho gọn; 1–2 ảnh thì chia đều một hàng
+  const cols = imgs.length > 36 ? 4 : Math.min(3, imgs.length);
+  const rows = Math.max(1, Math.ceil(imgs.length / cols));
+  const ah = rows * (cols === 4 ? 100 : 128);
+  const line = p.line || p.cardLine || p.accent;
+  return sec(170 + ah + 50, p.bg2 || p.bg, [
+    T(30, 40, 360, 20, 'OUR GALLERY', txt(p, 'label', { size: 11, anim: 'fade' })),
+    T(30, 62, 360, 58, 'Bộ sưu tập', txt(p, 'script', { size: 40, anim: 'fade' })),
+    S(150, 128, 120, 1, 'line', { fill: line }),
+    T(40, 136, 340, 24, 'Chạm vào ảnh để xem lớn hơn', txt(p, 'sans', { size: 12, italic: true })),
+    G(24, 170, 372, ah, 'album', { images: imgs, cols, gap: 6, radius: 6, collection: true, anim: 'up' }),
+  ]);
+}
+/** Chèn trang Bộ sưu tập ngay trước trang xác nhận tham dự (không có thì trước 2 trang cuối) */
+function insertBeforeRsvp(sections, extra) {
+  const rsvp = sections.findIndex((x) => x.els.some((e) => e.type === 'widget' && e.widget === 'rsvp'));
+  const pos = rsvp > 0 ? rsvp : Math.max(1, sections.length - 2);
+  return [...sections.slice(0, pos), ...extra, ...sections.slice(pos)];
+}
 
 /**
  * Mẫu nâng lên Premium (chủ dự án yêu cầu 18/11/2026): thêm trang "Khoảnh khắc" (6 ảnh)
@@ -1259,35 +1294,44 @@ function secMoments(p, ph) {
 }
 function addPremiumPages(d, sections, ph) {
   const n = PREMIUM_MORE[d.key];
-  if (!n) return sections;
+  if (!n || n < 2) return sections;
   // Lấy ảnh vòng lại, bắt đầu từ ảnh thứ 2 để không lặp ngay ảnh bìa
   const at = (i) => ph[(i + 1) % ph.length];
-  const extra = [];
-  if (n >= 2) extra.push(secMoments(d.p, [0, 1, 2, 3, 4, 5].map(at)));
-  extra.push(GALLERY.grid(d.p, Array.from({ length: 12 }, (_, i) => at(i + 6)), { cols: 3, title: 'Khung hình yêu thương', radius: 4 }));
-  // Chèn ngay trước trang xác nhận tham dự (không có thì trước 2 trang cuối)
-  const rsvp = sections.findIndex((x) => x.els.some((e) => e.type === 'widget' && e.widget === 'rsvp'));
-  const pos = rsvp > 0 ? rsvp : Math.max(1, sections.length - 2);
-  return [...sections.slice(0, pos), ...extra, ...sections.slice(pos)];
+  return insertBeforeRsvp(sections, [secMoments(d.p, [0, 1, 2, 3, 4, 5].map(at))]);
 }
 
 function buildAll() {
   return DEFS.map((d) => {
+    // Mẫu cũ được làm mới bìa + kiểu mở (19/11/2026)
+    const rs = SET_C.RESTYLE[d.key];
+    if (rs) d = { ...d, opener: rs.opener, op: { ...(d.op || {}), ...rs.op }, desc: rs.desc || d.desc };
     const ph = img(d.folder, d.photos);
-    const make = (tier) => {
+    const at = (i) => ph[(i + 2) % ph.length];
+    const make = (tier, collect) => {
       seq = 0;
       CUR_TIER = tier;
-      const sections = d.build(d.p, ph);
+      let sections = d.build(d.p, ph);
+      if (rs) sections[0] = rs.cover(d.p, ph[0]);
       // Trang "Hai gia đình" ngay sau lời mời; phong bì ảnh sau trang cô dâu chú rể
       // (mẫu có bìa phong bì đặt noEnvelope để không lặp)
       if (!d.noAuto) sections.splice(2, 0, secFamily(d.p));
       if (!d.noAuto && !d.noEnvelope) sections.splice(4, 0, secEnvelope(d.p, d.envPhotos ? img(d.folder, d.envPhotos) : [ph[ph.length - 1], ph[ph.length - 2]]));
-      return addPremiumPages(d, sections, ph);
+      sections = addPremiumPages(d, sections, ph);
+      // Trang "Bộ sưu tập" (ảnh lặp lại cho thiệp đầy đặn + chỗ nhận ảnh khách tải thêm)
+      if (collect > 0) sections = insertBeforeRsvp(sections, [secCollection(d.p, Array.from({ length: collect }, (_, i) => at(i)))]);
+      return sections;
     };
-    // Gói của mẫu tính theo số ảnh (chủ dự án chốt 18/11/2026): ≤10 Free · ≤30 Basic · còn lại Premium
-    let sections = make(d.tier);
-    const tier = tierByPhotos(countPhotos(sections));
-    if (tier !== d.tier) sections = make(tier);
+    // Gói của mẫu tính theo số ảnh: ≤10 Free · ≤50 Basic · còn lại Premium.
+    // Mẫu vốn Premium (cách tính cũ hoặc PREMIUM_MORE) / Basic / Free được lặp ảnh trong Bộ sưu tập cho đủ 100 / 50 / 10 vị trí.
+    const base = countPhotos(make(d.tier, 0));
+    // want: cố định gói của mẫu (vd. mẫu 33 ảnh nhưng chủ dự án muốn để Basic)
+    const want = d.want || (PREMIUM_MORE[d.key] ? 'premium' : oldTier(base));
+    // Đồng bộ vị trí ảnh đúng bằng giới hạn gói (chủ dự án chốt 19/11/2026): Free 10 · Basic 50 · Premium 100
+    const collect = Math.max(0, { free: 10, basic: 50, premium: 100 }[want] - base);
+    let tier = tierByPhotos(base + collect);
+    let sections = make(tier, collect);
+    tier = tierByPhotos(countPhotos(sections));
+    if (sections.length > 20) throw new Error('Mẫu ' + d.key + ' có ' + sections.length + ' trang (tối đa 20)');
     d = { ...d, tier };
     // Mẫu trả phí: có màn mở thiệp (mặc định theo bảng màu của mẫu)
     const op = d.tier === 'free' ? { style: 'none' } : { style: d.opener || 'envelope', color: d.op?.color || d.p.accent, paper: d.op?.paper || d.p.bg, font: d.p.script2 || d.p.script, photo: d.op?.photoIdx != null ? ph[d.op.photoIdx] : '' };
@@ -1297,7 +1341,8 @@ function buildAll() {
       desc: d.desc,
       tier: d.tier,
       tags: d.tags,
-      thumb: ph[0],
+      // Ảnh thẻ mẫu: ảnh cô dâu chú rể đẹp nhất (thumb = số ảnh trong thư mục), mặc định ảnh bìa
+      thumb: d.thumb ? img(d.folder, [d.thumb])[0] : ph[0],
       song: d.song,
       opener: op.style,
       // 3 = bộ mẫu mới nhất (18/11/2026), 2 = chủ dự án chọn đẩy lên đầu hàng phổ biến (17/11/2026), 1 = mẫu mới nổi bật
@@ -1319,4 +1364,4 @@ function buildAll() {
   });
 }
 
-module.exports = { buildAll };
+module.exports = { buildAll, SET_D };

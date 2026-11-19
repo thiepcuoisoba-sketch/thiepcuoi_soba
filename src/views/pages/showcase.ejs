@@ -11,7 +11,7 @@
     <div class="tpl-grid">
       <% showcase.forEach(function (c) { %>
       <a class="show-card" href="/t/<%= c.slug %>" target="_blank" rel="noopener">
-        <div class="tpl-thumb"><%- include('../partials/mini', { tpl: c.tpl, names: { g: c.d.groom.name, b: c.d.bride.name }, date: util.formatDateVi(c.d.date).split(', ')[1] }) %></div>
+        <div class="tpl-thumb"><%- include('../partials/show-thumb', { c }) %></div>
         <strong><%= c.title %></strong>
       </a>
       <% }) %>

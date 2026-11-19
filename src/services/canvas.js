@@ -41,13 +41,17 @@ const SONGS = [
   { key: 'le-duong', name: 'Lễ Đường – Kai Đinh', file: 'le-duong.mp3' },
   { key: 'vay-cuoi', name: 'Váy Cưới (cover)', file: 'vay-cuoi.mp3' },
   { key: 'bai-nay-khong-de-di-dien', name: 'Bài Này Không Để Đi Diễn – Anh Tú', file: 'bai-nay-khong-de-di-dien.m4a' },
-  { key: 'nhac-cuoi-nhe-nhang', name: 'Nhạc cưới nhẹ nhàng', file: 'nhac-cuoi-nhe-nhang.mp3' },
+  { key: 'nhac-cuoi-nhe-nhang', name: 'Love Story (piano)', file: 'nhac-cuoi-nhe-nhang.mp3' },
   // Thêm 18/11/2026 (chủ dự án xác nhận có giấy phép)
   { key: 'ben-do-hanh-phuc', name: 'Bến Đỗ Hạnh Phúc – Xanh', file: 'ben-do-hanh-phuc.mp3' },
   { key: 'love-like-a-dream', name: 'Love Like a Dream – Salotune', file: 'love-like-a-dream.mp3' },
   { key: 'the-gioi-cua-anh', name: 'Thế Giới Của Anh (piano)', file: 'the-gioi-cua-anh.mp3' },
   { key: 'thanh-than', name: 'Thành Thân – Vương Bình', file: 'thanh-than.mp3' },
   { key: 'canon-in-love', name: 'Canon In Love', file: 'canon-in-love.mp3' },
+  // Thêm 19/11/2026 (chủ dự án thêm vào thư viện nhạc)
+  { key: 'golden-hour', name: 'Golden Hour (violin cover)', file: 'golden-hour.mp3' },
+  { key: 'in-love', name: 'In Love – Low G ft. JustaTee', file: 'in-love.mp3' },
+  { key: 'one-day-at-a-time', name: 'One Day at a Time', file: 'one-day-at-a-time.mp3' },
 ].map((s) => ({ ...s, url: '/music/' + s.file }));
 const songUrl = (key) => (SONGS.find((s) => s.key === key) || {}).url || '';
 const musicUrl = (u) => {
@@ -71,6 +75,13 @@ const OPENERS = [
   { key: 'ribbon', name: 'Tháo nơ lụa' },
   { key: 'news', name: 'Tờ báo tin vui' },
   { key: 'oval', name: 'Khung ảnh oval' },
+  // Thêm 19/11/2026
+  { key: 'savedate', name: 'Save the Date – lật trang' },
+  { key: 'scroll', name: 'Cuộn thư trục gỗ' },
+  { key: 'cinema', name: 'Rạp chiếu phim – vé mời' },
+  { key: 'lantern', name: 'Đèn lồng & mây vàng' },
+  { key: 'pill', name: 'Khung viên thuốc (chữ Hỷ khi nền đậm)' },
+  { key: 'orbit', name: 'Quỹ đạo ngân hà' },
 ];
 const OPENER_KEYS = OPENERS.map((o) => o.key);
 // spin: xoay liên tục (đĩa nhạc) – chạy khi nhạc đang phát
@@ -79,7 +90,11 @@ const ANIMS = ['none', 'fade', 'up', 'down', 'left', 'right', 'zoom', 'rise', 's
 const FILTERS = ['none', 'warm', 'bw', 'film', 'soft', 'blur'];
 /** Hiệu ứng rơi trên trang khách (gói Basic+) */
 const FALLS = ['petals', 'leaves', 'hearts', 'sparkle', 'snow'];
-const LIMITS = { sections: 20, elements: 80, album: 30, text: 2000 };
+// album 100: "Bộ sưu tập" gần cuối thiệp nhận ảnh khách tải thêm (Premium tối đa 100 ảnh)
+const LIMITS = { sections: 20, elements: 80, album: 100, text: 2000 };
+
+// Tiêu đề đi kèm sổ lời chúc (gỡ cùng tiện ích ở gói Miễn phí – xem stripWishes)
+const WISH_HEAD = /lời chúc|lời nhắn|wishes|guestbook/i;
 
 // ===== Hàm làm sạch =====
 const num = (v, min, max, def) => {
@@ -193,6 +208,8 @@ function sanitizeElement(e = {}) {
       cols: num(e.cols, 1, 4, 2),
       gap: num(e.gap, 0, 24, 6),
       radius: num(e.radius, 0, 40, 6),
+      // Album "Bộ sưu tập": ảnh khách tải thêm được tự đưa vào đây
+      collection: bool(e.collection),
     });
   }
   if (widget === 'call') Object.assign(out, { phone: clean(e.phone, 20).replace(/[^0-9+]/g, ''), label: clean(e.label, 40) || 'Gọi điện' });
@@ -439,10 +456,42 @@ require('./canvas-starters')
   .reverse()
   .forEach((s) => {
     s.raw.music.url = songUrl(s.song);
-    STARTERS.unshift({ key: s.key, name: s.name, desc: s.desc, tier: s.tier, tags: s.tags, thumb: s.thumb, song: s.song, opener: s.opener, featured: s.featured, doc: sanitizeDoc(s.raw) });
+    const doc = sanitizeDoc(s.raw);
+    // Mẫu miễn phí: không có sổ lời chúc
+    STARTERS.unshift({ key: s.key, name: s.name, desc: s.desc, tier: s.tier, tags: s.tags, thumb: s.thumb, song: s.song, opener: s.opener, featured: s.featured, doc: s.tier === 'free' ? stripWishes(doc) : doc });
   });
 
 const starterOf = (key) => STARTERS.find((s) => s.key === key) || LEGACY_STARTERS.find((s) => s.key === key) || null;
+
+/**
+ * Gói Miễn phí không có sổ lời chúc (chủ dự án chốt 19/11/2026): gỡ tiện ích "wishes" cùng tiêu đề ngay trên nó,
+ * dồn các phần bên dưới lên. Trang chỉ còn tiêu đề/hoạ tiết (không ảnh, không tiện ích) thì bỏ hẳn.
+ */
+function stripWishes(doc) {
+  const out = { ...doc, sections: [] };
+  for (const sec of doc.sections) {
+    const ws = sec.els.filter((e) => e.type === 'widget' && e.widget === 'wishes').sort((a, b) => b.y - a.y);
+    if (!ws.length) {
+      out.sections.push(sec);
+      continue;
+    }
+    let els = sec.els.slice();
+    let h = sec.h;
+    for (const w of ws) {
+      const heads = els.filter((e) => e.type === 'text' && WISH_HEAD.test(e.text || '') && e.y < w.y && e.y >= w.y - 120);
+      const top = Math.min(w.y, ...heads.map((e) => e.y));
+      const bottom = w.y + w.h;
+      const cut = bottom - top + 30;
+      els = els.filter((e) => e !== w && !heads.includes(e));
+      els = els.map((e) => (e.y >= bottom ? { ...e, y: e.y - cut } : e));
+      h = Math.max(80, h - cut);
+    }
+    const left = els.some((e) => e.type === 'widget' || (e.type === 'image' && !/^\/img\/(deco|nen)\//.test(e.src || '')));
+    if (left || ws.length === 0) out.sections.push({ ...sec, h, els });
+  }
+  if (!out.sections.length) out.sections = doc.sections.slice(0, 1);
+  return out;
+}
 
 /** Thiệp trắng: 1 trang + vài chữ gợi ý */
 function blankDoc() {
@@ -457,8 +506,9 @@ function blankDoc() {
 
 /** Biến cho view invitation/canvas.ejs (trang khách xem + xem trước) */
 function pageLocals(card, { owner, guestName = '', preview = false, wishes = [], signatures = [], demo = false, doc } = {}) {
-  const d = doc || parseDoc(card);
   const plan = owner ? planOf(owner) : PLANS.premium;
+  const d0 = doc || parseDoc(card);
+  const d = plan.features.wishes ? d0 : stripWishes(d0);
   const title = `Thiệp cưới ${d.groom.name} & ${d.bride.name}`;
   return {
     layout: false,
@@ -481,11 +531,13 @@ function pageLocals(card, { owner, guestName = '', preview = false, wishes = [],
       opener: plan.features.effects && d.opener.style !== 'none' ? d.opener : null,
       toolbar: plan.features.effects && d.effects.toolbar,
       gift: plan.features.gift,
-      wishes: wishes.map((w) => ({ name: w.name, message: w.message, at: Number(w.created_at) })),
+      // Tên bài hát cho thẻ "Bài hát đã được phát cho bạn nghe" (chỉ bài trong thư viện)
+      songName: (SONGS.find((x) => x.url === d.music.url) || {}).name || '',
+      wishes: (plan.features.wishes ? wishes : []).map((w) => ({ name: w.name, message: w.message, at: Number(w.created_at) })),
       signatures: signatures.map((g) => ({ name: g.name, img: g.data })),
     }),
     meta: { title, description: d.date ? `Trân trọng kính mời bạn tới dự lễ cưới của chúng tôi – ${formatDateVi(parseDate(d.date, d.time))}.` : '' },
   };
 }
 
-module.exports = { pageLocals, W, FONTS, WIDGETS, LIMITS, BANKS, OPENERS, FALLS, SONGS, songUrl, STARTERS, starterOf, blankDoc, sanitizeDoc, parseDoc, viewDoc, docFontsUrl, safeJson };
+module.exports = { stripWishes, pageLocals, W, FONTS, WIDGETS, LIMITS, BANKS, OPENERS, FALLS, SONGS, songUrl, STARTERS, starterOf, blankDoc, sanitizeDoc, parseDoc, viewDoc, docFontsUrl, safeJson };

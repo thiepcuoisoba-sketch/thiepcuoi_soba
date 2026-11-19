@@ -1,0 +1,6 @@
+<%# Ảnh thẻ "Thiệp khách hàng": thiệp kéo thả hiện ảnh bìa thật, thiệp dạng form vẽ bằng CSS (mini) %>
+<% if (c.cv) { %>
+<span class="show-photo"><% if (c.cv.thumb) { %><img src="<%= c.cv.thumb %>" alt="Thiệp cưới <%= c.cv.names %>" loading="lazy"><% } %><span class="show-photo-cap"><b><%= c.cv.names %></b><% if (c.cv.date) { %><small><%= c.cv.date %></small><% } %></span></span>
+<% } else { %>
+<%- include('mini', { tpl: c.tpl, names: { g: c.d.groom.name, b: c.d.bride.name }, date: util.formatDateVi(c.d.date).split(', ')[1] }) %>
+<% } %>

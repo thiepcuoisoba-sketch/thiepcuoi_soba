@@ -1,6 +1,6 @@
 # HANDOFF – SOBA (bàn giao để tiếp tục trên máy khác)
 
-> Cập nhật: 18/11/2026 · commit cuối trước khi bàn giao: xem `git log`.
+> Cập nhật: 19/11/2026 · commit cuối trước khi bàn giao: xem `git log`.
 > File này **không** chứa mật khẩu, API key hay thông tin bí mật. Bí mật nằm trong `.env` (không vào git).
 
 ---
@@ -62,6 +62,31 @@ Luồng chính: khách đăng ký → chọn mẫu → tự chỉnh thiệp (edi
 - **Màn mở `doors`** đổi sang hai cánh cửa hoạ tiết lưới, dải vàng, **trượt sang hai bên**. Các mẫu dùng “lật sách” (`book`) đã chuyển sang `news / letter / oval / curtain` (kiểu `book` vẫn còn trong editor).
 - Nhạc: chủ dự án xoá Sweet Dreams và Say Sóng → gỡ khỏi `SONGS`/`public/music` (còn 18 bài); Sao Băng Đêm Xanh dùng Beautiful in White, Bản Tin Hạnh Phúc dùng Marry You.
 
+### 2.4d. Bộ mẫu thứ ba & làm mới kho mẫu (19/11/2026, `src/services/canvas-starters-c.js`)
+- **Gói theo số ảnh mới: Free 10 · Basic 50 · Premium 100** (`plans.js` `limits.photos`, `tierByPhotos` ≤10 / ≤50 / >50). Mẫu vốn Premium (cách tính cũ hoặc `PREMIUM_MORE`) được lặp ảnh trong trang **“Bộ sưu tập”** cho đủ 52 ảnh; mẫu Basic thêm 6–9 ảnh lặp; mẫu Free giữ ≤10 ảnh. Kết quả: **10 Free · 32 Basic · 9 Premium** (51 mẫu).
+- **Trang “Bộ sưu tập”** (`secCollection`, album 3 cột cờ `collection: true`, chèn trước trang xác nhận tham dự). Trong trình thiết kế, ảnh tải lên khi **không chọn phần tử nào** tự vào album này (chưa có thì tạo trang mới), album tự cao thêm theo số ảnh. Album tối đa 60 ảnh (`LIMITS.album`).
+- **4 mẫu Basic mới (~40 ảnh, 20 trang)**, `featured: 4`: Khu Vườn Lời Hứa (a47, mở `savedate`), Biển Xanh Jeju (a48, `pill`), Đèn Lồng Hanok (a49, `lantern`, nhạc Thành Thân), Buổi Công Chiếu Tình Yêu (a50, `cinema`). Ảnh a47/a48/a50 có vài tấm in chữ KOREA WEDDING PLEDGE / BRIDE (đã tránh dùng phần lớn), a49 toàn bộ có chữ WONKYU.
+- **6 kiểu mở thiệp mới** (tham khảo 27biggroup, vẽ lại bằng CSS/SVG của SOBA): `savedate` (lật trang), `scroll` (cuộn thư trục gỗ), `cinema` (rạp phim + vé mời), `lantern` (đèn lồng, mây, mặt trời mọc), `pill` (khung viên thuốc, có chữ Hỷ khi nền đậm), `orbit` (quỹ đạo ngân hà). Mỗi kiểu có trang bìa tương ứng (`COVERS` trong canvas-starters-c.js).
+- **Làm mới 8 mẫu cũ** (`RESTYLE`: thay bìa + kiểu mở): Mùa Yêu Đen Trắng → cinema, Đêm Thành Phố → orbit, Lễ Cưới Trên Đồi → scroll, Hanbok Xuân Thì → lantern, Hoa Hồng Đỏ → pill đỏ chữ Hỷ, Hoàng Hôn Sân Thượng → pill tím, Vườn Lụa Trắng & Sắc Màu Thành Phố → savedate.
+- **Nhạc**: thêm Golden Hour, In Love (Low G), One Day at a Time (21 bài).
+- **Watermark** chữ chéo rất mờ “SOBA · MẪU THIỆP” chỉ ở bản xem mẫu (`/demo-thiet-ke`, popup xem trước).
+- **Thẻ mẫu** ở trang chủ/kho mẫu vẽ đúng trang đầu của thiệp (`public/js/cv-thumbs.js` + `GET /api/mau-thiet-ke/:key/bia` trả tối đa 5 trang đầu); rê chuột thì thiệp tự cuộn xuống. Trên điện thoại (không có hover) chỉ hiện trang đầu.
+- **Mẫu đỏ xen kẽ lên đầu** (`RED_KEYS`, `interleaveRed` trong `routes/public.js`): Đỏ Son Song Hỷ, Hoa Hồng Đỏ, Đỏ Đô Chữ Vàng, Phong Bì Đỏ Nhung, Hỷ Sự Vui Nhộn, Báo Cưới.
+
+### 2.4e. Điều chỉnh 19/11/2026 (lần 2)
+- **Gói Miễn phí không còn sổ lời chúc** (`plans.js` `features.wishes: false`): `stripWishes` trong `canvas.js` gỡ tiện ích lời chúc + tiêu đề, dồn phần dưới lên (trang chỉ còn tiêu đề thì bỏ). Áp dụng cho mẫu Free và khi hiển thị thiệp của chủ gói Free; `POST /t/:slug/loi-chuc` trả 403; trình thiết kế khoá tiện ích Sổ lời chúc ở gói Free.
+- **Đồng bộ vị trí ảnh đúng bằng gói**: mọi mẫu Free có đúng 10, Basic 50, Premium 100 vị trí ảnh (phần thiếu lặp ảnh trong trang “Bộ sưu tập”, >36 ảnh thì 4 cột). Album tối đa 100 ảnh.
+- **Ảnh thẻ mẫu** là ảnh cô dâu chú rể (trường `thumb` = số ảnh trong thư mục, mặc định ảnh bìa); rê chuột mới hiện thiệp thật và cuộn xuống.
+- **Liên hệ**: thiepcuoisoba@gmail.com · 0326 409 003 (Zalo cùng số) – trong `.env` và mặc định ở `config.js`.
+
+### 2.4f. Thiệp 91 của chủ dự án & mẫu Love Story (19/11/2026, `src/services/canvas-starters-d.js`)
+- Thiệp HTML `D:\Claude_1\thiep_cuoi_91_premium` (Huy Hoàng & Lan Nhi, 12/12/2026) dựng lại thành thiệp canvas bằng `build91(ảnh, chữ)`: giữ thứ tự trang, bố cục ảnh/chữ, mở thiệp vân tay, nhạc Love Story (`nhac-cuoi-nhe-nhang.mp3` – chính là music.mp3 của thiệp 91, tên hiển thị đổi thành "Love Story (piano)").
+- Thêm chức năng SOBA mà bản HTML chưa có: tên khách mời trên bìa, RSVP lưu về máy chủ, sổ lời chúc, ký tên lưu bút, bản đồ nhúng, nút thêm vào lịch, âm lịch tự động, QR mừng cưới VietQR (Vietcombank) thay ảnh qr.png.
+- Thiệp thật: `node scripts/tao-thiep-91.js <email chủ thiệp>` → `/t/huy-hoang-lan-nhi`, đã xuất bản, `is_showcase = 1`. Ảnh nén ở `public/img/khach/huy-hoang-lan-nhi/`. Dev DB: thiệp id 22 thuộc tester@soba.local. **Production: đăng ký tài khoản của chủ dự án, nâng Basic/Premium rồi chạy lại script với email đó.**
+- Mẫu `love-story-do-son` (ảnh a51, ảnh bìa a51 #12, Basic 50 ảnh – `want: 'basic'` cố định gói, 16 trang). Bỏ ảnh a51 có chữ/logo studio (#5, #18, #20–25, #29).
+- Mục "Thiệp khách hàng" (trang chủ + /thiep-khach-hang) hiện được thiệp canvas: ảnh bìa + tên cặp đôi (`partials/show-thumb.ejs`).
+- Trang khách canvas: thẻ "Bài hát đã được phát cho bạn nghe" hiện một lần khi nhạc bắt đầu (`boot.songName`, lớp `.cv-song`).
+
 ### 2.5. Nhạc nền
 - **Thư viện 18 bài** trong `public/music/` (~74MB; 5 bài thêm 18/11/2026: Bến Đỗ Hạnh Phúc, Love Like a Dream, Thế Giới Của Anh, Thành Thân, Canon In Love), khai báo `SONGS` trong `src/services/canvas.js`, lưu `music.url = '/music/<tệp>'`. Chủ dự án xác nhận **đã có giấy phép** (17/11/2026). Mỗi mẫu ảnh gắn 1 bài (`song:` trong `DEFS`, lặp lại giữa các mẫu). Editor có nhóm “Nhạc cưới” (chọn + nghe thử), mọi gói đều dùng được.
 - 7 giai điệu gốc phát bằng Web Audio (`public/js/soba-music.js`, `builtin:<key>`) vẫn giữ.
@@ -84,6 +109,8 @@ bcrypt, CSRF token, Helmet + CSP (script chỉ `'self'`), rate limit, honeypot, 
 
 - [ ] **Chưa có remote GitHub, chưa push** (repo git nhánh `master`, đã có các commit). Máy này chưa cài GitHub CLI.
 - [ ] **Chưa deploy, chưa chạy thử với MySQL thật** (chỉ test SQLite). Migration `003_signatures` cũng chưa chạy trên MySQL.
+- [ ] Chưa duyệt kỹ 4 mẫu mới a47–a50 và 8 bìa làm mới trên điện thoại thật (đã xem màn mở thiệp + bìa trên khổ máy tính).
+- [ ] Thẻ chọn mẫu trong `/thiep/tao` (dashboard) vẫn dùng ảnh tĩnh, chưa dùng bìa vẽ trực tiếp như trang chủ.
 - [ ] Chưa duyệt **từng trang** của mọi mẫu ảnh trên điện thoại. Đã xem kỹ: Hanok Tinh Khôi, Hoa Trắng Tinh Khôi, Phim Đen Trắng, Hỷ Sự Vui Nhộn, Bướm Hồng Studio, Ngân Hà Sao Rơi. 8 mẫu mới (18/11) đã xem tổng quan trên khổ máy tính, chưa xem kỹ từng trang trên điện thoại thật. Còn lại cần xem: 6 mẫu kính mờ (a33, a34, a36–a39) và các trang “Hai gia đình” / “Phong bì ảnh” của a1–a31.
 - [ ] Tên bố mẹ, địa chỉ lễ tư gia, tên nhà hàng, timeline trong mẫu là **chữ mẫu** – chủ thiệp sửa bằng nhấp đúp; chưa có ô nhập riêng ở bảng Thông tin.
 - [ ] Thiệp dạng **form** (30 mẫu cũ): chưa có thanh tiện ích nổi, ký tên, dresscode, thư viện nhạc; màn mở thiệp form vẫn hiện với gói Free.

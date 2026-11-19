@@ -3,6 +3,7 @@
 <head>
   <%- include('../partials/head') %>
   <link rel="stylesheet" href="/css/explore.css?v=<%= assetVersion %>">
+  <link rel="stylesheet" href="/css/canvas.css?v=<%= assetVersion %>">
 </head>
 <body class="explore">
   <%- include('../partials/icons') %>
@@ -17,5 +18,7 @@
   <%- include('../explore/preview-modal') %>
   <script src="/js/app.js?v=<%= assetVersion %>" defer></script>
   <script src="/js/explore.js?v=<%= assetVersion %>" defer></script>
+  <script src="/js/cv-render.js?v=<%= assetVersion %>" defer></script>
+  <script src="/js/cv-thumbs.js?v=<%= assetVersion %>" defer></script>
 </body>
 </html>

@@ -45,9 +45,9 @@ const config = {
   adminEmail: env('ADMIN_EMAIL').toLowerCase(),
 
   contact: {
-    phone: env('CONTACT_PHONE'),
-    zalo: env('CONTACT_ZALO'),
-    email: env('CONTACT_EMAIL'),
+    phone: env('CONTACT_PHONE', '0326 409 003'),
+    zalo: env('CONTACT_ZALO', 'https://zalo.me/0326409003'),
+    email: env('CONTACT_EMAIL', 'thiepcuoisoba@gmail.com'),
     facebook: env('CONTACT_FACEBOOK'),
     tiktok: env('CONTACT_TIKTOK'),
     instagram: env('CONTACT_INSTAGRAM'),

@@ -83,6 +83,22 @@ router.get('/demo-thiet-ke/:key', (req, res, next) => {
   );
 });
 
+/** Vài trang đầu của mẫu – để thẻ mẫu ở trang chủ/kho mẫu vẽ đúng giao diện đầu thiệp và cuộn khi rê chuột */
+router.get('/api/mau-thiet-ke/:key/bia', (req, res) => {
+  const starter = canvas.starterOf(req.params.key);
+  if (!starter || !starter.doc) return res.status(404).json({ error: 'Không tìm thấy mẫu.' });
+  const doc = canvas.viewDoc(starter.doc);
+  const sections = [];
+  let total = 0;
+  for (const s of doc.sections) {
+    if (sections.length >= 5 || total >= 3400) break;
+    sections.push(s);
+    total += s.h;
+  }
+  res.set('Cache-Control', 'public, max-age=3600');
+  res.json({ doc: { ...doc, sections }, total });
+});
+
 async function publicCard(req, res) {
   const card = await db.get("SELECT id, data, status FROM cards WHERE slug = ? AND status = 'published'", [clean(req.params.slug, 80)]);
   if (!card) {
@@ -123,6 +139,9 @@ router.post('/t/:slug/loi-chuc', express.json(), writeLimiter, async (req, res) 
   const name = clean(b.name, 120);
   const message = clean(b.message, 1000);
   if (!name || !message) return res.status(400).json({ error: 'Vui lòng nhập tên và lời chúc.' });
+  // Gói Miễn phí không có sổ lời chúc
+  const owner = await db.get('SELECT u.id, u.plan, u.plan_expires_at, u.role FROM users u JOIN cards c ON c.user_id = u.id WHERE c.id = ?', [card.id]);
+  if (!planOf(owner).features.wishes) return res.status(403).json({ error: 'Thiệp này không nhận lời chúc.' });
   // Khách chọn "Chỉ cô dâu, chú rể" → lưu ẩn (chủ thiệp vẫn xem được ở trang Khách mời)
   const priv = b.visibility === 'private';
   await db.run('INSERT INTO wishes (card_id, name, message, hidden, created_at) VALUES (?, ?, ?, ?, ?)', [card.id, name, message, priv ? 1 : 0, Date.now()]);

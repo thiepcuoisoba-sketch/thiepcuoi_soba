@@ -368,6 +368,13 @@ body.explore { background: var(--bg); }
 .xc-music { position: absolute; top: 56px; right: 14px; z-index: 3; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, .92); color: var(--primary); box-shadow: 0 2px 8px rgba(0, 0, 0, .12); }
 .xc-music .ic { width: 15px; height: 15px; }
 .xc-photo:hover .xc-photo-name { opacity: 0; transition: opacity .25s; }
+/* Thẻ mẫu: bình thường là ảnh cô dâu chú rể; rê chuột thì hiện thiệp thật (cv-thumbs.js) và cuộn xuống */
+.cvth { position: absolute; inset: 0; z-index: 1; overflow: hidden; opacity: 0; transition: opacity .35s; pointer-events: none; background: #fff; }
+.cvth-stage { position: absolute; left: 0; top: 0; width: 420px; transform-origin: 0 0; translate: 0 0; transition: translate .6s var(--ease); }
+.cvth-stage .cv-sec { position: relative; overflow: hidden; }
+.xc-photo:hover .cvth-ready .cvth, .xc-hit:focus-visible ~ .cvth { opacity: 1; }
+.xc-photo:hover .cvth-ready .cvth-stage, .xc-hit:focus-visible ~ .cvth .cvth-stage { translate: 0 var(--cvth-shift, 0); transition: translate var(--cvth-dur, 8s) linear .6s; }
+@media (prefers-reduced-motion: reduce) { .xc-photo:hover .cvth-ready .cvth-stage { translate: 0 0; } }
 
 @media (max-width: 900px) {
   .hw-mosaic { grid-template-columns: repeat(5, 1fr); opacity: .4; }
