@@ -107,7 +107,7 @@ bcrypt, CSRF token, Helmet + CSP (script chỉ `'self'`), rate limit, honeypot, 
 
 ## 3. Chức năng đang phát triển / công việc còn dang dở
 
-- [ ] **Chưa có remote GitHub, chưa push** (repo git nhánh `master`, đã có các commit). Máy này chưa cài GitHub CLI.
+- [x] **Đã push GitHub** (19/11/2026): https://github.com/thiepcuoisoba-sketch/thiepcuoi_soba – nhánh `master`, remote `origin`. Sau khi sửa: `git push`.
 - [ ] **Chưa deploy, chưa chạy thử với MySQL thật** (chỉ test SQLite). Migration `003_signatures` cũng chưa chạy trên MySQL.
 - [ ] Chưa duyệt kỹ 4 mẫu mới a47–a50 và 8 bìa làm mới trên điện thoại thật (đã xem màn mở thiệp + bìa trên khổ máy tính).
 - [ ] Thẻ chọn mẫu trong `/thiep/tao` (dashboard) vẫn dùng ảnh tĩnh, chưa dùng bìa vẽ trực tiếp như trang chủ.
@@ -160,7 +160,7 @@ bcrypt, CSRF token, Helmet + CSP (script chỉ `'self'`), rate limit, honeypot, 
 
 ## 6. Bước tiếp theo đề xuất
 
-1. **Tạo repo GitHub riêng tư → push** (`README.md` mục 3). Dùng `git remote add origin <url>` rồi `git push -u origin master`.
+1. ~~Tạo repo GitHub → push~~ – xong 19/11/2026 (`origin` = github.com/thiepcuoisoba-sketch/thiepcuoi_soba). Nên để repo **riêng tư** vì có ảnh cưới và số tài khoản của chủ dự án (thiệp 91).
 2. Tạo DB MySQL + Node.js app trên Hostinger, khai báo biến môi trường, deploy, kiểm tra migration 001–003 chạy được trên MySQL (`README.md` mục 4).
 3. Cấu hình SePay webhook, Google/Facebook OAuth, SMTP Hostinger (`README.md` mục 5–7).
 4. Duyệt từng trang các mẫu còn lại trên điện thoại (mục 3); quyết định xử lý chữ ký studio trong ảnh.
@@ -200,7 +200,7 @@ npm run dev                  # http://localhost:3000 – migration tự chạy, 
 
 | File / thư mục | Trong git? | Ghi chú |
 |---|---|---|
-| `soba/` (trừ `node_modules/`) | **Có** | Toàn bộ mã nguồn, ảnh mẫu, nhạc. Chưa có remote → **phải chép thủ công hoặc push GitHub trước** |
+| `soba/` (trừ `node_modules/`) | **Có** | Toàn bộ mã nguồn, ảnh mẫu, nhạc. Đã có trên GitHub (`git clone https://github.com/thiepcuoisoba-sketch/thiepcuoi_soba.git`) – chỉ cần chép thêm `.env` và DB |
 | `soba/.git/` | – | Lịch sử commit (~120MB) – chép cùng thư mục `soba` nếu chưa push |
 | `soba/.env` | **Không** | Cấu hình & bí mật – chép thủ công qua kênh an toàn |
 | `soba/data/soba.sqlite`, `-shm`, `-wal` | Không | DB thử nghiệm (tài khoản, thiệp, chữ ký) – tuỳ chọn. Tắt server trước khi chép để file `-wal` gộp vào |
