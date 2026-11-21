@@ -56,9 +56,11 @@ const config = {
 
 // Thư mục ảnh nằm trong thư mục code → mất sạch mỗi lần deploy lại (Hostinger dựng lại thư mục code từ GitHub)
 const relUpload = path.relative(root, config.uploadDir);
-config.uploadInsideCode = !relUpload.startsWith('..') && !path.isAbsolute(relUpload);
+// Hostinger dựng mỗi lần deploy trong .../hbuilds/versions/<mã>/ → mọi thư mục trong đó cũng mất
+const inBuildVersion = /[\\/]hbuilds[\\/]/.test(config.uploadDir);
+config.uploadInsideCode = (!relUpload.startsWith('..') && !path.isAbsolute(relUpload)) || inBuildVersion;
 if (config.isProd && config.uploadInsideCode) {
-  console.warn(`[SOBA] CẢNH BÁO: UPLOAD_DIR (${config.uploadDir}) nằm trong thư mục code – ảnh khách sẽ MẤT khi deploy lại. Đặt UPLOAD_DIR=../soba-uploads hoặc đường dẫn tuyệt đối ngoài thư mục code.`);
+  console.warn(`[SOBA] CẢNH BÁO: UPLOAD_DIR (${config.uploadDir}) nằm trong thư mục deploy – ảnh khách sẽ MẤT khi deploy lại. Đặt đường dẫn tuyệt đối cố định, vd /home/<user>/domains/<tên miền>/soba-uploads.`);
 }
 
 if (config.isProd && (config.sessionSecret.length < 32 || config.sessionSecret === 'change-me')) {

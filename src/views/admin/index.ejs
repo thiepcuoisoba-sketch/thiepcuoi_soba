@@ -9,7 +9,8 @@
   <h2 class="h3" style="margin:0 0 8px">Lưu trữ ảnh tải lên</h2>
   <p class="small" style="margin:0 0 6px">Thư mục: <code><%= storage.dir %></code>
     · <span class="badge <%= storage.writable ? 'badge-success' : 'badge-warning' %>"><%= storage.writable ? 'Ghi được' : 'Không ghi được' %></span>
-    · <span class="badge <%= storage.insideCode ? 'badge-warning' : 'badge-success' %>"><%= storage.insideCode ? 'Nằm trong thư mục code – ảnh mất khi deploy lại' : 'Ngoài thư mục code – an toàn khi deploy' %></span></p>
+    · <span class="badge <%= storage.insideCode ? 'badge-warning' : 'badge-success' %>"><%= storage.insideCode ? 'Nằm trong thư mục deploy – ảnh mất khi deploy lại' : 'Ngoài thư mục deploy' %></span></p>
+  <% if (storage.since) { %><p class="small muted" style="margin:0 0 6px">Thư mục có từ <%= formatDateTime(storage.since) %> · web khởi động lúc <%= formatDateTime(storage.startedAt) %><%= storage.since < storage.startedAt - 60000 ? ' → đã giữ nguyên qua lần deploy gần nhất ✓' : ' (chưa qua lần deploy nào để kiểm chứng)' %></p><% } %>
   <% if (storage.missing.length) { %>
     <p class="small" style="margin:0 0 4px"><strong><%= storage.missing.length %> thiệp</strong> đang thiếu file ảnh (chủ thiệp cần tải lại ảnh):</p>
     <ul class="small" style="margin:0;padding-left:18px">

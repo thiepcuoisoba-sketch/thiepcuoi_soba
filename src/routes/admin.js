@@ -45,6 +45,14 @@ async function storageStatus() {
     fs.accessSync(dir, fs.constants.W_OK);
     writable = true;
   } catch { /* không ghi được */ }
+  // File đánh dấu: ngày tạo cũ hơn lần deploy gần nhất ⇒ thư mục ảnh được giữ nguyên qua deploy
+  let since = null;
+  const marker = path.join(dir, '.soba-storage');
+  try {
+    if (!fs.existsSync(marker) && writable) fs.writeFileSync(marker, String(Date.now()));
+    since = Number(fs.readFileSync(marker, 'utf8')) || null;
+  } catch { /* bỏ qua */ }
+  const startedAt = Date.now() - Math.round(process.uptime() * 1000);
   const missing = [];
   let referenced = 0;
   const rows = await db.all('SELECT id, slug, data FROM cards');
@@ -58,7 +66,7 @@ async function storageStatus() {
     }
     if (lost) missing.push({ id: r.id, slug: r.slug, lost, total: files.size });
   }
-  return { dir, writable, insideCode: config.uploadInsideCode, referenced, missing };
+  return { dir, writable, insideCode: config.uploadInsideCode, referenced, missing, since, startedAt };
 }
 
 router.get('/nguoi-dung', async (req, res) => {
