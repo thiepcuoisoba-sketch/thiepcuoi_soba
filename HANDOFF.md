@@ -1,6 +1,6 @@
 # HANDOFF – SOBA (bàn giao để tiếp tục trên máy khác)
 
-> Cập nhật: 19/11/2026 · commit cuối trước khi bàn giao: xem `git log`.
+> Cập nhật: 21/11/2026 (tối) · commit cuối trước khi bàn giao: xem `git log`. Web đang chạy thật tại https://thiepcuoisoba.com (Hostinger, deploy tự động khi push `master`).
 > File này **không** chứa mật khẩu, API key hay thông tin bí mật. Bí mật nằm trong `.env` (không vào git).
 
 ---
@@ -107,21 +107,32 @@ bcrypt, CSRF token, Helmet + CSP (script chỉ `'self'`), rate limit, honeypot, 
 
 ## 3. Chức năng đang phát triển / công việc còn dang dở
 
+### Phiên 21/11/2026 – đã làm xong
+- **Thanh toán tự động SePay chạy thật:** QR checkout ra MB 0326409003 – VU HUY HOANG (VietQR động: số tiền + mã đơn); webhook #74706 kích hoạt gói thành công (đơn thử SOBAF9CRBR). Chi tiết ở mục SePay bên dưới.
+- **Sự cố mất ảnh khách & cách chống** (chi tiết mục 4): ảnh lưu ở `UPLOAD_DIR` tuyệt đối ngoài thư mục deploy + bản sao trong DB (`upload_blobs`) + tự phục hồi + chặn nhận ảnh khi cấu hình sai + sao lưu/nhập ảnh ở `/quan-tri`. Đã lấy lại đủ 27/27 ảnh thiệp `/t/huy-hoang-lan-nhi-eqqk` (link giữ nguyên).
+- **Ảnh mất không tính vào hạn mức** ảnh của gói (`usage()` chỉ đếm tệp còn trên đĩa/DB).
+- **Xoá thiệp** không còn xoá ảnh mà thiệp nhân bản đang dùng.
+- **Lỗi bìa thiệp trống:** ảnh lưu bằng `https://www.thiepcuoisoba.com/...` bị chặn (CORP) khi xem ở tên miền không www → `canvas.js` `url()` đổi địa chỉ của chính SOBA về đường dẫn tương đối. Bìa thiệp eqqk (id 6, chủ: thiepcuoisoba@gmail.com) = `public/img/khach/huy-hoang-lan-nhi-eqqk/bia-dsc04186.jpg` (ảnh DSC04186 trong `D:\Claude_1\ANH_CHON`, cắt dọc 1320×2000).
+
+### Việc đang chờ chủ dự án trả lời (làm tiếp ngày mai)
+- [ ] **Rà soát chân trang + trang chính sách** để đủ điều kiện **thông báo website TMĐT** (Luật TMĐT 122/2025/QH15 + NĐ 248/2026, hiệu lực 01/07/2026; nộp online.gov.vn hoặc Cổng DVC – cần xác minh). Cần chủ dự án trả lời 2 câu: (1) **chính sách hoàn tiền** gói Basic/Premium (đề xuất: hoàn 100% trong 7 ngày nếu chưa xuất bản thiệp); (2) **đã có đăng ký hộ kinh doanh/MST chưa**. Kế hoạch: thêm biến `BUSINESS_*` (tên, MST, địa chỉ, người chịu trách nhiệm, link logo "Đã thông báo") hiện ở chân trang khi có giá trị; viết lại `views/pages/legal.ejs` (hiện là **bản mẫu**) thành các trang: điều khoản, thanh toán, cung cấp dịch vụ, hoàn tiền, khiếu nại, bảo mật/dữ liệu cá nhân.
+
+### Danh sách cũ
 - [x] **Đã push GitHub** (19/11/2026): https://github.com/thiepcuoisoba-sketch/thiepcuoi_soba – nhánh `master`, remote `origin`. Sau khi sửa: `git push`.
-- [ ] **Chưa deploy, chưa chạy thử với MySQL thật** (chỉ test SQLite). Migration `003_signatures` cũng chưa chạy trên MySQL.
+- [x] Đã deploy Hostinger + MySQL (19/11/2026); migration 001–004 đã chạy trên MySQL thật.
 - [ ] Chưa duyệt kỹ 4 mẫu mới a47–a50 và 8 bìa làm mới trên điện thoại thật (đã xem màn mở thiệp + bìa trên khổ máy tính).
 - [ ] Thẻ chọn mẫu trong `/thiep/tao` (dashboard) vẫn dùng ảnh tĩnh, chưa dùng bìa vẽ trực tiếp như trang chủ.
 - [ ] Chưa duyệt **từng trang** của mọi mẫu ảnh trên điện thoại. Đã xem kỹ: Hanok Tinh Khôi, Hoa Trắng Tinh Khôi, Phim Đen Trắng, Hỷ Sự Vui Nhộn, Bướm Hồng Studio, Ngân Hà Sao Rơi. 8 mẫu mới (18/11) đã xem tổng quan trên khổ máy tính, chưa xem kỹ từng trang trên điện thoại thật. Còn lại cần xem: 6 mẫu kính mờ (a33, a34, a36–a39) và các trang “Hai gia đình” / “Phong bì ảnh” của a1–a31.
 - [ ] Tên bố mẹ, địa chỉ lễ tư gia, tên nhà hàng, timeline trong mẫu là **chữ mẫu** – chủ thiệp sửa bằng nhấp đúp; chưa có ô nhập riêng ở bảng Thông tin.
 - [ ] Thiệp dạng **form** (30 mẫu cũ): chưa có thanh tiện ích nổi, ký tên, dresscode, thư viện nhạc; màn mở thiệp form vẫn hiện với gói Free.
-- [ ] Google/Facebook login, SePay, SMTP **chưa test với key thật**.
-- [ ] **SePay – đang làm dở (21/11/2026):**
+- [ ] Google/Facebook login, SMTP **chưa cấu hình/test với key thật** (SePay đã chạy thật).
+- [x] **SePay – xong 21/11/2026:**
   - Chủ dự án đã liên kết tài khoản **MB 0326409003 – VU HUY HOANG** với SePay (đã xác nhận là MB).
   - `.env` trên máy đã đổi: `BANK_ID=MB`, `BANK_ACCOUNT_NO=0326409003`, `BANK_ACCOUNT_NAME=VU HUY HOANG`.
   - **Xong 21/11/2026:** Hostinger đã đổi `BANK_ID=MB`, `BANK_ACCOUNT_NO=0326409003`, `BANK_ACCOUNT_NAME=VU HUY HOANG`, `APP_URL` đúng, đã thêm `SEPAY_WEBHOOK_KEY` (cùng giá trị dòng 36 `.env` máy) → đã redeploy; `/nang-cap?goi=basic` trên web thật ra QR MB 0326409003, số tiền 129.000đ, nội dung `SOBAxxxxxx`. QR là VietQR động theo từng đơn – **không** thay bằng ảnh QR tĩnh (mất số tiền/mã đơn → SePay không tự kích hoạt).
   - **Webhook SePay chạy thật (21/11/2026 17:03):** webhook #74706 `thiepcuoisoba` (API Key) đã lưu; chuyển thử thật 129.000đ đơn `SOBAF9CRBR` → HTTP 200 "Đã kích hoạt gói", tài khoản lên Basic. Lỗi 401 trước đó do `SEPAY_WEBHOOK_KEY` bị xoá khỏi hPanel – khoá phải giống hệt API Key trong SePay. Lưu ý hPanel: sửa biến chỉ có hiệu lực sau **Áp dụng thay đổi** (tự redeploy); tải lại trang thì mất thay đổi chưa áp dụng.
-  - (Ghi chú cũ) Webhook SePay (my.sepay.vn → Webhooks) chưa lưu: tên `thiepcuoisoba`, URL `https://thiepcuoisoba.com/api/webhooks/sepay`, Tiền vào, JSON, bật tự gửi lại, tài khoản MB trên, chứng thực **API Key** = đúng `SEPAY_WEBHOOK_KEY`. Sau đó chuyển thử 129.000đ với mã `SOBAxxxxxx`, xem "Lịch sử gửi".
-  - Claude không đăng nhập hộ được: chủ dự án tự đăng nhập Hostinger trong khung trình duyệt của app Claude (Ctrl+Shift+B), rồi Claude sửa biến môi trường.
+  - Cấu hình webhook: URL `https://thiepcuoisoba.com/api/webhooks/sepay`, Tiền vào, JSON, chứng thực **API Key** = đúng `SEPAY_WEBHOOK_KEY`. Kiểm tra ở my.sepay.vn → Webhooks → Lịch sử gửi (phát lại được).
+  - Claude không đăng nhập hộ và không tự nhập số tài khoản/khoá bí mật trên trang thật: chủ dự án tự đăng nhập (khung trình duyệt app Claude, Ctrl+Shift+B) và tự dán khoá; Claude sửa các biến khác và bấm áp dụng.
 - [ ] Chưa có ảnh **og:image** cho website; logo/liên hệ/mạng xã hội là tạm (`.env` `CONTACT_*`, `partials/logo.ejs`); điều khoản & chính sách là **bản mẫu** cần rà soát pháp lý; `TESTIMONIALS` rỗng (chỉ thêm cảm nhận thật).
 - [ ] Trình thiết kế: chưa chọn nhiều phần tử cùng lúc, chưa có kho sticker/hoạ tiết.
 - [ ] Chưa có test tự động.
@@ -138,7 +149,7 @@ bcrypt, CSRF token, Helmet + CSP (script chỉ `'self'`), rate limit, honeypot, 
 - Mẫu đã lưu & số “thả tim” chỉ lưu localStorage, không đồng bộ server.
 - Thời hạn lưu thiệp tính theo **gói hiện tại** của chủ thiệp.
 - Hiệu ứng (mở thiệp, xuất hiện) chỉ chạy khi tab đang hiển thị – trong khung xem trước bị ẩn của Claude, thẻ mở thiệp có thể đứng ở trạng thái mờ (không phải lỗi thiệp).
-- **Ảnh tải lên (đã sửa 21/11/2026):** trước đây `UPLOAD_DIR=./uploads` → mỗi lần deploy lại mất sạch ảnh khách (thiệp `/t/huy-hoang-lan-nhi-eqqk` mất 27/27 ảnh, `/t/minh-anh-thu-ha-53ka` mất 1 ảnh). Hostinger dựng mỗi lần deploy trong `.../hbuilds/versions/<mã>/` nên `../soba-uploads` cũng không an toàn. Hiện đặt `UPLOAD_DIR=/home/u671684285/domains/thiepcuoisoba.com/soba-uploads`; `/quan-tri` có ô "Lưu trữ ảnh tải lên" (ghi được?, giữ qua deploy ✓, danh sách thiệp thiếu ảnh) – đã kiểm chứng ✓ qua một lần redeploy. 27 ảnh của thiệp eqqk tải lên 19/11 21:48 – 20/11 09:39, trước bản sao lưu 20/11 17:21 → có thể lấy lại từ hPanel → Sao lưu → Khôi phục tệp (thư mục `uploads/202611` của bản build cũ), rồi chép vào `soba-uploads/202611/`; chưa làm (khung trình duyệt của Claude bị chặn mở trình quản lý tập tin). **Không** khôi phục cả trang.
+- **Ảnh tải lên (đã sửa 21/11/2026):** trước đây `UPLOAD_DIR=./uploads` → mỗi lần deploy lại mất sạch ảnh khách (thiệp `/t/huy-hoang-lan-nhi-eqqk` mất 27/27 ảnh, `/t/minh-anh-thu-ha-53ka` mất 1 ảnh). Hostinger dựng mỗi lần deploy trong `.../hbuilds/versions/<mã>/` nên `../soba-uploads` cũng không an toàn. Hiện đặt `UPLOAD_DIR=/home/u671684285/domains/thiepcuoisoba.com/soba-uploads`; `/quan-tri` có ô "Lưu trữ ảnh tải lên" (ghi được?, giữ qua deploy ✓, danh sách thiệp thiếu ảnh) – đã kiểm chứng ✓ qua nhiều lần redeploy. **Không** dùng "Khôi phục cả trang" của Hostinger (mất thay đổi mới).
   - **Lớp 2 – bản sao trong DB (21/11/2026, migration `004_upload_blobs`):** mỗi ảnh/nhạc tải lên được chép vào bảng `upload_blobs`; `/uploads/...` mất trên đĩa thì tự lấy lại từ DB (`services/storage.js` → `selfHeal`). Lúc khởi động và nút **"Khôi phục ảnh bị mất ngay"** ở `/quan-tri` chạy `maintain()`: cứu ảnh thiệp đang dùng từ DB hoặc từ thư mục deploy cũ `hbuilds/versions/*/…/uploads`, và sao lưu vào DB mọi ảnh trên đĩa. Xoá thiệp chỉ xoá tệp khi không thiệp nào khác (thiệp nhân bản) còn dùng.
   - **Đã lấy lại 27/27 ảnh thiệp eqqk (21/11/2026 22:30):** "Khôi phục tệp" của Hostinger thất bại với đường dẫn trong hbuilds, nên đã tải bản sao lưu 20/11 (tar.gz 1,5 GB) về máy, lấy riêng `hbuilds/versions/01a1f3bf…/nodejs/uploads/202611` (47 ảnh), đóng thành `D:/Claude_1/soba-anh-khoi-phuc.tar` và nhập qua **/quan-tri → Nhập lại ảnh từ bản sao lưu** (`POST /quan-tri/nhap-anh`, giữ nguyên tên tệp → thiệp hiện lại ở link cũ, đồng thời lưu vào DB). Cách này dùng lại được cho mọi lần mất ảnh sau.
   - Chống tái diễn: production **từ chối nhận ảnh** (lỗi 409, báo khách) nếu `UPLOAD_DIR` nằm trong thư mục deploy – không bao giờ nhận ảnh rồi để mất; `/quan-tri` hiện cảnh báo đỏ khi đang chặn. Nút **"Tải bản sao lưu toàn bộ ảnh (.tar)"** (`GET /quan-tri/sao-luu-anh`) để chủ dự án sao lưu định kỳ ra ngoài máy chủ.
@@ -156,7 +167,8 @@ bcrypt, CSRF token, Helmet + CSP (script chỉ `'self'`), rate limit, honeypot, 
 | Bản quyền | Không sao chép thiết kế/ảnh/thiệp của site khác – chỉ tham khảo bố cục, luồng, tiện ích. Ngoại lệ: ảnh `D:\Claude_1\anh_thiep_mau\a1–a39` và nhạc `D:\Claude_1\nhac_cuoi` – chủ dự án xác nhận có quyền |
 | Nhạc | Thư viện `public/music` (`SONGS`) + giai điệu tự soạn Web Audio |
 | Hosting | Hostinger Business/Cloud Node.js Web App + MySQL |
-| DB | Lớp `src/db.js` tự viết, SQL tương thích MySQL & SQLite; migration tự chạy khi khởi động – **thêm migration mới vào cuối, không sửa cái cũ** (đang có 001, 002, 003) |
+| DB | Lớp `src/db.js` tự viết, SQL tương thích MySQL & SQLite; migration tự chạy khi khởi động – **thêm migration mới vào cuối, không sửa cái cũ** (đang có 001–004; 004 = `upload_blobs` bản sao ảnh) |
+| Ảnh khách | `UPLOAD_DIR` tuyệt đối ngoài thư mục deploy (production: `/home/u671684285/domains/thiepcuoisoba.com/soba-uploads`) + bản sao DB; logic ở `src/services/storage.js` |
 | Thanh toán | VietQR + webhook SePay (không dùng VNPay/MoMo) |
 | Đăng nhập | Email + mật khẩu, Google, Facebook (Passport); session lưu bảng `sessions` |
 | Trang thiệp khách | Không tạo session (mount trước middleware session) |
@@ -170,9 +182,10 @@ bcrypt, CSRF token, Helmet + CSP (script chỉ `'self'`), rate limit, honeypot, 
 
 ## 6. Bước tiếp theo đề xuất
 
-1. ~~Tạo repo GitHub → push~~ – xong 19/11/2026 (`origin` = github.com/thiepcuoisoba-sketch/thiepcuoi_soba). Nên để repo **riêng tư** vì có ảnh cưới và số tài khoản của chủ dự án (thiệp 91).
-2. Tạo DB MySQL + Node.js app trên Hostinger, khai báo biến môi trường, deploy, kiểm tra migration 001–003 chạy được trên MySQL (`README.md` mục 4).
-3. Cấu hình SePay webhook, Google/Facebook OAuth, SMTP Hostinger (`README.md` mục 5–7).
+1. **Ngày mai (22/11):** rà soát chân trang + trang chính sách cho thông báo website TMĐT – cần câu trả lời của chủ dự án (mục 3 "Việc đang chờ").
+2. Sao lưu ảnh định kỳ: `/quan-tri` → "Tải bản sao lưu toàn bộ ảnh (.tar)" (tuần/lần, cất Google Drive). Chưa kiểm tra bản sao lưu tự động hằng ngày của Hostinger có chứa `soba-uploads` không.
+3. Google/Facebook OAuth, SMTP Hostinger (`README.md` mục 5–7); xác minh email tên miền (hPanel còn nhắc).
+3b. Repo GitHub nên để **riêng tư** (có ảnh cưới, thông tin chủ dự án). Mỗi lần `git push master` hoặc bấm "Áp dụng thay đổi" biến môi trường → Hostinger tự deploy lại.
 4. Duyệt từng trang các mẫu còn lại trên điện thoại (mục 3); quyết định xử lý chữ ký studio trong ảnh.
 5. Thêm ô nhập “Hai gia đình / lễ tư gia / nhà hàng / timeline” vào bảng Thông tin của trình thiết kế (hiện phải nhấp đúp sửa chữ).
 6. Cân nhắc đưa thanh tiện ích, ký tên, thư viện nhạc sang thiệp dạng form.
@@ -215,6 +228,9 @@ npm run dev                  # http://localhost:3000 – migration tự chạy, 
 | `soba/.env` | **Không** | Cấu hình & bí mật – chép thủ công qua kênh an toàn |
 | `soba/data/soba.sqlite`, `-shm`, `-wal` | Không | DB thử nghiệm (tài khoản, thiệp, chữ ký) – tuỳ chọn. Tắt server trước khi chép để file `-wal` gộp vào |
 | `soba/uploads/` | Không | Ảnh đã tải lên khi thử (tuỳ chọn) |
+| `D:\Claude_1\soba-anh-khoi-phuc.tar` | Không | 47 ảnh khách lấy lại từ bản sao lưu 20/11 – giữ làm dự phòng |
+| `D:\Claude_1\ANH_CHON\` | Không | 135 ảnh gốc cưới của chủ dự án (nguồn ảnh bìa DSC04186) |
+| `D:\Claude_1\tools\` | Không | `sharp` cài tạm để nén/cắt ảnh |
 | `soba/data/dev-test-account.txt` | Không | Tài khoản thử localhost (tuỳ chọn) |
 | `D:\Claude_1\.claude\launch.json` | Không (ngoài repo) | Cấu hình preview server của Claude (có thể tạo lại theo mục 7) |
 | `D:\Claude_1\anh_thiep_mau\a1…a39` | Không (ngoài repo, ~320MB) | Ảnh gốc độ phân giải cao – cần khi nén lại/chọn ảnh khác. `a10` có tệp tên chứa ký tự đặc biệt → nên **nén zip** cả thư mục rồi chép để không sót tệp |
