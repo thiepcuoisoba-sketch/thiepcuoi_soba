@@ -36,6 +36,57 @@ router.get('/', async (req, res) => {
   render(res, 'index', { meta: { title: 'Quản trị – SOBA' }, stats, storage, recentOrders, recentUsers, section: 'overview' });
 });
 
+/**
+ * Tải toàn bộ ảnh/nhạc khách đã tải lên thành một tệp .tar (bản sao lưu ngoài máy chủ).
+ * Tự ghi định dạng tar (ustar) để không thêm thư viện.
+ */
+router.get('/sao-luu-anh', async (req, res) => {
+  const root = config.uploadDir;
+  const files = [];
+  const walk = (dir, rel) => {
+    let entries = [];
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      const abs = path.join(dir, e.name);
+      const r = rel ? `${rel}/${e.name}` : e.name;
+      if (e.isDirectory()) walk(abs, r);
+      else if (e.isFile() && !e.name.startsWith('.')) files.push({ abs, rel: r });
+    }
+  };
+  walk(root, '');
+  const stamp = new Date().toISOString().slice(0, 10);
+  res.setHeader('Content-Type', 'application/x-tar');
+  res.setHeader('Content-Disposition', `attachment; filename="soba-anh-${stamp}.tar"`);
+  const header = (name, size, mtime) => {
+    const h = Buffer.alloc(512);
+    h.write(name.slice(0, 99), 0, 'utf8');
+    h.write('0000644\0', 100);
+    h.write('0000000\0', 108);
+    h.write('0000000\0', 116);
+    h.write(size.toString(8).padStart(11, '0') + '\0', 124);
+    h.write(Math.floor(mtime / 1000).toString(8).padStart(11, '0') + '\0', 136);
+    h.write('        ', 148);
+    h.write('0', 156);
+    h.write('ustar\0', 257);
+    h.write('00', 263);
+    let sum = 0;
+    for (const b of h) sum += b;
+    h.write(sum.toString(8).padStart(6, '0') + '\0 ', 148);
+    return h;
+  };
+  const write = (buf) => new Promise((ok) => (res.write(buf) ? ok() : res.once('drain', ok)));
+  for (const f of files) {
+    let data;
+    let st;
+    try { data = fs.readFileSync(f.abs); st = fs.statSync(f.abs); } catch { continue; }
+    await write(header(f.rel, data.length, st.mtimeMs));
+    await write(data);
+    const pad = (512 - (data.length % 512)) % 512;
+    if (pad) await write(Buffer.alloc(pad));
+  }
+  res.end(Buffer.alloc(1024));
+});
+
 /** Kiểm tra thư mục ảnh: đường dẫn, ghi được không, ảnh thiệp nào đang bị mất file */
 async function storageStatus() {
   const dir = config.uploadDir;
@@ -66,7 +117,8 @@ async function storageStatus() {
     }
     if (lost) missing.push({ id: r.id, slug: r.slug, lost, total: files.size });
   }
-  return { dir, writable, insideCode: config.uploadInsideCode, referenced, missing, since, startedAt };
+  const blocked = config.isProd && config.uploadInsideCode;
+  return { dir, writable, insideCode: config.uploadInsideCode, blocked, referenced, missing, since, startedAt };
 }
 
 router.get('/nguoi-dung', async (req, res) => {

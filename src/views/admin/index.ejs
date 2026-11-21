@@ -11,6 +11,8 @@
     · <span class="badge <%= storage.writable ? 'badge-success' : 'badge-warning' %>"><%= storage.writable ? 'Ghi được' : 'Không ghi được' %></span>
     · <span class="badge <%= storage.insideCode ? 'badge-warning' : 'badge-success' %>"><%= storage.insideCode ? 'Nằm trong thư mục deploy – ảnh mất khi deploy lại' : 'Ngoài thư mục deploy' %></span></p>
   <% if (storage.since) { %><p class="small muted" style="margin:0 0 6px">Thư mục có từ <%= formatDateTime(storage.since) %> · web khởi động lúc <%= formatDateTime(storage.startedAt) %><%= storage.since < storage.startedAt - 60000 ? ' → đã giữ nguyên qua lần deploy gần nhất ✓' : ' (chưa qua lần deploy nào để kiểm chứng)' %></p><% } %>
+  <p class="small" style="margin:0 0 8px"><a class="btn btn-outline btn-sm" href="/quan-tri/sao-luu-anh" download>Tải bản sao lưu toàn bộ ảnh (.tar)</a> <span class="muted">– nên tải định kỳ và cất ở máy/Google Drive</span></p>
+  <% if (storage.blocked) { %><p class="small" style="margin:0 0 6px;color:var(--danger, #b42318)"><strong>Đang chặn khách tải ảnh</strong> để tránh mất ảnh. Đặt UPLOAD_DIR thành đường dẫn tuyệt đối ngoài thư mục deploy rồi deploy lại.</p><% } %>
   <% if (storage.missing.length) { %>
     <p class="small" style="margin:0 0 4px"><strong><%= storage.missing.length %> thiệp</strong> đang thiếu file ảnh (chủ thiệp cần tải lại ảnh):</p>
     <ul class="small" style="margin:0;padding-left:18px">

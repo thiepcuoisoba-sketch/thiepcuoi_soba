@@ -70,6 +70,13 @@ const AUDIO_TYPES = { 'audio/mpeg': '.mp3', 'audio/mp3': '.mp3', 'audio/mp4': '.
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    // Chặn nhận ảnh khi thư mục lưu nằm trong thư mục deploy: thà báo lỗi ngay còn hơn để khách mất ảnh sau lần deploy tới
+    if (config.isProd && config.uploadInsideCode) {
+      console.error(`[SOBA] Từ chối tải ảnh: UPLOAD_DIR (${config.uploadDir}) nằm trong thư mục deploy.`);
+      const err = new Error('Hệ thống lưu ảnh đang bảo trì, vui lòng thử lại sau ít phút hoặc liên hệ SOBA.');
+      err.status = 409;
+      return cb(err);
+    }
     const d = new Date();
     const sub = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`;
     const dir = path.join(config.uploadDir, sub);
