@@ -138,7 +138,7 @@ bcrypt, CSRF token, Helmet + CSP (script chỉ `'self'`), rate limit, honeypot, 
 - Mẫu đã lưu & số “thả tim” chỉ lưu localStorage, không đồng bộ server.
 - Thời hạn lưu thiệp tính theo **gói hiện tại** của chủ thiệp.
 - Hiệu ứng (mở thiệp, xuất hiện) chỉ chạy khi tab đang hiển thị – trong khung xem trước bị ẩn của Claude, thẻ mở thiệp có thể đứng ở trạng thái mờ (không phải lỗi thiệp).
-- Trên Hostinger, nếu `UPLOAD_DIR` nằm trong thư mục code thì ảnh khách **có thể mất khi deploy lại** → đặt ngoài.
+- **Ảnh tải lên (đã sửa 21/11/2026):** trước đây `UPLOAD_DIR=./uploads` → mỗi lần deploy lại mất sạch ảnh khách (thiệp `/t/huy-hoang-lan-nhi-eqqk` mất 27/27 ảnh, `/t/minh-anh-thu-ha-53ka` mất 1 ảnh). Hostinger dựng mỗi lần deploy trong `.../hbuilds/versions/<mã>/` nên `../soba-uploads` cũng không an toàn. Hiện đặt `UPLOAD_DIR=/home/u671684285/domains/thiepcuoisoba.com/soba-uploads`; `/quan-tri` có ô "Lưu trữ ảnh tải lên" (ghi được?, giữ qua deploy ✓, danh sách thiệp thiếu ảnh) – đã kiểm chứng ✓ qua một lần redeploy. 27 ảnh của thiệp eqqk tải lên 19/11 21:48 – 20/11 09:39, trước bản sao lưu 20/11 17:21 → có thể lấy lại từ hPanel → Sao lưu → Khôi phục tệp (thư mục `uploads/202611` của bản build cũ), rồi chép vào `soba-uploads/202611/`; chưa làm (khung trình duyệt của Claude bị chặn mở trình quản lý tập tin). **Không** khôi phục cả trang.
 
 ---
 
