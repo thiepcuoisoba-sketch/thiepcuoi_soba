@@ -17,5 +17,7 @@ const createApp = require('./src/app');
   app.listen(config.port, () => {
     console.log(`[SOBA] Đang chạy tại ${config.appUrl} (cổng ${config.port}, db: ${config.db.client})`);
     console.log(`[SOBA] Thư mục ảnh tải lên: ${config.uploadDir}`);
+    // Cứu ảnh bị mất + sao lưu ảnh vào DB (chạy nền, không chặn web)
+    setTimeout(() => require('./src/services/storage').maintain(), 3000);
   });
 })();

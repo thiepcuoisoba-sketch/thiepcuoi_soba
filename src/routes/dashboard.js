@@ -10,6 +10,7 @@ const { TEMPLATES, getTemplate, exists } = require('../services/templates');
 const { planOf, tierAllowed, effectivePlanKey, PLANS } = require('../services/plans');
 const cards = require('../services/cards');
 const canvas = require('../services/canvas');
+const storage = require('../services/storage');
 const { BANKS } = require('../services/banks');
 const { clean, formatDateTime } = require('../services/util');
 
@@ -228,7 +229,8 @@ router.post('/thiep/:id/xoa', requireAuth, loadCard, async (req, res) => {
   const files = await db.all('SELECT file FROM uploads WHERE card_id = ?', [id]);
   for (const t of ['rsvps', 'wishes', 'guests', 'uploads', 'signatures']) await db.run(`DELETE FROM ${t} WHERE card_id = ?`, [id]);
   await db.run('DELETE FROM cards WHERE id = ?', [id]);
-  for (const f of files) fs.unlink(path.join(config.uploadDir, f.file), () => {});
+  // Thiệp nhân bản dùng chung ảnh → chỉ xoá tệp khi không còn thiệp nào dùng
+  for (const f of files) await storage.removeIfUnused(f.file);
   req.flash('success', 'Đã xoá thiệp.');
   res.redirect('/tai-khoan');
 });
@@ -285,6 +287,7 @@ router.post('/api/thiep/:id/tai-len', requireAuth, loadCard, upload.array('files
       f.size,
       Date.now(),
     ]);
+    await storage.mirror(rel, f.path);
     out.push({ url: `/uploads/${rel}`, kind: isAudio ? 'audio' : 'image' });
   }
   let warning = '';

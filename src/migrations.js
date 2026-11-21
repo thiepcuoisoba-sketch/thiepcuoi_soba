@@ -12,6 +12,7 @@ const T = {
   text: { mysql: 'MEDIUMTEXT', sqlite: 'TEXT' },
   int: { mysql: 'INT', sqlite: 'INTEGER' },
   big: { mysql: 'BIGINT', sqlite: 'INTEGER' },
+  blob: { mysql: 'LONGBLOB', sqlite: 'BLOB' },
 };
 
 function table(name, cols, extra = []) {
@@ -181,6 +182,21 @@ const MIGRATIONS = [
         created_at: [T.big, 'NOT NULL'],
       }),
       index('ix_signatures_card', 'signatures', 'card_id'),
+    ],
+  },
+  {
+    // Bản sao ảnh/nhạc khách tải lên trong DB – tự khôi phục khi tệp trên đĩa bị mất (deploy lại…)
+    id: '004_upload_blobs',
+    steps: [
+      table('upload_blobs', {
+        id: T.id,
+        file: [T.str(120), 'NOT NULL'],
+        mime: [T.str(40), 'NOT NULL'],
+        size: [T.int, 'NOT NULL'],
+        data: [T.blob, 'NOT NULL'],
+        created_at: [T.big, 'NOT NULL'],
+      }),
+      index('ux_upload_blobs_file', 'upload_blobs', 'file', true),
     ],
   },
 ];

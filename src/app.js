@@ -55,7 +55,7 @@ function createApp() {
 
   // Tệp tĩnh
   app.use(express.static(path.join(config.root, 'public'), { maxAge: config.isProd ? '7d' : 0 }));
-  app.use('/uploads', express.static(config.uploadDir, { maxAge: '30d', fallthrough: false }));
+  app.use('/uploads', require('./services/storage').selfHeal, express.static(config.uploadDir, { maxAge: '30d', fallthrough: false }));
 
   // Webhook thanh toán cần body thô JSON, đăng ký trước CSRF
   app.use('/api/webhooks', express.json({ limit: '200kb' }), require('./routes/webhooks'));

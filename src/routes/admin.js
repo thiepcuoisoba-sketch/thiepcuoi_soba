@@ -4,6 +4,7 @@ const path = require('path');
 const express = require('express');
 const config = require('../config');
 const db = require('../db');
+const storage = require('../services/storage');
 const { requireAdmin } = require('../middleware');
 const { PLANS, MONTH } = require('../services/plans');
 const { markPaid } = require('../services/orders');
@@ -34,6 +35,14 @@ router.get('/', async (req, res) => {
   const recentOrders = await db.all('SELECT o.*, u.email FROM orders o JOIN users u ON u.id = o.user_id ORDER BY o.id DESC LIMIT 8');
   const recentUsers = await db.all('SELECT id, email, name, plan, created_at FROM users ORDER BY id DESC LIMIT 8');
   render(res, 'index', { meta: { title: 'Quản trị – SOBA' }, stats, storage, recentOrders, recentUsers, section: 'overview' });
+});
+
+/** Chạy lại bảo trì ảnh: cứu ảnh mất (từ DB / bản deploy cũ) + sao lưu ảnh vào DB */
+router.post('/khoi-phuc-anh', async (req, res) => {
+  const r = await storage.maintain();
+  req.flash(r.stillMissing.length ? 'error' : 'success',
+    `Khôi phục ${r.fromDb + r.fromOld}/${r.missingBefore} ảnh bị mất (DB: ${r.fromDb}, bản deploy cũ: ${r.fromOld}); còn thiếu ${r.stillMissing.length}; sao lưu thêm ${r.mirrored} ảnh vào DB.`);
+  res.redirect('/quan-tri');
 });
 
 /**
@@ -118,7 +127,8 @@ async function storageStatus() {
     if (lost) missing.push({ id: r.id, slug: r.slug, lost, total: files.size });
   }
   const blocked = config.isProd && config.uploadInsideCode;
-  return { dir, writable, insideCode: config.uploadInsideCode, blocked, referenced, missing, since, startedAt };
+  const db2 = await storage.counts();
+  return { dir, writable, insideCode: config.uploadInsideCode, blocked, referenced, missing, since, startedAt, dbCopies: db2.n, dbBytes: db2.bytes, report: storage.getLastReport() };
 }
 
 router.get('/nguoi-dung', async (req, res) => {
