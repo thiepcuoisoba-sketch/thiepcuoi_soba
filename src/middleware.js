@@ -58,7 +58,12 @@ function requireAdmin(req, res, next) {
 }
 
 // ===== Upload ảnh / nhạc =====
-fs.mkdirSync(config.uploadDir, { recursive: true });
+try {
+  fs.mkdirSync(config.uploadDir, { recursive: true });
+} catch (e) {
+  // Không để web sập vì thư mục ảnh – trang quản trị sẽ báo "Không ghi được"
+  console.error(`[SOBA] Không tạo được thư mục ảnh ${config.uploadDir}: ${e.message}`);
+}
 
 const IMAGE_TYPES = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp', 'image/gif': '.gif' };
 const AUDIO_TYPES = { 'audio/mpeg': '.mp3', 'audio/mp3': '.mp3', 'audio/mp4': '.m4a', 'audio/x-m4a': '.m4a', 'audio/aac': '.aac' };

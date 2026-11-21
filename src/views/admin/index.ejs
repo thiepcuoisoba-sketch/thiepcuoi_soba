@@ -5,6 +5,20 @@
   <div class="stat"><div class="label"><svg class="ic"><use href="#i-receipt"/></svg>Doanh thu tháng này</div><div class="value" style="font-size:24px"><%= vnd(stats.revenueMonth) %></div><div class="small muted">Tổng: <%= vnd(stats.revenue) %></div></div>
   <div class="stat"><div class="label"><svg class="ic"><use href="#i-clock"/></svg>Đơn chờ thanh toán</div><div class="value"><%= stats.pending %></div><div class="small muted"><a href="/quan-tri/lien-he"><%= stats.contacts %> liên hệ</a></div></div>
 </div>
+<div class="card" style="margin-bottom:20px">
+  <h2 class="h3" style="margin:0 0 8px">Lưu trữ ảnh tải lên</h2>
+  <p class="small" style="margin:0 0 6px">Thư mục: <code><%= storage.dir %></code>
+    · <span class="badge <%= storage.writable ? 'badge-success' : 'badge-warning' %>"><%= storage.writable ? 'Ghi được' : 'Không ghi được' %></span>
+    · <span class="badge <%= storage.insideCode ? 'badge-warning' : 'badge-success' %>"><%= storage.insideCode ? 'Nằm trong thư mục code – ảnh mất khi deploy lại' : 'Ngoài thư mục code – an toàn khi deploy' %></span></p>
+  <% if (storage.missing.length) { %>
+    <p class="small" style="margin:0 0 4px"><strong><%= storage.missing.length %> thiệp</strong> đang thiếu file ảnh (chủ thiệp cần tải lại ảnh):</p>
+    <ul class="small" style="margin:0;padding-left:18px">
+      <% storage.missing.slice(0, 20).forEach(function (m) { %><li><a href="/t/<%= m.slug %>" target="_blank" rel="noopener">/t/<%= m.slug %></a> – mất <%= m.lost %>/<%= m.total %> ảnh</li><% }) %>
+    </ul>
+  <% } else { %>
+    <p class="small muted" style="margin:0">Tất cả <%= storage.referenced %> ảnh được thiệp sử dụng đều còn file.</p>
+  <% } %>
+</div>
 <div class="grid grid-2">
   <div class="card" style="padding:0;overflow:hidden">
     <div style="padding:18px 20px;display:flex;justify-content:space-between;align-items:center"><h2 class="h3" style="margin:0">Đơn hàng mới</h2><a class="small" href="/quan-tri/don-hang">Xem tất cả</a></div>

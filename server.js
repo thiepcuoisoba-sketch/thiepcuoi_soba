@@ -16,5 +16,6 @@ const createApp = require('./src/app');
   const app = createApp();
   app.listen(config.port, () => {
     console.log(`[SOBA] Đang chạy tại ${config.appUrl} (cổng ${config.port}, db: ${config.db.client})`);
+    console.log(`[SOBA] Thư mục ảnh tải lên: ${config.uploadDir}`);
   });
 })();

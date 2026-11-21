@@ -1,5 +1,8 @@
 'use strict';
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
+const config = require('../config');
 const db = require('../db');
 const { requireAdmin } = require('../middleware');
 const { PLANS, MONTH } = require('../services/plans');
@@ -27,10 +30,36 @@ router.get('/', async (req, res) => {
     pending: await n("SELECT COUNT(*) AS n FROM orders WHERE status = 'pending'"),
     contacts: await n('SELECT COUNT(*) AS n FROM contacts'),
   };
+  const storage = await storageStatus();
   const recentOrders = await db.all('SELECT o.*, u.email FROM orders o JOIN users u ON u.id = o.user_id ORDER BY o.id DESC LIMIT 8');
   const recentUsers = await db.all('SELECT id, email, name, plan, created_at FROM users ORDER BY id DESC LIMIT 8');
-  render(res, 'index', { meta: { title: 'Quản trị – SOBA' }, stats, recentOrders, recentUsers, section: 'overview' });
+  render(res, 'index', { meta: { title: 'Quản trị – SOBA' }, stats, storage, recentOrders, recentUsers, section: 'overview' });
 });
+
+/** Kiểm tra thư mục ảnh: đường dẫn, ghi được không, ảnh thiệp nào đang bị mất file */
+async function storageStatus() {
+  const dir = config.uploadDir;
+  let writable = false;
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+    fs.accessSync(dir, fs.constants.W_OK);
+    writable = true;
+  } catch { /* không ghi được */ }
+  const missing = [];
+  let referenced = 0;
+  const rows = await db.all('SELECT id, slug, data FROM cards');
+  for (const r of rows) {
+    const files = new Set(String(r.data || '').match(/\/uploads\/[\w./-]+/g) || []);
+    let lost = 0;
+    for (const u of files) {
+      referenced++;
+      const file = path.join(dir, u.slice('/uploads/'.length));
+      if (!file.startsWith(dir) || !fs.existsSync(file)) lost++;
+    }
+    if (lost) missing.push({ id: r.id, slug: r.slug, lost, total: files.size });
+  }
+  return { dir, writable, insideCode: config.uploadInsideCode, referenced, missing };
+}
 
 router.get('/nguoi-dung', async (req, res) => {
   const q = clean(req.query.q, 100);

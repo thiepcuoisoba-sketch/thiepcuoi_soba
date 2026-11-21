@@ -54,6 +54,13 @@ const config = {
   },
 };
 
+// Thư mục ảnh nằm trong thư mục code → mất sạch mỗi lần deploy lại (Hostinger dựng lại thư mục code từ GitHub)
+const relUpload = path.relative(root, config.uploadDir);
+config.uploadInsideCode = !relUpload.startsWith('..') && !path.isAbsolute(relUpload);
+if (config.isProd && config.uploadInsideCode) {
+  console.warn(`[SOBA] CẢNH BÁO: UPLOAD_DIR (${config.uploadDir}) nằm trong thư mục code – ảnh khách sẽ MẤT khi deploy lại. Đặt UPLOAD_DIR=../soba-uploads hoặc đường dẫn tuyệt đối ngoài thư mục code.`);
+}
+
 if (config.isProd && (config.sessionSecret.length < 32 || config.sessionSecret === 'change-me')) {
   console.warn('[SOBA] CẢNH BÁO: SESSION_SECRET quá ngắn. Hãy đặt chuỗi ngẫu nhiên >= 32 ký tự.');
 }
