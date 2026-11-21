@@ -5,6 +5,7 @@
  * (chữ, ảnh, hình, tiện ích) theo toạ độ thiết kế rộng W = 420px.
  * Toàn bộ dữ liệu lưu dạng JSON trong cột cards.data; cột cards.kind = 'canvas'.
  */
+const config = require('../config');
 const { clean, isSafeUrl, parseDate, formatDateVi } = require('./util');
 const { FONT_SPEC, fontsUrl } = require('./templates');
 const { BANKS, bankByBin, vietQrUrl } = require('./banks');
@@ -105,8 +106,15 @@ const num = (v, min, max, def) => {
 const bool = (v) => v === true;
 const pick = (v, list, def) => (list.includes(v) ? v : def);
 const color = (v, def = '') => (/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(v || '') ? v : def);
+// Địa chỉ tuyệt đối trỏ về chính SOBA (có/không www) → đổi về đường dẫn tương đối.
+// Ảnh lấy từ www.* bị chặn (Cross-Origin-Resource-Policy) khi thiệp mở ở tên miền không www và ngược lại.
+const OWN_HOST = (() => {
+  try { return new URL(config.appUrl).hostname.replace(/^www\./, ''); } catch { return ''; }
+})();
+const OWN_ABS = OWN_HOST ? new RegExp(`^https?://(www\\.)?${OWN_HOST.replace(/\./g, '\\.')}(?=/)`, 'i') : null;
 const url = (u) => {
-  const s = clean(u, 500);
+  let s = clean(u, 500);
+  if (OWN_ABS) s = s.replace(OWN_ABS, '');
   return isSafeUrl(s) ? s : '';
 };
 const id = (v) => (/^[a-z0-9]{1,16}$/i.test(v || '') ? v : Math.random().toString(36).slice(2, 10));
