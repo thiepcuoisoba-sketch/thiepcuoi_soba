@@ -139,6 +139,62 @@ async function removeIfUnused(rel) {
   await db.run('DELETE FROM upload_blobs WHERE file = ?', [rel]).catch(() => {});
 }
 
+/**
+ * Nhập lại ảnh/nhạc (từ bản sao lưu) giữ NGUYÊN tên tệp → thiệp đang trỏ tới /uploads/<tháng>/<tên> hiện lại ngay.
+ * items: [{ name: 'mwno0y2a-xxx.jpg' hoặc '202611/mwno0y2a-xxx.jpg', data: Buffer }]
+ * Thư mục tháng lấy theo đường dẫn trong tên, hoặc theo thiệp đang dùng tệp, hoặc theo thời điểm mã hoá trong tên.
+ */
+async function importFiles(items) {
+  const refs = await referencedFiles();
+  const byBase = new Map([...refs].map((r) => [path.basename(r), r]));
+  const report = { total: items.length, imported: 0, skipped: [], usedByCards: 0 };
+  for (const it of items) {
+    const base = path.basename(String(it.name || '').replace(/\\/g, '/'));
+    let rel = null;
+    const m = String(it.name || '').replace(/\\/g, '/').match(/([0-9]{6})\/([A-Za-z0-9._-]+)$/);
+    if (m) rel = `${m[1]}/${m[2]}`;
+    else if (byBase.has(base)) rel = byBase.get(base);
+    else {
+      const t = parseInt(base.split('-')[0], 36);
+      if (t > 1.6e12 && t < 4e12) {
+        const d = new Date(t);
+        rel = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}/${base}`;
+      }
+    }
+    if (!rel || !REL_RE.test(rel) || !MIME[path.extname(rel).toLowerCase()] || !it.data || !it.data.length) {
+      report.skipped.push(base || '(không tên)');
+      continue;
+    }
+    const file = absOf(rel);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, it.data);
+    await db.run('DELETE FROM upload_blobs WHERE file = ?', [rel]).catch(() => {});
+    await mirror(rel, file);
+    report.imported++;
+    if (refs.has(rel)) report.usedByCards++;
+  }
+  return report;
+}
+
+/** Đọc tệp .tar (ustar) thành danh sách { name, data } */
+function readTar(buf) {
+  const out = [];
+  let o = 0;
+  while (o + 512 <= buf.length) {
+    const h = buf.subarray(o, o + 512);
+    if (h.every((b) => b === 0)) break;
+    const str = (a, b) => h.subarray(a, b).toString('utf8').replace(/\0.*$/s, '');
+    const prefix = str(345, 500);
+    const name = (prefix ? prefix + '/' : '') + str(0, 100);
+    const size = parseInt(str(124, 136).trim() || '0', 8) || 0;
+    const type = str(156, 157);
+    o += 512;
+    if (type === '0' || type === '' ) out.push({ name, data: buf.subarray(o, o + size) });
+    o += Math.ceil(size / 512) * 512;
+  }
+  return out;
+}
+
 /** Tệp còn dùng được: có trên đĩa hoặc có bản sao trong DB */
 async function exists(rel) {
   if (!REL_RE.test(rel)) return false;
@@ -153,4 +209,4 @@ async function counts() {
   } catch { return { n: 0, bytes: 0 }; }
 }
 
-module.exports = { mirror, restore, selfHeal, maintain, removeIfUnused, counts, exists, referencedFiles, getLastReport: () => lastReport, REL_RE };
+module.exports = { mirror, restore, selfHeal, maintain, removeIfUnused, counts, exists, importFiles, readTar, referencedFiles, getLastReport: () => lastReport, REL_RE };

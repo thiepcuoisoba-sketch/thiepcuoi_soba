@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const multer = require('multer');
 const config = require('../config');
 const db = require('../db');
 const storage = require('../services/storage');
@@ -35,6 +36,24 @@ router.get('/', async (req, res) => {
   const recentOrders = await db.all('SELECT o.*, u.email FROM orders o JOIN users u ON u.id = o.user_id ORDER BY o.id DESC LIMIT 8');
   const recentUsers = await db.all('SELECT id, email, name, plan, created_at FROM users ORDER BY id DESC LIMIT 8');
   render(res, 'index', { meta: { title: 'Quản trị – SOBA' }, stats, storage, recentOrders, recentUsers, section: 'overview' });
+});
+
+/** Nhập lại ảnh từ bản sao lưu (chọn nhiều ảnh hoặc tệp .tar) – giữ nguyên tên tệp */
+const importUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 150 * 1024 * 1024, files: 500 } });
+router.post('/nhap-anh', importUpload.array('files', 500), async (req, res) => {
+  const items = [];
+  for (const f of req.files || []) {
+    if (/\.tar$/i.test(f.originalname)) items.push(...storage.readTar(f.buffer));
+    else items.push({ name: f.originalname, data: f.buffer });
+  }
+  if (!items.length) {
+    req.flash('error', 'Chưa chọn tệp ảnh nào.');
+    return res.redirect('/quan-tri');
+  }
+  const r = await storage.importFiles(items);
+  req.flash(r.skipped.length ? 'error' : 'success',
+    `Đã nhập ${r.imported}/${r.total} tệp (${r.usedByCards} tệp đang được thiệp dùng)${r.skipped.length ? `; bỏ qua: ${r.skipped.slice(0, 10).join(', ')}` : ''}.`);
+  res.redirect('/quan-tri');
 });
 
 /** Chạy lại bảo trì ảnh: cứu ảnh mất (từ DB / bản deploy cũ) + sao lưu ảnh vào DB */

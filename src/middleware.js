@@ -13,7 +13,9 @@ function csrf(req, res, next) {
   if (!req.session.csrf) req.session.csrf = crypto.randomBytes(24).toString('hex');
   res.locals.csrfToken = req.session.csrf;
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
-  const sent = (req.body && req.body._csrf) || req.get('x-csrf-token');
+  // Form tải tệp (multipart) chưa được đọc body ở bước này → nhận token qua ?_csrf=
+  const multipart = /^multipart\//i.test(req.get('content-type') || '');
+  const sent = (req.body && req.body._csrf) || req.get('x-csrf-token') || (multipart && req.query && req.query._csrf);
   if (sent && crypto.timingSafeEqual(Buffer.from(String(sent).padEnd(48).slice(0, 48)), Buffer.from(req.session.csrf))) return next();
   const err = new Error('Phiên làm việc đã hết hạn, vui lòng tải lại trang và thử lại.');
   err.status = 403;

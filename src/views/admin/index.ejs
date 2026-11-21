@@ -13,6 +13,11 @@
   <% if (storage.since) { %><p class="small muted" style="margin:0 0 6px">Thư mục có từ <%= formatDateTime(storage.since) %> · web khởi động lúc <%= formatDateTime(storage.startedAt) %><%= storage.since < storage.startedAt - 60000 ? ' → đã giữ nguyên qua lần deploy gần nhất ✓' : ' (chưa qua lần deploy nào để kiểm chứng)' %></p><% } %>
   <p class="small" style="margin:0 0 6px">Bản sao trong database: <strong><%= storage.dbCopies %></strong> tệp (<%= (storage.dbBytes / 1048576).toFixed(1) %> MB) – ảnh mất trên ổ đĩa sẽ tự lấy lại từ đây.
     <% if (storage.report) { %><br><span class="muted">Bảo trì lần cuối <%= formatDateTime(storage.report.at) %>: cứu được <%= storage.report.fromDb + storage.report.fromOld %>/<%= storage.report.missingBefore %> ảnh mất, sao lưu thêm <%= storage.report.mirrored %> ảnh vào DB<%= storage.report.error ? ' · lỗi: ' + storage.report.error : '' %>.</span><% } %></p>
+  <form method="post" action="/quan-tri/nhap-anh?_csrf=<%= csrfToken %>" enctype="multipart/form-data" style="margin:0 0 10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <label class="small" for="import-files"><strong>Nhập lại ảnh từ bản sao lưu</strong> (giữ nguyên tên tệp, chọn nhiều ảnh hoặc tệp .tar):</label>
+    <input id="import-files" type="file" name="files" multiple accept=".jpg,.jpeg,.png,.webp,.gif,.mp3,.m4a,.aac,.tar">
+    <button class="btn btn-outline btn-sm" type="submit">Nhập ảnh</button>
+  </form>
   <form method="post" action="/quan-tri/khoi-phuc-anh" style="display:inline"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-primary btn-sm" type="submit">Khôi phục ảnh bị mất ngay</button></form>
   <p class="small" style="margin:8px 0 8px"><a class="btn btn-outline btn-sm" href="/quan-tri/sao-luu-anh" download>Tải bản sao lưu toàn bộ ảnh (.tar)</a> <span class="muted">– nên tải định kỳ và cất ở máy/Google Drive</span></p>
   <% if (storage.blocked) { %><p class="small" style="margin:0 0 6px;color:var(--danger, #b42318)"><strong>Đang chặn khách tải ảnh</strong> để tránh mất ảnh. Đặt UPLOAD_DIR thành đường dẫn tuyệt đối ngoài thư mục deploy rồi deploy lại.</p><% } %>
