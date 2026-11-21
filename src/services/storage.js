@@ -139,6 +139,13 @@ async function removeIfUnused(rel) {
   await db.run('DELETE FROM upload_blobs WHERE file = ?', [rel]).catch(() => {});
 }
 
+/** Tệp còn dùng được: có trên đĩa hoặc có bản sao trong DB */
+async function exists(rel) {
+  if (!REL_RE.test(rel)) return false;
+  if (fs.existsSync(absOf(rel))) return true;
+  try { return Boolean(await db.get('SELECT id FROM upload_blobs WHERE file = ?', [rel])); } catch { return false; }
+}
+
 async function counts() {
   try {
     const r = await db.get('SELECT COUNT(*) AS n, COALESCE(SUM(size),0) AS bytes FROM upload_blobs');
@@ -146,4 +153,4 @@ async function counts() {
   } catch { return { n: 0, bytes: 0 }; }
 }
 
-module.exports = { mirror, restore, selfHeal, maintain, removeIfUnused, counts, referencedFiles, getLastReport: () => lastReport, REL_RE };
+module.exports = { mirror, restore, selfHeal, maintain, removeIfUnused, counts, exists, referencedFiles, getLastReport: () => lastReport, REL_RE };

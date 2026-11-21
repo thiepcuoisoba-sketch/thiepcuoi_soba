@@ -19,11 +19,14 @@ const router = express.Router();
 const cardUrl = (c) => `${config.appUrl}/t/${c.slug}`;
 
 async function usage(user) {
-  const [c, p] = await Promise.all([
+  const [c, rows] = await Promise.all([
     db.get('SELECT COUNT(*) AS n FROM cards WHERE user_id = ?', [user.id]),
-    db.get("SELECT COUNT(*) AS n FROM uploads WHERE user_id = ? AND kind = 'image'", [user.id]),
+    db.all("SELECT file FROM uploads WHERE user_id = ? AND kind = 'image'", [user.id]),
   ]);
-  return { cards: Number(c.n), photos: Number(p.n) };
+  // Ảnh đã mất (không còn trên đĩa, không còn bản sao DB) không tính vào hạn mức – khách tải lại được
+  let photos = 0;
+  for (const r of rows) if (await storage.exists(r.file)) photos++;
+  return { cards: Number(c.n), photos };
 }
 
 async function loadCard(req, res, next) {
