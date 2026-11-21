@@ -115,6 +115,13 @@ bcrypt, CSRF token, Helmet + CSP (script chỉ `'self'`), rate limit, honeypot, 
 - [ ] Tên bố mẹ, địa chỉ lễ tư gia, tên nhà hàng, timeline trong mẫu là **chữ mẫu** – chủ thiệp sửa bằng nhấp đúp; chưa có ô nhập riêng ở bảng Thông tin.
 - [ ] Thiệp dạng **form** (30 mẫu cũ): chưa có thanh tiện ích nổi, ký tên, dresscode, thư viện nhạc; màn mở thiệp form vẫn hiện với gói Free.
 - [ ] Google/Facebook login, SePay, SMTP **chưa test với key thật**.
+- [ ] **SePay – đang làm dở (21/11/2026):**
+  - Chủ dự án đã liên kết tài khoản **MB 0326409003 – VU HUY HOANG** với SePay (đã xác nhận là MB).
+  - `.env` trên máy đã đổi: `BANK_ID=MB`, `BANK_ACCOUNT_NO=0326409003`, `BANK_ACCOUNT_NAME=VU HUY HOANG`.
+  - **Xong 21/11/2026:** Hostinger đã đổi `BANK_ID=MB`, `BANK_ACCOUNT_NO=0326409003`, `BANK_ACCOUNT_NAME=VU HUY HOANG`, `APP_URL` đúng, đã thêm `SEPAY_WEBHOOK_KEY` (cùng giá trị dòng 36 `.env` máy) → đã redeploy; `/nang-cap?goi=basic` trên web thật ra QR MB 0326409003, số tiền 129.000đ, nội dung `SOBAxxxxxx`. QR là VietQR động theo từng đơn – **không** thay bằng ảnh QR tĩnh (mất số tiền/mã đơn → SePay không tự kích hoạt).
+  - **Webhook SePay chạy thật (21/11/2026 17:03):** webhook #74706 `thiepcuoisoba` (API Key) đã lưu; chuyển thử thật 129.000đ đơn `SOBAF9CRBR` → HTTP 200 "Đã kích hoạt gói", tài khoản lên Basic. Lỗi 401 trước đó do `SEPAY_WEBHOOK_KEY` bị xoá khỏi hPanel – khoá phải giống hệt API Key trong SePay. Lưu ý hPanel: sửa biến chỉ có hiệu lực sau **Áp dụng thay đổi** (tự redeploy); tải lại trang thì mất thay đổi chưa áp dụng.
+  - (Ghi chú cũ) Webhook SePay (my.sepay.vn → Webhooks) chưa lưu: tên `thiepcuoisoba`, URL `https://thiepcuoisoba.com/api/webhooks/sepay`, Tiền vào, JSON, bật tự gửi lại, tài khoản MB trên, chứng thực **API Key** = đúng `SEPAY_WEBHOOK_KEY`. Sau đó chuyển thử 129.000đ với mã `SOBAxxxxxx`, xem "Lịch sử gửi".
+  - Claude không đăng nhập hộ được: chủ dự án tự đăng nhập Hostinger trong khung trình duyệt của app Claude (Ctrl+Shift+B), rồi Claude sửa biến môi trường.
 - [ ] Chưa có ảnh **og:image** cho website; logo/liên hệ/mạng xã hội là tạm (`.env` `CONTACT_*`, `partials/logo.ejs`); điều khoản & chính sách là **bản mẫu** cần rà soát pháp lý; `TESTIMONIALS` rỗng (chỉ thêm cảm nhận thật).
 - [ ] Trình thiết kế: chưa chọn nhiều phần tử cùng lúc, chưa có kho sticker/hoạ tiết.
 - [ ] Chưa có test tự động.
